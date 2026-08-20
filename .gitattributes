@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.html text linguist-language=HTML
+*.json text
+*.md text
+*.png binary
+*.zip binary
+

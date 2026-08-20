@@ -1,0 +1,30 @@
+name: 功能建议
+description: 提交一个具体、可复用的产品建议
+title: "[建议] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: 你遇到的具体问题
+      description: 请先描述任务和阻力，不要只写功能名称。
+    validations:
+      required: true
+  - type: textarea
+    id: current
+    attributes:
+      label: 你现在怎么解决
+  - type: textarea
+    id: expected
+    attributes:
+      label: 你希望拾光怎么帮助
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 隐私确认
+      options:
+        - label: 我不会提交未脱敏文章、账号、客户信息、密码、验证码或恢复码。
+          required: true
+

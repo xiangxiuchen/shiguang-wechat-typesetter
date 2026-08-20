@@ -1,0 +1,2684 @@
+<!doctype html>
+<!--
+  拾光排版器开源免费版
+  Copyright (c) 2026 xiangxiuchen (Crush)
+  Licensed under the Mozilla Public License 2.0.
+  Source: https://github.com/xiangxiuchen/shiguang-wechat-typesetter
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拾光排版器 V4.1.1 · 开源免费版</title>
+<style>
+  :root{
+    --accent:#6a4c93; --accent-2:#b39ddb; --accent-soft:#f1ecf7;
+    --bg:#f6f4f1; --panel:#ffffff; --panel-2:#faf9f7; --text:#2b2733; --muted:#8b8794;
+    --border:#ece7e0; --radius:14px;
+  }
+  * { box-sizing:border-box; }
+  html,body{ margin:0; height:100%; }
+  body{ font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:var(--bg); color:var(--text); height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+
+  .topbar{ min-height:56px; flex:none; background:var(--panel); border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:14px; padding:8px 20px; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand .logo{ width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); }
+  .brand b{ font-size:15px; font-weight:700; letter-spacing:.2px; }
+  .brand .ver{ font-size:11px; color:#fff; background:var(--accent); border-radius:6px; padding:2px 7px; font-weight:700; }
+  .top-right{ display:flex; align-items:center; gap:9px; min-width:0; overflow-x:auto; }
+  .save-state{ font-size:12px; color:var(--muted); }
+  .btn-toggle,.btn-check{ border:1px solid var(--border); background:var(--panel-2); color:#4a4458; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; }
+  .btn-toggle:hover,.btn-check:hover{ border-color:var(--accent-2); color:var(--accent); }
+  .btn-toggle.on{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .top-right button:disabled{ opacity:.42; cursor:not-allowed; }
+  .btn-sample{ border:1px solid #e5ddf0; background:var(--accent-soft); color:var(--accent); border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; }
+  .btn-sample:hover{ background:#e7def4; }
+  .btn-check{ background:transparent; }
+
+  .toolbar{ flex:none; background:var(--panel); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:18px; padding:10px 18px; overflow-x:auto; }
+  .tb-group{ display:inline-flex; align-items:center; gap:7px; flex:none; }
+  .tb-label{ font-size:11px; color:#a9a4b6; margin-right:2px; white-space:nowrap; }
+  button.chip{ border:1px solid var(--border); background:var(--panel-2); color:#4a4458; border-radius:9px; padding:7px 12px; font-size:13px; cursor:pointer; transition:.15s; font-family:inherit; white-space:nowrap; }
+  button.chip:hover{ background:var(--accent-soft); border-color:var(--accent-2); color:var(--accent); }
+  .compat-badge{ display:inline-block; margin-left:5px; padding:1px 5px; border-radius:5px; font-size:9px; line-height:1.4; font-weight:700; vertical-align:1px; }
+  .compat-stable{ background:#e8f4ed; color:#26704c; }
+  .compat-degrade{ background:#fff3dc; color:#986114; }
+  .compat-local-only{ background:#eeeeef; color:#6d6973; }
+  .compat-high-risk{ background:#fde8e5; color:#a33b2e; }
+
+  .app{ flex:1; display:flex; min-height:0; }
+
+  .sidebar{ width:272px; flex:none; background:var(--panel); border-right:1px solid var(--border); display:flex; flex-direction:column; min-height:0; }
+  .scroll{ overflow-y:auto; padding:16px; flex:1; }
+  .group{ margin-bottom:20px; }
+  .group-title{ font-size:12px; font-weight:700; color:var(--muted); letter-spacing:1px; margin:0 0 10px; display:flex; align-items:center; gap:6px; }
+  .group-title::before{ content:""; width:3px; height:12px; background:var(--accent); border-radius:2px; }
+  .themes{ display:block; }
+  .theme-access{ display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--panel-2); border:1px solid var(--border); border-radius:10px; padding:8px 10px; margin-bottom:12px; font-size:12px; color:#5a5566; }
+  .tier-head{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin:14px 0 8px; padding:7px 6px; border-bottom:1px dashed var(--border); cursor:pointer; border-radius:7px; transition:background .15s,border-color .15s; }
+  .tier-head:hover{ background:var(--panel-2); border-bottom-color:var(--accent-2); }
+  .tier-arrow{ display:inline-block; font-size:11px; line-height:1; color:var(--muted); transition:transform .15s ease; transform:rotate(0deg); }
+  .tier-head.collapsed .tier-arrow{ transform:rotate(-90deg); }
+  .tier-head:first-of-type{ margin-top:0; }
+  .tpl-head{ display:flex; align-items:center; gap:7px; cursor:pointer; user-select:none; padding:4px 6px; border-radius:7px; transition:background .15s; margin:0 -6px; }
+  .tpl-head:hover{ background:var(--panel-2); }
+  .tpl-arrow{ display:inline-block; font-size:11px; line-height:1; color:var(--muted); transition:transform .15s ease; transform:rotate(0deg); flex:none; }
+  .tpl-head.collapsed .tpl-arrow{ transform:rotate(-90deg); }
+  .tpl-body.collapsed{ display:none; }
+  .tier-head:first-of-type{ margin-top:0; }
+  .tier-name{ font-size:13px; font-weight:700; color:#2b2733; }
+  .tier-badge{ font-size:10px; font-weight:700; color:#fff; background:var(--muted); border-radius:5px; padding:1px 6px; }
+  .tier-desc{ flex-basis:100%; font-size:11px; color:var(--muted); line-height:1.4; }
+  .tier-themes{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:4px; }
+  .swatch{ display:flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:10px; padding:8px 10px; cursor:pointer; font-size:12px; color:#4a4458; transition:.15s; background:var(--panel-2); }
+  .swatch:hover{ border-color:var(--accent-2); }
+  .swatch.active{ border-color:var(--accent); box-shadow:0 0 0 2px rgba(106,76,147,.15); background:var(--accent-soft); color:var(--accent); }
+  .swatch .dot{ width:16px; height:16px; border-radius:50%; flex:none; border:1px solid rgba(0,0,0,.08); }
+  .sliders label{ display:block; font-size:12px; color:#5a5566; margin:8px 0 3px; }
+  .sliders input[type=range]{ width:100%; accent-color:var(--accent); }
+  .color-row{ display:flex; align-items:center; gap:8px; font-size:12px; color:#5a5566; margin-top:10px; }
+  .color-row input[type=color]{ width:34px; height:28px; border:1px solid var(--border); border-radius:6px; padding:0; cursor:pointer; background:none; }
+  .link-btn{ background:none; border:none; color:var(--accent); font-size:12px; cursor:pointer; padding:0; font-family:inherit; }
+  .publish-setting{ margin-top:12px; padding:10px 11px; border:1px solid var(--border); border-radius:9px; background:var(--panel-2); }
+  .publish-setting label{ display:flex!important; align-items:flex-start; gap:8px; margin:0!important; color:#4a4458!important; line-height:1.5; cursor:pointer; }
+  .publish-setting input{ margin-top:2px; accent-color:var(--accent); }
+  .publish-setting small{ display:block; margin-top:5px; color:var(--muted); font-size:10px; line-height:1.5; }
+  .info input{ width:100%; border:1px solid var(--border); border-radius:9px; padding:9px 11px; font-size:13px; font-family:inherit; margin-bottom:8px; background:var(--panel-2); color:var(--text); }
+  .info input:focus{ outline:none; border-color:var(--accent-2); background:#fff; }
+  .info input::placeholder{ color:#a9a4b6; }
+  .tpl-btn{ display:block; width:100%; text-align:left; border:1px solid var(--border); background:var(--panel-2); border-radius:10px; padding:9px 11px; margin-bottom:8px; cursor:pointer; font-family:inherit; transition:.15s; }
+  .tpl-btn:hover{ border-color:var(--accent-2); background:var(--accent-soft); }
+  .tpl-btn b{ display:block; font-size:13px; color:#3b2f4a; font-weight:700; }
+  .tpl-btn span{ display:block; font-size:11px; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .actions{ flex:none; display:flex; gap:8px; padding:14px 16px; border-top:1px solid var(--border); }
+  .actions button{ flex:1; padding:11px; border-radius:11px; border:none; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .btn-copy{ background:var(--accent); color:#fff; }
+  .btn-copy:hover{ background:#5a3f82; }
+  .btn-ghost{ background:var(--accent-soft); color:var(--accent); }
+  .btn-ghost:hover{ background:#e7def4; }
+  .data-summary{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px 0; }
+  .data-card{ border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:var(--panel-2); }
+  .data-card b{ display:block; font-size:16px; color:#2b2733; }
+  .data-card span{ display:block; margin-top:2px; font-size:11px; color:var(--muted); }
+  .data-actions{ display:grid; gap:8px; margin-top:12px; }
+  .data-actions button{ width:100%; border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; color:#4a4458; font:600 13px inherit; cursor:pointer; }
+  .data-actions button:hover{ border-color:var(--accent-2); color:var(--accent); }
+  .data-actions .danger{ border-color:#ecd4d0; color:#a33b2e; background:#fff8f7; }
+
+  .stage{ flex:1; overflow-y:auto; padding:30px 24px 70px; }
+  .phone-label{ font-size:12px; color:var(--muted); margin-bottom:16px; text-align:center; }
+  .phones{ display:flex; gap:24px; justify-content:center; flex-wrap:wrap; align-items:flex-start; }
+  .phone-wrap{ position:relative; }
+  .phone{ width:414px; background:#fff; border-radius:26px; box-shadow:0 16px 44px rgba(40,30,60,.12); padding:18px 16px; min-height:760px; border:1px solid var(--border); }
+  .stage.compare .phone{ width:330px; min-height:680px; }
+  .phone-header{ padding:6px 6px 14px; border-bottom:1px solid #ece9f1; margin-bottom:14px; }
+  .ph-title{ font-size:20px; font-weight:700; line-height:1.5; color:#1f1b29; }
+  .ph-meta{ font-size:12px; color:#999999; margin-top:8px; }
+  #editor{ outline:none; min-height:600px; font-size:16px; }
+  #editor [data-direct-edit="true"]{ cursor:text; }
+  #editor [data-direct-edit="true"]:empty::before{ content:'点击输入内容'; color:#b7b2be; font-weight:400; font-style:normal; }
+  #editor [data-direct-edit="false"]{ cursor:pointer; }
+  #editor [data-direct-edit="false"]:focus{ outline:2px dashed var(--accent-2); outline-offset:3px; }
+  .cmp-body{ outline:none; min-height:600px; font-size:16px; }
+  .cmp-label{ text-align:center; font-size:12px; color:var(--accent); font-weight:700; margin-top:10px; cursor:pointer; }
+  .cmp-label:hover{ color:#5a3f82; }
+  .hint{ font-size:11px; color:#a9a4b6; text-align:center; margin:24px auto 0; max-width:560px; line-height:1.6; }
+
+  .block-tools{ display:none; position:absolute; top:10px; right:10px; background:#1f1b29; border-radius:10px; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.22); z-index:20; }
+  .block-tools button{ background:none; border:none; color:#fff; width:34px; height:34px; font-size:15px; cursor:pointer; font-family:inherit; }
+  .block-tools button:hover{ background:rgba(255,255,255,.15); }
+  .block-tools button.del:hover{ background:#c0392b; }
+  [data-type].sel{ outline:2px dashed var(--accent-2); outline-offset:3px; border-radius:6px; }
+  [data-type]{ cursor:default; }
+  [data-type]:hover{ outline:1px dashed var(--accent-2); outline-offset:2px; border-radius:6px; }
+
+  .empty-state{ display:none; position:absolute; inset:0; background:rgba(255,255,255,.95); border-radius:26px; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:30px; z-index:10; }
+  .empty-state .es-icon{ font-size:34px; }
+  .empty-state .es-title{ font-size:17px; font-weight:700; margin:10px 0 6px; color:#1f1b29; }
+  .empty-state .es-sub{ font-size:13px; color:#8b8794; line-height:1.6; max-width:300px; margin-bottom:18px; }
+  .empty-state .es-btns{ display:flex; gap:10px; }
+  .empty-state .es-btns button{ padding:10px 16px; border-radius:11px; border:none; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+
+  /* 属性面板 */
+  .props{ width:252px; flex:none; background:var(--panel); border-left:1px solid var(--border); display:none; flex-direction:column; min-height:0; }
+  .app.show-props .props{ display:flex; }
+  .props .scroll{ padding:16px; }
+  .prop-type{ font-size:13px; font-weight:700; color:var(--accent); margin:0 0 12px; }
+  .prop-field{ margin-bottom:12px; }
+  .prop-field label{ display:block; font-size:12px; color:#5a5566; margin-bottom:4px; }
+  .prop-field input, .prop-field textarea, .prop-rich{ width:100%; box-sizing:border-box; border:1px solid var(--border); border-radius:9px; padding:8px 10px; font-size:13px; line-height:1.55; font-family:inherit; background:var(--panel-2); color:var(--text); resize:vertical; }
+  .prop-rich{ min-height:38px; max-height:150px; overflow:auto; white-space:pre-wrap; }
+  .prop-field input:focus, .prop-field textarea:focus, .prop-rich:focus{ outline:none; border-color:var(--accent-2); background:#fff; }
+  .prop-hint{ font-size:11px; color:#a9a4b6; line-height:1.5; margin-top:6px; }
+
+  /* 弹窗 */
+  .modal{ display:none; position:fixed; inset:0; background:rgba(30,20,45,.4); z-index:100; align-items:center; justify-content:center; }
+  .modal.show{ display:flex; }
+  .modal-box{ background:#fff; border-radius:16px; padding:22px; width:420px; max-width:88vw; max-height:88vh; overflow-y:auto; overscroll-behavior:contain; box-shadow:0 20px 60px rgba(0,0,0,.18); }
+  .modal-box h3{ margin:0 0 12px; font-size:16px; color:#1f1b29; }
+  .modal-box ul{ margin:0; padding-left:18px; font-size:13px; color:#5a5566; line-height:1.7; }
+  .modal-box p{ margin:0; font-size:13px; color:#5a5566; line-height:1.7; }
+  .modal-box button{ margin-top:16px; width:100%; padding:11px; border:none; border-radius:11px; background:var(--accent); color:#fff; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .preflight-section{ margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
+  .preflight-section:first-child{ margin-top:0; padding-top:0; border-top:0; }
+  .preflight-title{ font-size:13px; font-weight:700; margin:0 0 6px; color:#3f3948; }
+  .asset-list{ margin:5px 0 0!important; padding-left:18px!important; max-height:150px; overflow:auto; }
+  .asset-list code{ font-size:11px; overflow-wrap:anywhere; color:#596b63; }
+  .screen-warning{ display:none; }
+  @media (max-width:1180px){
+    .sidebar{ width:238px; }
+    .props{ width:226px; }
+    .stage{ padding-left:14px; padding-right:14px; }
+    .topbar{ padding-left:12px; padding-right:12px; }
+    .top-right button{ padding-left:10px; padding-right:10px; }
+  }
+  @media (max-width:900px){
+    body{ min-width:900px; overflow:auto; }
+    .app{ min-height:760px; }
+    .phone{ max-width:calc(100vw - 500px); min-width:360px; }
+    .screen-warning{ display:block; position:fixed; z-index:500; left:16px; right:16px; top:12px; padding:10px 14px; border-radius:10px; background:#2b2534; color:#fff; text-align:center; font-size:13px; box-shadow:0 8px 24px rgba(0,0,0,.22); }
+  }
+  
+</style>
+  <meta name="description" content="拾光排版器：无需注册、文章不上传的微信公众号排版工具，35 套主题，单 HTML 双击即用。">
+  <meta name="author" content="Crush / xiangxiuchen">
+  <meta name="license" content="MPL-2.0">
+  <meta name="shiguang-edition" content="open-source-free">
+  <meta name="shiguang-build" content="2026-08-20T10:55:14.928Z">
+</head>
+<body>
+  <div class="screen-warning">当前版本为电脑端编辑工具；建议使用宽度 1024px 以上的浏览器编辑，手机端只做发布后预览。</div>
+  <div class="topbar">
+    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.1 · 开源免费版</span></div>
+    <div class="top-right">
+      <button class="btn-check" id="undoBtn" disabled>撤销</button>
+      <button class="btn-check" id="redoBtn" disabled>重做</button>
+      <button class="btn-check" id="versionsBtn">恢复版本</button>
+      <button class="btn-check" id="backupBtn">项目备份</button>
+      <button class="btn-check" id="dataBtn">本机数据</button>
+      
+      <span class="save-state" id="saveState">尚未保存</span>
+      <button class="btn-check" id="checkBtn">发布预检</button>
+      <button class="btn-sample" id="topSample">载入示例文章</button>
+      <button class="btn-toggle" id="compareBtn">对比主题</button>
+      <button class="btn-check" id="helpBtn">使用教程</button>
+      <button class="btn-check" id="aboutBtn">关于</button>
+    </div>
+  </div>
+
+  <div class="toolbar" id="toolbar"></div>
+
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <div class="scroll">
+        <div class="group">
+          <p class="group-title">主题</p>
+          <div class="themes" id="themeList"></div>
+        </div>
+        <div class="group">
+          <p class="group-title tpl-head" data-tpl="v2"><span class="tpl-arrow">▾</span><span>场景结构 · 10 套</span></p>
+          <div id="tplListV2" class="tpl-body"></div>
+        </div>
+        <div class="group">
+          <p class="group-title tpl-head" data-tpl="v1"><span class="tpl-arrow">▾</span><span>常用结构 · 6 套</span></p>
+          <div id="tplList" class="tpl-body"></div>
+        </div>
+        <div class="group sliders">
+          <p class="group-title">全局调节</p>
+          <label>字号 <span id="fsVal">1.00×</span></label>
+          <input type="range" id="fontScale" min="0.9" max="1.25" step="0.05" value="1">
+          <label>行距 / 间距 <span id="spVal">1.0×</span></label>
+          <input type="range" id="spaceScale" min="0.8" max="1.4" step="0.1" value="1">
+          <div class="color-row">
+            <input type="color" id="primaryOverride" value="#6a4c93">
+            <span>主色覆盖</span>
+            <button class="link-btn" id="resetPrimary">恢复主题色</button>
+          </div>
+          <div class="publish-setting">
+            <label><input type="checkbox" id="keepWechatTable"><span>保留真实表格（高风险模式）</span></label>
+            <small>默认会把三列表格转为纵向卡片。只有经过微信保存、重开和手机预览验收后，才建议保留真实表格。</small>
+          </div>
+        </div>
+        <div class="group info">
+          <p class="group-title">文章信息（仅预览，不进正文）</p>
+          <input id="titleInput" maxlength="500" placeholder="文章标题（微信后台也要填一次）">
+          <input id="authorInput" maxlength="500" placeholder="作者名">
+        </div>
+        <div class="group">
+          <p class="group-title">导入正文</p>
+          <textarea id="import" placeholder="粘贴多段文字，每段变成一个正文块…" style="width:100%;height:70px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--panel-2);color:var(--text);"></textarea>
+          <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
+            <button class="chip" id="doImport">安全导入正文</button>
+            <button class="chip" id="importLegacy">导入旧稿/备份</button>
+            <button class="chip" id="clearAll">清空</button>
+            <input type="file" id="legacyFile" accept=".html,.htm,.json" hidden>
+          </div>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-copy" id="copyBtn">复制微信草稿</button>
+        <button class="btn-ghost" id="exportBtn">导出微信复制页</button>
+      </div>
+    </aside>
+
+    <main class="stage" id="stage">
+      <div class="phone-label" id="phoneLabel">手机预览 · 414px 宽度模拟</div>
+      <div class="phones" id="phones">
+        <div class="phone-wrap" id="mainPhone">
+          <div class="phone">
+            <div class="phone-header">
+              <div class="ph-title" id="phTitle">在此预览标题</div>
+              <div class="ph-meta" id="phAuthor">文 / 你的名字</div>
+            </div>
+            <div id="editor" contenteditable="false"></div>
+          </div>
+          <div class="block-tools" id="blockTools">
+            <button class="up" title="上移">↑</button>
+            <button class="down" title="下移">↓</button>
+            <button class="dup" title="复制块">⧉</button>
+            <button class="del" title="删除">✕</button>
+          </div>
+          <div class="empty-state" id="emptyState">
+            <div class="es-icon">✎</div>
+            <div class="es-title">还没有内容</div>
+            <div class="es-sub">先载入示例或选择文章结构，再挑一套视觉主题；不会用就点右上角「使用教程」</div>
+            <div class="es-btns">
+              <button class="btn-copy" id="esSample">载入示例文章</button>
+              <button class="btn-ghost" id="esBlank">从空白开始</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hint">提示：正文、引用、金句等简单文字可直接修改；卡片、列表、表格等结构组件请在右侧属性面板编辑。复制前会执行静态发布预检，最终仍需在微信后台粘贴、保存草稿、重新打开并手机预览。</div>
+    </main>
+
+    <aside class="props" id="props">
+      <div class="scroll">
+        <p class="group-title">编辑区块</p>
+        <div class="prop-type" id="propType"></div>
+        <div id="propFields"></div>
+      </div>
+      <div class="actions" style="flex-wrap:wrap;">
+        <button class="btn-ghost" id="pUp" style="flex:1 1 40%;">上移</button>
+        <button class="btn-ghost" id="pDown" style="flex:1 1 40%;">下移</button>
+        <button class="btn-ghost" id="pDup" style="flex:1 1 40%;">复制</button>
+        <button class="btn-copy" id="pDel" style="flex:1 1 40%;background:#c0392b;">删除</button>
+      </div>
+    </aside>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <h3 id="modalTitle"></h3>
+      <div id="modalBody"></div>
+      <button id="modalClose">知道了</button>
+    </div>
+  </div>
+
+<script>
+/* ============ 主题 ============ */
+/* ============ 主题分组（全部开放，仅按视觉气质分类）============ */
+const TIERS = [
+  { id:'v1', name:'轻量基础', badge:'10 套', free:true, desc:'清爽耐读，适合日常文章' },
+  { id:'v2', name:'标题风格', badge:'10 套', free:true, desc:'条形、引用和胶囊标题' },
+  { id:'v3', name:'杂志质感', badge:'10 套', free:true, desc:'杂志、东方、卡片和暖文艺' },
+  { id:'v4', name:'标志风格', badge:'5 套', free:true, desc:'留白、金线、数据条和时间轴' },
+];
+const THEME_DEFS = {
+  /* —— V1 基础版：现有 10 套，原样保留（顺序不变，保证旧数据兼容）—— */
+  v1:[
+    { id:'minimal', name:'极简白',   primary:'#333333', accent:'#cccccc', card:'#f7f7f7', text:'#3f3f3f', radius:8,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'green',   name:'清新绿',   primary:'#2e7d52', accent:'#8bc34a', card:'#eef7f0', text:'#37473f', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'warm',    name:'暖黄',     primary:'#b8860b', accent:'#f0c14b', card:'#fff8e6', text:'#4a4031', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'morandi', name:'莫兰迪',   primary:'#8a7d7d', accent:'#c9b8b0', card:'#f3eeec', text:'#4f4646', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'guofeng', name:'国风',     primary:'#9e2f2a', accent:'#c8a45c', card:'#f7efe6', text:'#43332c', radius:6,  font:"'STKaiti','KaiTi','PingFang SC',serif" },
+    { id:'blue',    name:'商务蓝',   primary:'#1f5fa8', accent:'#7fb3e0', card:'#eef4fb', text:'#2c3a4a', radius:8,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'purple',  name:'科技紫',   primary:'#6a4c93', accent:'#b39ddb', card:'#f1ecf7', text:'#3b2f4a', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'gray',    name:'高级灰',   primary:'#4a4a4a', accent:'#b0b0b0', card:'#f2f2f2', text:'#3a3a3a', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'sky',     name:'清新蓝',   primary:'#3a8fb7', accent:'#9fd3e8', card:'#eaf6fb', text:'#2e4250', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" },
+    { id:'orange',  name:'活力橙',   primary:'#e07b39', accent:'#f4b483', card:'#fdf1e7', text:'#4a3829', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif" }
+  ],
+  /* —— V2 进阶版（重点）：每套保留独立气质，但配色统一调到协调耐看、有层次（主色+更搭的点缀色+同色系浅底） —— */
+  v2:[
+    { id:'v2-ink',    name:'墨黑·条', primary:'#1c1c1e', accent:'#b08d4f', card:'#f5f2ec', text:'#2c2c2e', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v2-navy',   name:'深蓝·条', primary:'#1e3a5f', accent:'#4a86c5', card:'#eaf1f8', text:'#26384a', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v2-forest', name:'墨绿·条', primary:'#1f4d3a', accent:'#4f9e7e', card:'#e9f3ee', text:'#28463a', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v2-cocoa',  name:'可可·条', primary:'#5a3a26', accent:'#c2895a', card:'#f4ece2', text:'#3f2c22', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v2-slate',  name:'石板·条', primary:'#37474f', accent:'#6b8a9c', card:'#eef2f4', text:'#2c3a40', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v2-song',   name:'宋韵·引', primary:'#7a2e2e', accent:'#c8a45c', card:'#f7efe7', text:'#432f2c', radius:6,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote' },
+    { id:'v2-kai',    name:'楷境·引', primary:'#a8342a', accent:'#cf9a4e', card:'#f7efe6', text:'#432f2c', radius:6,  font:"'STKaiti','KaiTi','PingFang SC',serif", hFont:"'STKaiti','KaiTi',serif", titleStyle:'quote' },
+    { id:'v2-ruby',   name:'胭脂·丸', primary:'#b03a5b', accent:'#e88aa6', card:'#fdeef2', text:'#5a2538', radius:20, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'pill' },
+    { id:'v2-tea',    name:'茶褐·引', primary:'#6b4a2b', accent:'#b8945a', card:'#f3ece0', text:'#3f3226', radius:8,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote' },
+    { id:'v2-ink2',   name:'水墨·丸', primary:'#2a2a2e', accent:'#9a9aa2', card:'#f4f3f1', text:'#34343a', radius:20, font:"'Songti SC','SimSun',serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'pill' }
+  ],
+  /* —— V3 高级版（高级感提质：杂志编辑风 3 / 东方极简 2 / 卡片式 2 / 暖文艺 3）—— */
+  v3:[
+    /* 杂志编辑风 ×3（editorial 标题：h2 英文序号+细竖线+浅灰底条，像口袋杂志） */
+    { id:'v3-m1',  name:'刊·浅金', primary:'#8a7a5f', accent:'#c9a227', card:'#fafafa', text:'#6a6052', radius:6,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'editorial' },
+    { id:'v3-m2',  name:'刊·蓝', primary:'#1e3a5f', accent:'#7ba3c8', card:'#f5f7fa', text:'#2c3a4a', radius:8,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'editorial' },
+    { id:'v3-m3',  name:'刊·砂', primary:'#5c5048', accent:'#b8a078', card:'#f8f5f2', text:'#4a3e38', radius:8,  font:"'Songti SC','SimSun',serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'editorial' },
+    /* 东方极简 ×2（观夏式：低饱和东方色 + 宋体 + 大留白） */
+    { id:'v3-m4',  name:'黛山',   primary:'#3d4f3d', accent:'#8a9a7a', card:'#f5f7f4', text:'#3a4534', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote' },
+    { id:'v3-m5',  name:'昆仑',   primary:'#4a5560', accent:'#9aa8b6', card:'#f2f4f7', text:'#3a424d', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote' },
+    /* 卡片式高级 ×2（一条式：深主色+金/铜点缀、去描边、模块化） */
+    { id:'v3-m6',  name:'卡·雾', primary:'#6b7280', accent:'#9aa8b6', card:'#f5f7fa', text:'#4a5560', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    { id:'v3-m7',  name:'卡·靛', primary:'#2c3e50', accent:'#7fb3b5', card:'#f0f4f8', text:'#2a3a4a', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar' },
+    /* 暖文艺 ×3（十点读书式：暖米/燕麦底 + 楷体/宋体 + 金句框） */
+    { id:'v3-m8',  name:'暖·杏', primary:'#8b6914', accent:'#d4b86a', card:'#fdfaf3', text:'#4a3d28', radius:14, font:"'STKaiti','KaiTi','PingFang SC',serif", hFont:"'STKaiti','KaiTi',serif", titleStyle:'pill' },
+    { id:'v3-m9',  name:'暖·棠', primary:'#9e4a3a', accent:'#d49a8a', card:'#fdf5f2', text:'#4a2e28', radius:14, font:"'STKaiti','KaiTi','PingFang SC',serif", hFont:"'STKaiti','KaiTi',serif", titleStyle:'pill' },
+    { id:'v3-m10', name:'暖·茶', primary:'#5a4a3a', accent:'#bfa06a', card:'#f7f3ec', text:'#3f3326', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote' }
+  ],
+  /* —— V4 顶配版（全新顶级调性 ×5，每套带 signature 专属件）—— */
+  v4:[
+    /* 留白·序 —— 极简留白：超大序号水印 + 极细金线 */
+    { id:'v4-bai',  name:'留白·序', primary:'#2b2b2b', accent:'#b8a06a', card:'#fcfcfa', text:'#3a3a3a', radius:4,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'editorial', signature:'number' },
+    /* 墨玉·境 —— 东方深雅：墨绿+玉色，章节金线分隔 */
+    { id:'v4-yu',   name:'墨玉·境', primary:'#1f3a34', accent:'#5a9a86', card:'#f3f6f3', text:'#2a4038', radius:8,  font:"'Songti SC','SimSun',serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'quote', signature:'line' },
+    /* 夜阑·金 —— 微信安全版：深金用于重点卡片，正文保持浅底深字，不依赖整页暗背景 */
+    { id:'v4-ye',   name:'夜阑·金·安全', primary:'#241f18', accent:'#8a6427', card:'#f7f2e8', text:'#322e27', radius:6,  font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'pill', signature:'data' },
+    /* 晨雾·卡 —— 卡片模块：雾蓝灰+银蓝，时间轴 */
+    { id:'v4-wu',   name:'晨雾·卡', primary:'#5a6470', accent:'#9aa8b6', card:'#f6f8fa', text:'#3c4450', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar', signature:'timeline' },
+    /* 缃色·暖 —— 暖文艺高定：缃色+暖金，对比卡 */
+    { id:'v4-xiang',name:'缃色·暖', primary:'#9a7b3f', accent:'#c9a96e', card:'#fbf7ef', text:'#4a3d28', radius:14, font:"'STKaiti','KaiTi','PingFang SC',serif", hFont:"'STKaiti','KaiTi',serif", titleStyle:'pill', signature:'compare' }
+  ]
+};
+/* 扁平化：保持 V1 顺序在前（旧数字索引兼容），每个主题附带 tier 与全局索引 gIdx */
+const ALL_THEMES = [];
+TIERS.forEach(tier => (THEME_DEFS[tier.id]||[]).forEach(t => { t.tier = tier.id; t.gIdx = ALL_THEMES.length; ALL_THEMES.push(t); }));
+THEME_DEFS.v2.forEach(t => t.numStyle = '01'); // V2 统一用「01 |」现代编号，区别于 V1 的「一、」
+const THEMES = ALL_THEMES; // 别名，兼容旧引用 getTheme / renderThemes / compare
+const DEFAULT_THEME = 6;
+
+/* ============ 组件分组 ============ */
+const COMPONENT_GROUPS = [
+  { name:'标题',   items:[['h1','大标题'],['h2','小标题'],['h3','子标题']] },
+  { name:'正文',   items:[['p','正文段落'],['strong','强调句'],['quote','引用'],['list','列表'],['clist','圈号列表']] },
+  { name:'卡片/证据', items:[['intro','导语卡'],['card','卡片'],['tip','提示框'],['stat','数据卡'],['quote2','金句'],['compare','对比卡'],['meta','阅读标签'],['table','三列表格·高风险'],['cta','行动提示卡']] },
+  { name:'步骤/引导', items:[['step','步骤条'],['twocol','上下双卡'],['guide','文末提示卡'],['follow','关注提示卡'],['tags','静态标签']] },
+  { name:'媒体/结尾', items:[['image','图片占位'],['caption','图注'],['divider','分割线'],['recap','要点回顾'],['refs','参考资料'],['footer','结尾']] },
+  { name:'行动/推荐', items:[['triple','三连提示卡'],['next','下期预告'],['hist','往期推荐']] }
+];
+
+/* ============ 属性面板字段定义 ============ */
+const SCHEMA = {
+  h1:{ name:'大标题', fields:[['text','标题文字','text']] },
+  h2:{ name:'小标题', fields:[['text','小标题','text']] },
+  h3:{ name:'子标题', fields:[['text','子标题','text']] },
+  p:{ name:'正文段落', fields:[['text','正文内容','area']] },
+  strong:{ name:'强调句', fields:[['text','强调内容','area']] },
+  quote:{ name:'引用', fields:[['text','引用内容','area']] },
+  tip:{ name:'提示框', fields:[['text','提示内容','area']] },
+  image:{ name:'图片占位', fields:[['text','占位文字','text']] },
+  caption:{ name:'图注', fields:[['text','图注文字','text']] },
+  footer:{ name:'结尾', fields:[['text','结尾文字','text']] },
+  recap:{ name:'要点回顾', fields:[['title','标题','text'],['items','要点（每行一条）','list']] },
+  meta:{ name:'阅读标签', fields:[['words','字数','text'],['minutes','阅读时长','text'],['fit','适读人群/期数','text']] },
+  clist:{ name:'圈号列表', fields:[['items','条目（每行一条，可写"标题|说明"）','list']] },
+  table:{ name:'三列表格（高风险）', fields:[['head','表头（三列用|分隔）','text'],['rows','数据行（每行三列用|分隔；发布前必须手机预览）','area']] },
+  refs:{ name:'参考资料', fields:[['title','栏目标题','text'],['items','条目（每行：标题|来源说明）','list']] },
+  triple:{ name:'三连提示卡', fields:[['lead','引导句（不可点击）','area'],['acts','动作名（每行一个）','list'],['icons','图标（每行一个，emoji）','list'],['tail','底部文案','text']] },
+  next:{ name:'下期预告', fields:[['title','标题','text'],['body','预告内容','area']] },
+  hist:{ name:'往期推荐', fields:[['title','标题','text'],['items','文章（每行：标题|说明）','list']] },
+  quote2:{ name:'金句', fields:[['text','金句内容','area']] },
+  cta:{ name:'行动提示卡', fields:[['text','行动文案（不可点击）','area']] },
+  card:{ name:'卡片', fields:[['title','卡片标题','text'],['body','卡片内容','area']] },
+  intro:{ name:'导语卡', fields:[['strong','小标签','text'],['body','导语内容','area']] },
+  stat:{ name:'数据卡', fields:[['label','卡标题','text'],['value','数字（每行一个）','area']] },
+  list:{ name:'列表', fields:[['items','条目（每行一条）','list']] },
+  compare:{ name:'对比卡', fields:[['aTitle','方案A标题','text'],['aItems','A优点（每行）','list'],['bTitle','方案B标题','text'],['bItems','B缺点（每行）','list']] },
+  step:{ name:'步骤条', fields:[['items','步骤（每行：标题|说明）','steplist']] },
+  twocol:{ name:'上下双卡', fields:[['left','上方卡片（每行一段）','area'],['right','下方卡片（每行一段）','area']] },
+  guide:{ name:'文末提示卡', fields:[['text','提示文案（首行标题，其余说明；不可点击）','area']] },
+  follow:{ name:'关注提示卡', fields:[['text','关注文案（首行标题，其余说明；不可点击）','area']] },
+  tags:{ name:'静态标签', fields:[['items','标签（每行一个，不含#；不可点击）','list']] }
+};
+const DIRECT_EDITABLE = new Set(['h1','p','strong','quote','image','caption','footer','quote2','cta']);
+const INLINE_FIELDS = new Set([
+  'h1.text','p.text','strong.text','quote.text','image.text','caption.text','footer.text','quote2.text','cta.text',
+  'card.body','tip.text','intro.body','stat.value','next.body','guide.text','follow.text'
+]);
+const BLOCK_TYPES = new Set(COMPONENT_GROUPS.flatMap(group=>group.items.map(item=>item[0])));
+/* 微信发布兼容策略：31 类组件都必须明确归入四类之一，缺少声明时发布失败关闭。 */
+const PUBLISH_STATUS=Object.freeze({
+  stable:{label:'稳定',description:'原样保留'},
+  degrade:{label:'降级',description:'微信安全降级'},
+  'local-only':{label:'仅本地',description:'仅编辑器展示'},
+  'high-risk':{label:'高风险',description:'需要人工验收'}
+});
+const publishPolicy=(status,note)=>Object.freeze({status,note});
+const PUBLISH_POLICY=Object.freeze({
+  h1:publishPolicy('stable','大标题'),h2:publishPolicy('stable','小标题'),h3:publishPolicy('stable','子标题'),
+  p:publishPolicy('stable','正文'),strong:publishPolicy('stable','重点块'),quote:publishPolicy('stable','引用'),
+  list:publishPolicy('degrade','项目符号转为线性段落'),clist:publishPolicy('stable','移动端圈号卡片'),
+  card:publishPolicy('stable','信息卡片'),tip:publishPolicy('stable','提示框'),intro:publishPolicy('stable','导语卡'),
+  stat:publishPolicy('stable','数据卡'),quote2:publishPolicy('stable','金句'),compare:publishPolicy('degrade','对比内容纵向堆叠'),
+  meta:publishPolicy('stable','阅读标签'),table:publishPolicy('high-risk','默认转纵向卡片；可显式保留真表格'),
+  cta:publishPolicy('degrade','行动按钮感降为静态提示'),step:publishPolicy('stable','移动端步骤卡'),
+  twocol:publishPolicy('degrade','双栏改为上下双卡'),guide:publishPolicy('degrade','交互引导降为静态文案'),
+  follow:publishPolicy('degrade','关注动作降为静态文案'),tags:publishPolicy('degrade','标签降为静态胶囊'),
+  image:publishPolicy('local-only','仅作为插图位置锚点，不直接复制'),caption:publishPolicy('stable','图注'),
+  divider:publishPolicy('degrade','分割线改为容器上边框'),recap:publishPolicy('stable','要点回顾'),
+  refs:publishPolicy('stable','参考资料文字清单'),footer:publishPolicy('stable','结尾'),
+  triple:publishPolicy('degrade','点赞在看转发降为静态提示'),next:publishPolicy('stable','下期预告'),
+  hist:publishPolicy('stable','往期推荐文字清单')
+});
+const APP_SCHEMA = 2;
+const WECHAT_RENDERER_VERSION = '4.2.0-wechat-compat-1';
+const KEY = 'wx-typesetter-v41';
+const LEGACY_KEY = 'wx-typesetter-v1';
+const LEGACY_BACKUP_KEY = 'wx-typesetter-v41-legacy-backup';
+const SNAPSHOT_KEY = 'wx-typesetter-v41-snapshots';
+const CORRUPT_BACKUP_PREFIX = 'wx-typesetter-v41-corrupt-backup-';
+const MAX_HISTORY = 50;
+const MAX_SNAPSHOTS = 10;
+const MAX_BLOCKS = 1000;
+const MAX_TOTAL_CHARS = 1000000;
+const MAX_FIELD_CHARS = 100000;
+const MAX_LIST_ITEMS = 500;
+const MAX_LIST_ITEM_CHARS = 10000;
+const MAX_META_CHARS = 500;
+const MAX_RENDER_UNITS = 8000;
+
+/* 新建组件的真实默认数据：预览、属性面板和模型始终一致 */
+const DEFAULT_CONTENT = {
+  h1:{text:'在此输入大标题'}, h2:{text:'小标题'}, h3:{text:'子节标题'},
+  p:{text:'在此输入正文内容，或使用「导入文本」批量粘贴。行距舒适，适合手机阅读。'},
+  strong:{text:'这是一句需要强调的重点内容。'}, quote:{text:'引用他人的一句话，或金句摘抄，斜体显示更雅致。'},
+  list:{items:['要点一','要点二','要点三']}, card:{title:'卡片标题',body:'卡片内容说明文字，可替换为你的要点。'},
+  tip:{text:'提示：这里是补充说明、注意事项或行动指引。'}, image:{text:'图片占位 — 请在公众号后台替换为实图'},
+  caption:{text:'图注：图片说明文字（图片需自行上传到公众号）'}, footer:{text:'— 全文完 —　感谢阅读 · 欢迎分享'},
+  recap:{title:'要点回顾',items:['要点一','要点二','要点三']}, meta:{words:'约 3000 字',minutes:'阅读 8 分钟',fit:'适读：所有人'},
+  clist:{items:['要点一|一句话说明','要点二|一句话说明','要点三|一句话说明']}, table:{head:'维度|现状|建议',rows:'效率|低|高\n成本|高|低'},
+  refs:{title:'REFERENCES · 参考资料',items:['资料一|来源说明','资料二|来源说明']},
+  triple:{lead:'既然看到这里了，随手点赞、在看、转发三连吧。',acts:['点赞','在看','转发'],icons:['👍','👁','↗'],tail:'THANKS FOR READING'},
+  next:{title:'下期预告',body:'下一篇文章，我想聊聊……（在这里写一句钩子，让人想追更）'},
+  hist:{title:'往期推荐',items:['往期文章标题一|阅读数据请替换','往期文章标题二|阅读数据请替换']},
+  intro:{strong:'写在前面',body:'把这段换成你的开场白，用“我”的口吻，三两句话把读者拉进来。'},
+  stat:{label:'数据卡标题',value:'关键数字一 · 关键数字二<br>关键数字三 · 关键数字四'}, quote2:{text:'「把最想让人记住的一句话，放在这里。」'},
+  compare:{aTitle:'方案 A（推荐）',aItems:['优点一','优点二','优点三'],bTitle:'方案 B（不推荐）',bItems:['缺点一','缺点二','缺点三']},
+  step:{items:['步骤一|说明文字','步骤二|说明文字','步骤三|说明文字']}, twocol:{left:'左栏内容',right:'右栏内容'},
+  guide:{text:'如果觉得有用，点个「在看」支持一下\n你的每一次分享，都是我继续写下去的动力。'},
+  follow:{text:'关注我，不错过下一篇\n微信搜一搜，或点上方蓝字即可关注'}, tags:{items:['效率工具','AI','时间管理']},
+  cta:{text:'你平时用它干过最爽的一件事是什么？<br><strong>评论区聊聊，我去抄作业</strong>'}
+};
+
+const PLACEHOLDER_CORE = {
+  h1:['text'],h2:['text'],h3:['text'],p:['text'],strong:['text'],quote:['text'],list:['items'],card:['title','body'],tip:['text'],
+  caption:['text'],recap:['items'],meta:['words','minutes','fit'],clist:['items'],table:['rows'],refs:['items'],triple:['lead'],next:['body'],hist:['items'],
+  intro:['body'],stat:['label','value'],quote2:['text'],compare:['aItems','bItems'],step:['items'],twocol:['left','right'],guide:['text'],follow:['text'],tags:['items'],cta:['text']
+};
+
+/* ============ 状态 ============ */
+let themeIndex = DEFAULT_THEME;
+let compareMode = false;
+const G = { scale:1, space:1, primaryOverride:null, tableMode:'cards' };
+let documentState = {
+  schemaVersion:APP_SCHEMA,
+  revision:0,
+  updatedAt:Date.now(),
+  meta:{title:'',author:'',summary:''},
+  appearance:{themeId:(THEMES[DEFAULT_THEME]&&THEMES[DEFAULT_THEME].id)||null,scale:1,space:1,primary:null,tableMode:'cards'},
+  blocks:[]
+};
+
+function cloneJson(value){ return JSON.parse(JSON.stringify(value)); }
+function newBlockId(){
+  if(globalThis.crypto && typeof globalThis.crypto.randomUUID==='function') return crypto.randomUUID();
+  return 'b-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
+}
+function normalizeContent(type, content){
+  const src = content && typeof content==='object' ? content : {};
+  const def = SCHEMA[type];
+  if(!def) return {};
+  const out = {};
+  def.fields.forEach(([key,,kind])=>{
+    if(!Object.prototype.hasOwnProperty.call(src,key)) return;
+    const value = src[key];
+    if(kind==='list' || kind==='steplist'){
+      out[key] = Array.isArray(value) ? value.map(v=>sanitizePlainText(v).trim()).filter(Boolean) : splitLines(sanitizePlainText(value||''));
+    }else if(INLINE_FIELDS.has(type+'.'+key)){
+      out[key] = sanitizeInlineHtml(value==null?'':String(value));
+    }else{
+      out[key] = sanitizePlainText(value==null?'':String(value));
+    }
+  });
+  return out;
+}
+function createBlockRecord(type, content, id){
+  if(!BLOCK_TYPES.has(type)) type='p';
+  const defaults=cloneJson(DEFAULT_CONTENT[type]||{});
+  const merged=Object.assign(defaults,content&&typeof content==='object'?content:{});
+  return { id:normalizeBlockId(id), type, content:normalizeContent(type,merged) };
+}
+function getBlockRecord(id){ return documentState.blocks.find(block=>block.id===id)||null; }
+function getBlockIndex(id){ return documentState.blocks.findIndex(block=>block.id===id); }
+
+function normalizeBlockId(value){
+  const id=typeof value==='string'?value:'';
+  return /^[A-Za-z0-9_-]{1,120}$/.test(id)?id:newBlockId();
+}
+function safeNumber(value){
+  if(typeof value==='number') return Number.isFinite(value)?value:NaN;
+  if(typeof value==='string'&&value.trim()!==''&&/^-?(?:\d+\.?\d*|\.\d+)$/.test(value.trim())) return Number(value);
+  return NaN;
+}
+function normalizeAppearance(value){
+  const src=value&&typeof value==='object'?value:{};
+  const themeId=typeof src.themeId==='string'&&ALL_THEMES.some(t=>t.id===src.themeId)?src.themeId:THEMES[DEFAULT_THEME].id;
+  const clamp=(raw,min,max,fallback)=>{ const n=safeNumber(raw); return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback; };
+  const primary=typeof src.primary==='string'&&/^#[0-9a-f]{6}$/i.test(src.primary)?src.primary.toLowerCase():null;
+  const tableMode=src.tableMode==='table'?'table':'cards';
+  return {themeId,scale:clamp(src.scale,.9,1.25,1),space:clamp(src.space,.8,1.4,1),primary,tableMode};
+}
+
+function getTheme(idx){
+  const base=THEMES[idx]||THEMES[DEFAULT_THEME];
+  const safePrimary=typeof G.primaryOverride==='string'&&/^#[0-9a-f]{6}$/i.test(G.primaryOverride)?G.primaryOverride:null;
+  return (idx===themeIndex && safePrimary) ? Object.assign({},base,{primary:safePrimary}) : base;
+}
+function curTheme(){ return getTheme(themeIndex); }
+
+/* ============ 样式生成（全部内联）============ */
+function blockStyle(type, t, g){
+  const fs = 16 * g.scale, sp = 14 * g.space;
+  const breath = t.tier === 'v1';
+  const secTop = breath ? 30*g.space : 20*g.space;
+  const secBot = breath ? 15*g.space : 10*g.space;
+  const blkGap = breath ? 17*g.space : sp;
+  const base = `font-family:${t.font};font-size:${fs}px;line-height:${t.tier==='v4'?1.85:1.75};color:${t.text};letter-spacing:${t.tier==='v4'?.4:.3}px;`;
+  const txt = (t.tier==='v4') ? t.text : t.primary; // V4 文字统一用 text（暗色安全）
+  switch(type){
+    case 'h1': {
+      const hf = t.hFont ? `font-family:${t.hFont};` : '';
+      let head = `text-align:center;padding-bottom:8px;border-bottom:3px solid ${t.accent};`; // V1 默认：居中下划线
+      if(t.titleStyle==='bar'){ head = `display:block;background:${t.primary};color:#fff;padding:${12*g.space}px ${18*g.space}px;border-left:5px solid ${t.accent};border-radius:${t.radius}px;margin:${22*g.space}px 0 ${16*g.space}px;letter-spacing:1px;text-align:left;font-weight:700;`; }
+      else if(t.titleStyle==='pill'){ head = `display:block;text-align:center;background:${t.primary};color:#fff;padding:${12*g.space}px ${18*g.space}px;border-radius:${t.radius>=16?t.radius:18}px;margin:${22*g.space}px 0 ${16*g.space}px;letter-spacing:1px;box-shadow:0 3px 10px rgba(0,0,0,.12);font-weight:700;`; }
+      return base + `font-size:${26*g.scale}px;font-weight:700;color:${txt};margin:${(breath?30:24)*g.space}px 0 ${(breath?18:16)*g.space}px;` + hf + head;
+    }
+    case 'h2': {
+      const hf = t.hFont ? `font-family:${t.hFont};` : '';
+      if(t.tier==='v4'){ return base + `font-size:${20*g.scale}px;font-weight:700;color:${t.text};margin:${secTop}px 0 ${secBot}px;` + hf; } // V4：纯净基底，装饰交给 signature
+      let head = `padding-left:12px;border-left:4px solid ${t.accent};`; // V1 默认：左边框
+      if(t.titleStyle==='bar'){ head = `display:block;background:${t.primary};color:#fff;padding:${10*g.space}px ${16*g.space}px;border-left:5px solid ${t.accent};border-radius:${t.radius}px;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.5px;font-weight:700;`; }
+      else if(t.titleStyle==='quote'){ head = `display:block;background:${t.card};color:${txt};padding:${10*g.space}px ${14*g.space}px ${10*g.space}px;border-left:5px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.3px;font-weight:700;`; }
+      else if(t.titleStyle==='pill'){ head = `display:inline-block;background:${t.primary};color:#fff;padding:${6*g.space}px ${16*g.space}px;border-radius:${t.radius>=16?t.radius:18}px;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.5px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.10);`; }
+      else if(t.titleStyle==='editorial'){ head = `display:block;background:#f5f5f5;padding:${8*g.space}px ${14*g.space}px;margin:${18*g.space}px 0 ${10*g.space}px;border-radius:4px;letter-spacing:.5px;font-weight:700;color:${t.text};border-left:4px solid ${t.accent};`; }
+      return base + `font-size:${20*g.scale}px;font-weight:700;color:${txt};margin:${secTop}px 0 ${secBot}px;` + hf + head;
+    }
+    case 'h3': {
+      const hf = t.hFont ? `font-family:${t.hFont};` : '';
+      return base + `font-size:${17*g.scale}px;font-weight:700;color:${txt};margin:${16*g.space}px 0 ${8*g.space}px;` + hf;
+    }
+    case 'p':
+      if(t.tier==='v3'){ return base + `margin:0 0 ${blkGap}px;color:#555;`; }
+      return base + `margin:0 0 ${blkGap}px;`;
+    case 'strong': return base + `display:block;font-weight:700;color:${txt};background:${t.card};padding:${10*g.space}px ${14*g.space}px;border-radius:${t.radius}px;margin:${sp}px 0;`;
+    case 'quote':  return base + `display:block;color:${t.text};background:${t.card};border-left:4px solid ${t.primary};padding:${13*g.space}px ${16*g.space}px;margin:${sp}px 0;border-radius:0 ${t.radius}px ${t.radius}px 0;`;
+    case 'card':
+      if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`; }
+      if(t.tier==='v4'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;box-shadow:0 2px 12px rgba(0,0,0,.04);`; }
+      return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`;
+    case 'tip':
+      if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${12*g.space}px ${14*g.space}px;margin:${sp}px 0;`; }
+      return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${12*g.space}px ${14*g.space}px;margin:${sp}px 0;`;
+    case 'image':  return base + `display:block;border:2px dashed ${t.accent};border-radius:${t.radius}px;padding:${30*g.space}px;text-align:center;color:#999;margin:${sp}px 0;font-size:${14*g.scale}px;`;
+    case 'divider':return `border:none;border-top:2px dashed ${t.accent};margin:${20*g.space}px 0;`;
+    case 'caption':
+      if(t.tier==='v3'){ return base + `font-size:${13*g.scale}px;color:#999;text-align:center;margin:${8*g.space}px 0 ${16*g.space}px;padding-top:${8*g.space}px;border-top:1px solid ${t.accent};`; }
+      return base + `font-size:${13*g.scale}px;color:#999;text-align:center;margin:${8*g.space}px 0 ${16*g.space}px;`;
+    case 'footer':
+      if(t.tier==='v4'){ return base + `display:block;text-align:center;color:${t.accent};font-size:${12*g.scale}px;margin:${28*g.space}px 0 ${24*g.space}px;padding-top:${14*g.space}px;border-top:1px solid ${t.accent};letter-spacing:1px;`; }
+      return base + `display:block;text-align:center;color:#999;font-size:${13*g.scale}px;margin:${24*g.space}px 0;padding-top:${12*g.space}px;border-top:1px solid ${t.accent};`;
+    case 'recap':  return base + `background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'triple': return base + `display:block;border:1px solid ${t.accent};border-radius:${Math.max(t.radius,12)}px;padding:${16*g.space}px ${14*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+    case 'next':   return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'hist':   return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'intro':
+      if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${14*g.space}px ${16*g.space}px;margin:0 0 ${18*g.space}px;font-size:${15*g.scale}px;`; }
+      return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${14*g.space}px ${16*g.space}px;margin:0 0 ${18*g.space}px;font-size:${15*g.scale}px;`;
+    case 'stat':
+      if(t.tier==='v4'){ return base + `display:block;background:${t.card};color:${t.text};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${18*g.space}px 0;text-align:center;`; }
+      return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px;margin:${18*g.space}px 0;text-align:center;`;
+    case 'quote2':
+      if(t.tier==='v3'){ return base + `display:block;color:${txt};font-size:${19*g.scale}px;font-weight:700;line-height:1.7;text-align:center;margin:${20*g.space}px 0;padding:${12*g.space}px 8px;border-bottom:2px solid ${t.accent};`; }
+      return base + `display:block;color:${txt};font-size:${19*g.scale}px;font-weight:700;line-height:1.7;text-align:center;margin:${20*g.space}px 0;padding:${12*g.space}px 8px;`;
+    case 'compare':return base + `margin:${18*g.space}px 0;`;
+    case 'step':   return base + `margin:${18*g.space}px 0;`;
+    case 'twocol': return base + `margin:${18*g.space}px 0;`;
+    case 'guide':  return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+    case 'follow': return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+    case 'cta':    return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px ${18*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+    case 'meta':  return base + `display:block;text-align:center;font-size:${12*g.scale}px;color:#999;letter-spacing:1px;margin:0 0 ${16*g.space}px;`;
+    case 'clist': return base + `margin:${sp}px 0;`;
+    case 'table': return base + `margin:${18*g.space}px 0;`;
+    case 'refs':  return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'tags':   return base + `margin:${16*g.space}px 0;`;
+  }
+  return base;
+}
+function sanitizePlainText(value){
+  return (value==null?'':String(value)).replace(/\r\n?/g,'\n').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,'');
+}
+function escapeHtml(value){
+  return sanitizePlainText(value).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function textToInlineHtml(value){ return escapeHtml(value).replace(/\n/g,'<br>'); }
+function normalizeHttpUrl(value){
+  const raw=sanitizePlainText(value==null?'':String(value)).trim().replace(/[\u0000-\u0020\u007f]+/g,'');
+  if(!raw) return '';
+  try{
+    const url=new URL(raw);
+    if(url.protocol!=='https:'&&url.protocol!=='http:') return '';
+    return url.href;
+  }catch(_){ return ''; }
+}
+function sanitizeInlineHtml(value){
+  const template=document.createElement('template');
+  template.innerHTML=sanitizePlainText(value);
+  const allowed=new Set(['BR','STRONG','B','EM','I','U','A']);
+  const blocked=new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','SVG','MATH','IMG','VIDEO','AUDIO','FORM','INPUT','BUTTON','LINK','META']);
+  const lineBlocks=new Set(['DIV','P','SECTION','BLOCKQUOTE','LI','H1','H2','H3']);
+  function clean(node){
+    if(node.nodeType===Node.TEXT_NODE) return escapeHtml(node.nodeValue||'');
+    if(node.nodeType!==Node.ELEMENT_NODE) return '';
+    if(blocked.has(node.tagName)) return '';
+    const inner=Array.from(node.childNodes).map(clean).join('');
+    if(!allowed.has(node.tagName)) return lineBlocks.has(node.tagName)?('<br>'+inner+'<br>'):inner;
+    if(node.tagName==='BR') return '<br>';
+    if(node.tagName==='A'){
+      const rawHref=node.getAttribute('href')||'';
+      const href=normalizeHttpUrl(rawHref);
+      if(!href) return inner+(rawHref?'（已拦截不安全链接：'+escapeHtml(rawHref)+'）':'');
+      return `<a href="${escapeHtml(href)}">${inner||escapeHtml(href)}</a>`;
+    }
+    const tag=node.tagName.toLowerCase();
+    return `<${tag}>${inner}</${tag}>`;
+  }
+  return Array.from(template.content.childNodes).map(clean).join('').replace(/(?:<br>\s*){2,}/gi,'<br>').replace(/^(?:<br>)+|(?:<br>)+$/gi,'');
+}
+function inlineHtmlToText(value){
+  const template=document.createElement('template');
+  template.innerHTML=sanitizeInlineHtml(value);
+  function read(node){
+    if(node.nodeType===Node.TEXT_NODE) return node.nodeValue||'';
+    if(node.nodeType!==Node.ELEMENT_NODE) return '';
+    if(node.tagName==='BR') return '\n';
+    return Array.from(node.childNodes).map(read).join('');
+  }
+  return Array.from(template.content.childNodes).map(read).join('');
+}
+function fieldValue(content,key,fallback){ return Object.prototype.hasOwnProperty.call(content||{},key)?content[key]:fallback; }
+function inlineValue(value, fallback){ return sanitizeInlineHtml(value==null?(fallback==null?'':fallback):value); }
+function inlineField(content,key,fallback){ return inlineValue(fieldValue(content,key,fallback),''); }
+function textField(content,key,fallback){ return sanitizePlainText(fieldValue(content,key,fallback)); }
+function listField(content,key,fallback){ const value=fieldValue(content,key,fallback); return Array.isArray(value)?value:(fallback||[]); }
+function listItems(items, t, g){ return (items||[]).map(i=>`<li style="margin:6px 0;">${escapeHtml(i)}</li>`).join(''); }
+function splitLines(s){ return sanitizePlainText(s||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); }
+
+/* ============ 编辑器组件 HTML ============ */
+function buildEditorComponent(type, t, g, c){
+  c = c || {};
+  const s = blockStyle(type, t, g);
+  const txt = (t.tier==='v4') ? t.text : t.primary;
+  switch(type){
+    case 'h1':     return `<section data-type="h1" style="${s}">${inlineField(c,'text','在此输入大标题')}</section>`;
+    case 'h2':
+      if(t.tier==='v4'){
+        const sig = t.signature;
+        const raw = textField(c,'text','小标题').replace(/^(?:[零一二三四五六七八九十]{1,3})、/, '').replace(/^\d{1,2}\s*\|\s*/, '');
+        if(sig==='number'){
+          return `<section data-type="h2" style="${s};letter-spacing:.8px;"><div style="font-size:${42*g.scale}px;line-height:1;font-weight:700;color:${t.accent};opacity:.20;letter-spacing:2px;margin-bottom:6px;">01</div><div style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</div></section>`;
+        }
+        if(sig==='line'){
+          return `<section data-type="h2" style="${s};letter-spacing:.8px;border-top:2px solid ${t.accent};border-bottom:2px solid ${t.accent};padding:10px 0;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        }
+        if(sig==='data'){
+          return `<section data-type="h2" style="${s};letter-spacing:.8px;border-top:1px solid ${t.accent};border-bottom:1px solid ${t.accent};padding:8px 0;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        }
+        if(sig==='timeline'){
+          return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:4px solid ${t.accent};padding-left:12px;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        }
+        if(sig==='compare'){
+          return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:24px solid ${t.accent};border-right:24px solid ${t.accent};padding:0 12px;text-align:center;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        }
+      }
+      if(t.titleStyle==='editorial'){
+        return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;font-family:-apple-system,'Helvetica Neue',sans-serif;">01</span><span style="display:inline-block;width:1px;height:14px;background:#ccc;margin-right:12px;vertical-align:-2px;"></span><span>${escapeHtml(textField(c,'text','小标题'))}</span></section>`;
+      }
+      return `<section data-type="h2" style="${s}">${escapeHtml(textField(c,'text','小标题'))}</section>`;
+    case 'h3':     return `<section data-type="h3" style="${s};border-left:4px solid ${t.accent};padding-left:9px;"><span style="font-weight:700;color:${txt};">${escapeHtml(textField(c,'text','子节标题'))}</span></section>`;
+    case 'p':      return `<p data-type="p" style="${s}">${inlineField(c,'text','在此输入正文内容，或使用「导入文本」批量粘贴。行距舒适，适合手机阅读。')}</p>`;
+    case 'strong': return `<section data-type="strong" style="${s}">${inlineField(c,'text','这是一句需要强调的重点内容。')}</section>`;
+    case 'quote':  return `<section data-type="quote" style="${s}">${inlineField(c,'text','引用他人的一句话，或金句摘抄，斜体显示更雅致。')}</section>`;
+    case 'list':   return `<ul data-type="list" style="list-style:disc;padding-left:22px;margin:${14*g.space}px 0;color:${t.text};font-family:${t.font};font-size:${16*g.scale}px;line-height:1.75;">${listItems(listField(c,'items',['要点一','要点二','要点三']))}</ul>`;
+    case 'card':   return `<section data-type="card" style="${s}"><strong style="display:block;border-left:4px solid ${t.accent};padding-left:10px;color:${txt};font-size:${17*g.scale}px;margin-bottom:7px;line-height:1.4;">${escapeHtml(textField(c,'title','卡片标题'))}</strong><span style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;">${inlineField(c,'body','卡片内容说明文字，可替换为你的要点。')}</span></section>`;
+    case 'tip':    return `<section data-type="tip" style="${s}"><span style="display:inline-block;background:${t.accent};color:#fff;font-size:${11*g.scale}px;font-weight:700;padding:1px 8px;border-radius:${Math.max(t.radius-4,3)}px;margin-right:8px;letter-spacing:1px;vertical-align:1px;">TIP</span><span style="color:${t.text};line-height:1.7;">${inlineField(c,'text','提示：这里是补充说明、注意事项或行动指引。')}</span></section>`;
+    case 'image':  return `<section data-type="image" style="${s}">${inlineField(c,'text','图片占位 — 请在公众号后台替换为实图')}</section>`;
+    case 'divider':return `<hr data-type="divider" style="${s}">`;
+    case 'caption':return `<section data-type="caption" style="${s}">${inlineField(c,'text','图注：图片说明文字（图片需自行上传到公众号）')}</section>`;
+    case 'footer': return `<section data-type="footer" style="${s}">${inlineField(c,'text','— 全文完 —　感谢阅读 · 欢迎分享')}</section>`;
+    case 'recap':  return `<section data-type="recap" style="${s}"><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:8px;">${escapeHtml(textField(c,'title','要点回顾'))}</div>${listField(c,'items',['要点一','要点二','要点三']).map(x=>`<p style="margin:0 0 7px;font-size:${15*g.scale}px;color:${t.text};line-height:1.7;"><span style="color:${t.accent};font-weight:700;margin-right:8px;">▪</span><span>${escapeHtml(x)}</span></p>`).join('')}</section>`;
+    case 'meta': {
+      const parts=[textField(c,'words','约 3000 字'),textField(c,'minutes','阅读 8 分钟'),textField(c,'fit','适读：所有人')].filter(Boolean);
+      return `<section data-type="meta" style="${s}">${parts.map(x=>escapeHtml(x)).join('&nbsp;&nbsp;·&nbsp;&nbsp;')}</section>`;
+    }
+    case 'clist': {
+      const items=listField(c,'items',['要点一|一句话说明','要点二|一句话说明','要点三|一句话说明']);
+      return `<section data-type="clist" style="${s}">${items.map((it,i)=>{ const raw=String(it),idx=raw.indexOf('|'),title=idx<0?raw:raw.slice(0,idx),desc=idx<0?'':raw.slice(idx+1); return `<section style="margin:0 0 ${10*g.space}px;padding:${12*g.space}px ${14*g.space}px;background:${t.card};border-left:3px solid ${t.accent};border-radius:${t.radius}px;"><p style="margin:0;line-height:24px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${t.primary};color:#fff;font-size:${12*g.scale}px;font-weight:700;text-align:center;line-height:24px;vertical-align:middle;margin-right:8px;">${i+1}</span><strong style="color:${txt};font-size:${16*g.scale}px;line-height:1.45;vertical-align:middle;">${escapeHtml(title)}</strong></p>${desc?`<p style="display:block;margin:6px 0 0;font-size:${15*g.scale}px;color:${t.text};line-height:1.75;">${escapeHtml(desc)}</p>`:''}</section>`; }).join('')}</section>`;
+    }
+    case 'table': {
+      const head=textField(c,'head','维度|现状|建议').split('|').map(x=>x.trim()).slice(0,3);
+      const rows=splitLines(textField(c,'rows','效率|低|高\n成本|高|低')).map(r=>r.split('|').map(x=>x.trim()));
+      const th=head.map(h=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${t.accent};">${escapeHtml(h)}</th>`).join('');
+      const trs=rows.map((r,ri)=>`<tr>${[0,1,2].map(ci=>`<td style="background:${ri%2?t.card:'#ffffff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${t.accent};">${escapeHtml(r[ci]||'')}</td>`).join('')}</tr>`).join('');
+      return `<section data-type="table" style="${s}"><table style="width:100%;border-collapse:collapse;"><tr>${th}</tr>${trs}</table></section>`;
+    }
+    case 'refs': {
+      const items=listField(c,'items',['资料一|来源说明','资料二|来源说明']);
+      return `<section data-type="refs" style="${s}"><div style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin-bottom:10px;letter-spacing:1px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','REFERENCES · 参考资料'))}</div>${items.map((it,i)=>{ const p=String(it).split('|'); return `<div style="font-size:${12*g.scale}px;color:#888;line-height:1.7;margin:5px 0;"><span style="color:${txt};">[${String(i+1).padStart(2,'0')}]</span> ${escapeHtml(p[0])}${p[1]?` <span style="color:#aaa;">— ${escapeHtml(p[1])}</span>`:''}</div>`; }).join('')}</section>`;
+    }
+    case 'triple': {
+      const acts=listField(c,'acts',['点赞','在看','转发']);
+      const icons=listField(c,'icons',['👍','👁','↗']);
+      const lead=inlineField(c,'lead','既然看到这里了，随手点赞、在看、转发三连吧。');
+      const btns = acts.map((a,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${t.accent};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};"><span style="margin-right:5px;">${escapeHtml(icons[i]||'')}</span><strong>${escapeHtml(a)}</strong></span>`).join('');
+      return `<section data-type="triple" style="${s}"><div style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin-bottom:${10*g.space}px;">${lead}</div><p style="margin:0;text-align:center;line-height:1.8;">${btns}</p><div style="margin-top:${12*g.space}px;font-size:10px;letter-spacing:3px;color:#b0b0b0;">${escapeHtml(textField(c,'tail','THANKS FOR READING'))}</div></section>`;
+    }
+    case 'next':   return `<section data-type="next" style="${s}"><div style="font-size:10px;letter-spacing:2px;color:${txt};font-weight:700;margin-bottom:6px;">NEXT</div><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:6px;">${escapeHtml(textField(c,'title','下期预告'))}</div><div style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;">${inlineField(c,'body','下一篇文章，我想聊聊……（在这里写一句钩子，让人想追更）')}</div></section>`;
+    case 'hist':   return `<section data-type="hist" style="${s}"><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:8px;">${escapeHtml(textField(c,'title','往期推荐'))}</div>${listField(c,'items',['往期文章标题一|阅读数据请替换','往期文章标题二|阅读数据请替换']).map(line=>{ const raw=String(line),idx=raw.indexOf('|'),title=idx<0?raw:raw.slice(0,idx),desc=idx<0?'':raw.slice(idx+1); return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${t.accent};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(title)}</strong>${desc?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(desc)}</span>`:''}</p>`; }).join('')}</section>`;
+    case 'intro':
+      if(t.tier==='v3'){ return `<section data-type="intro" style="${s}"><strong style="display:inline-block;color:${t.accent};font-size:${11*g.scale}px;letter-spacing:2px;font-weight:700;text-transform:uppercase;margin-bottom:10px;font-family:-apple-system,'Helvetica Neue',sans-serif;">EDITOR'S NOTE</strong><br><span style="font-size:${15*g.scale}px;line-height:1.8;color:${t.text};">${inlineField(c,'body','把这段换成你的开场白，用“我”的口吻，三两句话把读者拉进来。')}</span></section>`; }
+      return `<section data-type="intro" style="${s}"><strong style="display:inline-block;color:${txt};font-size:${13*g.scale}px;letter-spacing:1px;border:1px solid ${t.accent};border-radius:20px;padding:2px 12px;margin-bottom:8px;">${escapeHtml(textField(c,'strong','写在前面'))}</strong><br><span style="font-size:${15*g.scale}px;line-height:1.75;color:${t.text};">${inlineField(c,'body','把这段换成你的开场白，用“我”的口吻，三两句话把读者拉进来。')}</span></section>`;
+    case 'stat':   return `<section data-type="stat" style="${s}"><div style="font-size:${13*g.scale}px;opacity:.85;margin-bottom:8px;">${escapeHtml(textField(c,'label','数据卡标题'))}</div><div style="font-size:${18*g.scale}px;font-weight:700;line-height:1.6;">${inlineField(c,'value','关键数字一 · 关键数字二<br>关键数字三 · 关键数字四').replace(/\n/g,'<br>')}</div></section>`;
+    case 'quote2': return `<section data-type="quote2" style="${s}">${inlineField(c,'text','「把最想让人记住的一句话，放在这里。」')}</section>`;
+    case 'compare':return `<section data-type="compare" style="${s}">`
+                        + `<div style="background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;line-height:1.7;">${escapeHtml(textField(c,'aTitle','方案 A（推荐）'))}</p><ul style="list-style:disc;padding-left:20px;margin:0;color:${t.text};font-size:${15*g.scale}px;line-height:1.7;">${listItems(listField(c,'aItems',['优点一','优点二','优点三']))}</ul></div>`
+                        + `<div style="background:#f7f2ee;border:1px solid #e0c9b0;border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;"><p style="font-weight:700;color:#8a5a2b;font-size:${15*g.scale}px;margin:0 0 6px;line-height:1.7;">${escapeHtml(textField(c,'bTitle','方案 B（不推荐）'))}</p><ul style="list-style:disc;padding-left:20px;margin:0;color:${t.text};font-size:${15*g.scale}px;line-height:1.7;">${listItems(listField(c,'bItems',['缺点一','缺点二','缺点三']))}</ul></div></section>`;
+    case 'step':   return `<section data-type="step" style="${s}">` + listField(c,'items',['步骤一|说明文字','步骤二|说明文字','步骤三|说明文字']).map((it,i)=>{
+                        const idx=it.indexOf('|'); const ti=idx<0?it:it.slice(0,idx); const de=idx<0?'':it.slice(idx+1);
+                        return `<section style="margin:0 0 ${10*g.space}px;padding:${12*g.space}px ${14*g.space}px;background:${t.card};border-left:3px solid ${t.accent};border-radius:${t.radius}px;"><p style="margin:0;line-height:26px;"><span style="display:inline-block;width:26px;height:26px;border-radius:50%;background:${t.primary};color:#fff;font-size:14px;font-weight:700;text-align:center;line-height:26px;vertical-align:middle;margin-right:8px;">${i+1}</span><strong style="color:${txt};font-size:${16*g.scale}px;line-height:1.45;vertical-align:middle;">${escapeHtml(ti)}</strong></p>${de?`<p style="display:block;margin:6px 0 0;font-size:${15*g.scale}px;color:${t.text};line-height:1.75;">${escapeHtml(de)}</p>`:''}</section>`;
+                      }).join('') + `</section>`;
+    case 'twocol': return `<section data-type="twocol" style="${s}">`
+                        + `<section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','左栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
+                        + `<section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','右栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
+                        + `</section>`;
+    case 'guide':  { const L=splitLines(inlineHtmlToText(inlineField(c,'text','如果觉得有用，点个「在看」支持一下\n你的每一次分享，都是我继续写下去的动力。'))); return `<section data-type="guide" style="${s}"><div style="font-size:${16*g.scale}px;font-weight:700;color:${txt};margin-bottom:8px;">${escapeHtml(L[0]||'')}</div><div style="font-size:${14*g.scale}px;color:${t.text};">${escapeHtml(L.slice(1).join(' '))}</div></section>`; }
+    case 'follow': { const L=splitLines(inlineHtmlToText(inlineField(c,'text','关注我，不错过下一篇\n微信搜一搜，或点上方蓝字即可关注'))); return `<section data-type="follow" style="${s}"><div style="font-weight:700;font-size:${16*g.scale}px;margin-bottom:6px;">${escapeHtml(L[0]||'')}</div><div style="font-size:${13*g.scale}px;opacity:.9;">${escapeHtml(L.slice(1).join(' '))}</div></section>`; }
+    case 'tags':   return `<section data-type="tags" style="${s}">` + listField(c,'items',['效率工具','AI','时间管理']).map(x=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${t.accent};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(x)}</span>`).join('') + `</section>`;
+    case 'cta':    return `<section data-type="cta" style="${s}">${inlineField(c,'text','你平时用它干过最爽的一件事是什么？<br><strong>评论区聊聊，我去抄作业</strong>')}</section>`;
+  }
+  return '';
+}
+
+/* ============ 微信发布组件 HTML（独立结构，不回退到编辑器 DOM）============ */
+function publishInlineHtml(value,t){
+  const template=document.createElement('template');
+  template.innerHTML=sanitizeInlineHtml(value==null?'':String(value));
+  Array.from(template.content.querySelectorAll('a')).forEach(a=>{
+    const href=normalizeHttpUrl(a.getAttribute('href'));
+    const label=(a.textContent||'').trim()||href;
+    const wrap=document.createElement('span');
+    wrap.style.cssText='text-decoration:underline;';
+    while(a.firstChild) wrap.appendChild(a.firstChild);
+    const url=document.createElement('span');
+    url.style.cssText='font-size:12px;color:#7a8781;overflow-wrap:anywhere;';
+    url.textContent=href&&label!==href?'（'+href+'）':'';
+    a.replaceWith(wrap,url);
+  });
+  return template.innerHTML;
+}
+function publishInlineField(content,key,fallback,t){ return publishInlineHtml(fieldValue(content,key,fallback),t); }
+function publishTextLines(value,t,g,prefix){
+  return (value||[]).map((item,index)=>`<p style="margin:0 0 ${7*g.space}px;font-size:${15*g.scale}px;line-height:1.75;color:${t.text};"><strong style="color:${t.accent};margin-right:7px;">${escapeHtml(typeof prefix==='function'?prefix(index):prefix||'•')}</strong><span>${escapeHtml(item)}</span></p>`).join('');
+}
+function buildWechatComponent(type,t,g,c,ctx,record){
+  c=c||{}; ctx=ctx||{};
+  const policy=PUBLISH_POLICY[type];
+  if(!policy||!PUBLISH_STATUS[policy.status]) return '';
+  if(policy.status==='local-only') return '';
+  const s=blockStyle(type,t,g),txt=t.tier==='v4'?t.text:t.primary;
+  switch(type){
+    case 'h1': return `<section data-type="h1" style="${s}">${publishInlineField(c,'text','在此输入大标题',t)}</section>`;
+    case 'h2': {
+      const raw=textField(c,'text','小标题').replace(/^(?:[零一二三四五六七八九十]{1,3})、/,'').replace(/^\d{1,2}\s*\|\s*/,'');
+      if(t.tier==='v4'){
+        if(t.signature==='number') return `<section data-type="h2" style="${s};letter-spacing:.8px;"><div style="font-size:${42*g.scale}px;line-height:1;font-weight:700;color:${t.accent};opacity:.20;letter-spacing:2px;margin-bottom:6px;">01</div><div style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</div></section>`;
+        if(t.signature==='line') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-top:2px solid ${t.accent};border-bottom:2px solid ${t.accent};padding:10px 0;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        if(t.signature==='data') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-top:1px solid ${t.accent};border-bottom:1px solid ${t.accent};padding:8px 0;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        if(t.signature==='timeline') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:4px solid ${t.accent};padding-left:12px;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+        if(t.signature==='compare') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:24px solid ${t.accent};border-right:24px solid ${t.accent};padding:0 12px;text-align:center;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
+      }
+      if(t.titleStyle==='editorial') return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;">01</span><span style="border-left:1px solid #ccc;padding-left:12px;">${escapeHtml(raw)}</span></section>`;
+      return `<section data-type="h2" style="${s}">${escapeHtml(raw)}</section>`;
+    }
+    case 'h3': return `<section data-type="h3" style="${s};border-left:4px solid ${t.accent};padding-left:9px;"><span style="font-weight:700;color:${txt};">${escapeHtml(textField(c,'text','子节标题'))}</span></section>`;
+    case 'p': return `<p data-type="p" style="${s}">${publishInlineField(c,'text','在此输入正文内容。',t)}</p>`;
+    case 'strong': return `<section data-type="strong" style="${s}">${publishInlineField(c,'text','重点内容',t)}</section>`;
+    case 'quote': return `<blockquote data-type="quote" style="${s}">${publishInlineField(c,'text','引用内容',t)}</blockquote>`;
+    case 'list': return `<section data-type="list" style="${s};margin:${14*g.space}px 0;">${publishTextLines(listField(c,'items',[]),t,g,'•')}</section>`;
+    case 'clist': {
+      const items=listField(c,'items',[]);
+      return `<section data-type="clist" style="${s}">${items.map((it,i)=>{ const pair=splitPublishPair(it); return `<section style="margin:0 0 ${10*g.space}px;padding:${12*g.space}px ${14*g.space}px;background:${t.card};border-left:3px solid ${t.accent};border-radius:${t.radius}px;"><p style="margin:0;line-height:24px;"><span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:${t.primary};color:#fff;font-size:${12*g.scale}px;font-weight:700;text-align:center;line-height:24px;vertical-align:middle;margin-right:8px;">${i+1}</span><strong style="color:${txt};font-size:${16*g.scale}px;line-height:1.45;vertical-align:middle;">${escapeHtml(pair.title)}</strong></p>${pair.description?`<p style="margin:6px 0 0;font-size:${15*g.scale}px;color:${t.text};line-height:1.75;">${escapeHtml(pair.description)}</p>`:''}</section>`;}).join('')}</section>`;
+    }
+    case 'card': return `<section data-type="card" style="${s}"><strong style="display:block;border-left:4px solid ${t.accent};padding-left:10px;color:${txt};font-size:${17*g.scale}px;margin-bottom:7px;line-height:1.4;">${escapeHtml(textField(c,'title','卡片标题'))}</strong><span style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;">${publishInlineField(c,'body','卡片内容',t)}</span></section>`;
+    case 'tip': return `<section data-type="tip" style="${s}"><strong style="display:inline-block;background:${t.accent};color:#fff;font-size:${11*g.scale}px;padding:1px 8px;border-radius:${Math.max(t.radius-4,3)}px;margin-right:8px;">TIP</strong><span style="color:${t.text};line-height:1.7;">${publishInlineField(c,'text','提示内容',t)}</span></section>`;
+    case 'caption': return `<section data-type="caption" style="${s}">${publishInlineField(c,'text','图注',t)}</section>`;
+    case 'footer': return `<section data-type="footer" style="${s}">${publishInlineField(c,'text','— 全文完 —',t)}</section>`;
+    case 'divider': return `<section data-type="divider" style="border-top:2px dashed ${t.accent};margin:${20*g.space}px 0;height:1px;line-height:1px;"><span style="font-size:1px;line-height:1;color:transparent;">·</span></section>`;
+    case 'recap': return `<section data-type="recap" style="${s}"><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 8px;">${escapeHtml(textField(c,'title','要点回顾'))}</p>${publishTextLines(listField(c,'items',[]),t,g,'▪')}</section>`;
+    case 'meta': {
+      const parts=[textField(c,'words',''),textField(c,'minutes',''),textField(c,'fit','')].filter(Boolean);
+      return `<section data-type="meta" style="${s}">${parts.map(x=>`<span style="display:inline-block;margin:2px 6px;">${escapeHtml(x)}</span>`).join('')}</section>`;
+    }
+    case 'table': {
+      const head=textField(c,'head','维度|现状|建议').split('|').map(x=>x.trim()).slice(0,3);
+      const rows=splitLines(textField(c,'rows','')).map(row=>row.split('|').map(x=>x.trim()).slice(0,3));
+      if(ctx.tableMode==='table'){
+        const th=head.map(value=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${t.accent};">${escapeHtml(value)}</th>`).join('');
+        const trs=rows.map((row,ri)=>`<tr>${[0,1,2].map(ci=>`<td style="background:${ri%2?t.card:'#fff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${t.accent};">${escapeHtml(row[ci]||'')}</td>`).join('')}</tr>`).join('');
+        return `<section data-type="table" style="${s}"><table style="width:100%;border-collapse:collapse;"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></section>`;
+      }
+      return `<section data-type="table" style="${s}">${rows.map((row,ri)=>`<section style="display:block;background:${ri%2?t.card:'#fff'};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin:0 0 ${10*g.space}px;">${[0,1,2].map(ci=>`<p style="margin:${ci?6:0}px 0 0;font-size:${14*g.scale}px;line-height:1.7;color:${t.text};"><strong style="color:${txt};margin-right:8px;">${escapeHtml(head[ci]||('第'+(ci+1)+'列'))}</strong><span>${escapeHtml(row[ci]||'')}</span></p>`).join('')}</section>`).join('')}</section>`;
+    }
+    case 'refs': return `<section data-type="refs" style="${s}"><p style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin:0 0 10px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','参考资料'))}</p>${listField(c,'items',[]).map((item,i)=>{const pair=splitPublishPair(item);return `<p style="font-size:${12*g.scale}px;color:#888;line-height:1.7;margin:5px 0;"><strong style="color:${txt};">[${String(i+1).padStart(2,'0')}]</strong> ${escapeHtml(pair.title)}${pair.description?' — '+escapeHtml(pair.description):''}</p>`;}).join('')}</section>`;
+    case 'triple': {
+      const acts=listField(c,'acts',[]),icons=listField(c,'icons',[]);
+      return `<section data-type="triple" style="${s}"><p style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin:0 0 ${10*g.space}px;">${publishInlineField(c,'lead','',t)}</p><p style="margin:0;text-align:center;line-height:1.8;">${acts.map((action,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${t.accent};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};">${escapeHtml(icons[i]||'')} <strong>${escapeHtml(action)}</strong></span>`).join('')}</p><p style="margin:${12*g.space}px 0 0;font-size:10px;letter-spacing:3px;color:#999;">${escapeHtml(textField(c,'tail',''))}</p></section>`;
+    }
+    case 'next': return `<section data-type="next" style="${s}"><p style="font-size:10px;letter-spacing:2px;color:${txt};font-weight:700;margin:0 0 6px;">NEXT</p><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'title','下期预告'))}</p><p style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;margin:0;">${publishInlineField(c,'body','',t)}</p></section>`;
+    case 'hist': return `<section data-type="hist" style="${s}"><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 8px;">${escapeHtml(textField(c,'title','往期推荐'))}</p>${listField(c,'items',[]).map(item=>{const pair=splitPublishPair(item);return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${t.accent};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(pair.title)}</strong>${pair.description?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(pair.description)}</span>`:''}</p>`;}).join('')}</section>`;
+    case 'intro': return `<section data-type="intro" style="${s}"><strong style="display:inline-block;color:${t.accent};font-size:${12*g.scale}px;letter-spacing:1px;margin-bottom:8px;">${escapeHtml(textField(c,'strong','写在前面'))}</strong><br><span style="font-size:${15*g.scale}px;line-height:1.8;color:${t.text};">${publishInlineField(c,'body','',t)}</span></section>`;
+    case 'stat': return `<section data-type="stat" style="${s}"><p style="font-size:${13*g.scale}px;opacity:.85;margin:0 0 8px;">${escapeHtml(textField(c,'label','数据卡标题'))}</p><p style="font-size:${18*g.scale}px;font-weight:700;line-height:1.6;margin:0;">${publishInlineField(c,'value','',t)}</p></section>`;
+    case 'quote2': return `<section data-type="quote2" style="${s}">${publishInlineField(c,'text','',t)}</section>`;
+    case 'compare': return `<section data-type="compare" style="${s}"><section style="background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'aTitle','方案 A'))}</p>${publishTextLines(listField(c,'aItems',[]),t,g,'•')}</section><section style="background:#f7f2ee;border:1px solid #e0c9b0;border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;"><p style="font-weight:700;color:#8a5a2b;font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'bTitle','方案 B'))}</p>${publishTextLines(listField(c,'bItems',[]),t,g,'•')}</section></section>`;
+    case 'step': return `<section data-type="step" style="${s}">${listField(c,'items',[]).map((item,i)=>{const pair=splitPublishPair(item);return `<section style="margin:0 0 ${10*g.space}px;padding:${12*g.space}px ${14*g.space}px;background:${t.card};border-left:3px solid ${t.accent};border-radius:${t.radius}px;"><p style="margin:0;line-height:26px;"><span style="display:inline-block;width:26px;height:26px;border-radius:50%;background:${t.primary};color:#fff;font-size:14px;font-weight:700;text-align:center;line-height:26px;vertical-align:middle;margin-right:8px;">${i+1}</span><strong style="color:${txt};font-size:${16*g.scale}px;">${escapeHtml(pair.title)}</strong></p>${pair.description?`<p style="margin:6px 0 0;font-size:${15*g.scale}px;color:${t.text};line-height:1.75;">${escapeHtml(pair.description)}</p>`:''}</section>`;}).join('')}</section>`;
+    case 'twocol': return `<section data-type="twocol" style="${s}"><section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section><section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section></section>`;
+    case 'guide':
+    case 'follow': {
+      const lines=splitLines(inlineHtmlToText(fieldValue(c,'text','')));
+      return `<section data-type="${type}" style="${s}"><p style="font-weight:700;font-size:${16*g.scale}px;margin:0 0 6px;">${escapeHtml(lines[0]||'')}</p><p style="font-size:${13*g.scale}px;line-height:1.7;margin:0;">${escapeHtml(lines.slice(1).join(' '))}</p></section>`;
+    }
+    case 'tags': return `<section data-type="tags" style="${s}">${listField(c,'items',[]).map(tag=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${t.accent};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(tag)}</span>`).join('')}</section>`;
+    case 'cta': return `<section data-type="cta" style="${s}">${publishInlineField(c,'text','',t)}</section>`;
+  }
+  return '';
+}
+function buildComponent(type,t,g,c,target,ctx,record){
+  return target==='wechat'?buildWechatComponent(type,t,g,c,ctx,record):buildEditorComponent(type,t,g,c);
+}
+
+/* 生成带 data-content 的区块元素 */
+function makeBlock(type, t, g, c, id){
+  const cleanContent=normalizeContent(type,c||{});
+  const wrap = document.createElement('div');
+  wrap.innerHTML = buildComponent(type, t, g, cleanContent);
+  const el = wrap.firstElementChild;
+  el.dataset.blockId = id || newBlockId();
+  el.dataset.content = JSON.stringify(cleanContent);
+  const direct=DIRECT_EDITABLE.has(type);
+  el.dataset.directEdit=direct?'true':'false';
+  el.contentEditable=direct?'true':'false';
+  el.setAttribute('draggable',direct?'false':'true');
+  if(direct) el.spellcheck=true;
+  return el;
+}
+
+/* ============ 示例文章（拾光排版器发布推文）============ */
+const SAMPLE_ARTICLE = [
+  { type:'intro', c:{ strong:'写在前面', body:'有一种疲惫，做过公众号的人大概都懂。不是没有灵感，也不是写不出来。' } },
+  { type:'p', c:{ text:'标题已经定了，正文也改了几轮。可一打开公众号后台，你还是会在字号、行距、对齐和颜色之间反复调整。' } },
+  { type:'p', c:{ text:'这里好像太挤，那里又显得太空；引用样式刚换好，前面的段落又要重新检查。' } },
+  { type:'p', c:{ text:'文章明明已经写完，注意力却还困在排版里。我也反复被这件事拖住过。' } },
+  { type:'p', c:{ text:'我是 Crush，做海外市场营销。这段时间陆续写了十几篇公众号文章，也一次次被发布前的排版拖住。' } },
+  { type:'p', c:{ text:'<strong>内容营销真正的差距，不在于谁偶尔写出一篇漂亮文章，而在于谁能持续、稳定地把有价值的内容发布出去。</strong>' } },
+  { type:'p', c:{ text:'而排版，恰恰是很多人停在"写完了"、却迟迟没有走到"发出去了"的最后一步。' } },
+  { type:'h2', c:{ text:'排版看似是审美问题，本质上是效率问题' } },
+  { type:'p', c:{ text:'好的排版当然重要。它能让信息层级更清楚，让重点更容易被看见，也让读者愿意多停留一会儿。' } },
+  { type:'p', c:{ text:'但它不应该要求创作者每次都从零开始，更不该让人在发布前重新"装修"一遍全文。' } },
+  { type:'p', c:{ text:'如果每写一篇文章，都要重新选择字号、调试间距、搭配颜色，被消耗掉的就不只是时间，还有下一次打开编辑器的意愿。' } },
+  { type:'p', c:{ text:'对长期做内容的人来说，最稀缺的从来不是模板，而是持续表达的心力。' } },
+  { type:'quote2', c:{ text:'「排版应该为内容让路，<br>而不是成为发布前的最后一道阻力。」' } },
+  { type:'h2', c:{ text:'于是，我把重复劳动做成了「拾光」' } },
+  { type:'p', c:{ text:'上个月，我把自己发文章时反复处理的版式、配色和操作步骤，整理成了一个公众号排版工具，取名叫「拾光排版器」。' } },
+  { type:'stat', c:{ label:'示例数据（发布前请替换）', value:'排版前耗时：[填写真实记录]\n排版后耗时：[填写真实记录]' } },
+  { type:'p', c:{ text:'它没有打算把排版变成一门新的功课，只想做好一件事：<strong>把那些重复出现、却不值得反复消耗时间的动作，提前替你整理好。</strong>' } },
+  { type:'p', c:{ text:'它是一个独立的 HTML 文件，放在电脑里，双击就能打开。不需要安装软件，也不依赖网络。' } },
+  { type:'image', c:{ text:'图片占位 — 建议此处放一张工具界面截图' } },
+  { type:'caption', c:{ text:'图注：拾光排版器界面 · 左侧选主题，右侧实时预览' } },
+  { type:'clist', c:{ items:[
+    '35 套视觉主题|覆盖杂志、东方、卡片和暖文艺',
+    '一键复制富文本|粘贴后保存草稿并手机预览',
+    '静态发布预检|复制前检查占位与高风险结构',
+    '示例文章教程|第一次使用也能跟着完成'
+  ] } },
+  { type:'tip', c:{ text:'小贴士：Mac / Windows 都能双击使用，不用装任何软件；建议在电脑上排版复制，再到公众号后台粘贴发布。' } },
+  { type:'p', c:{ text:'每篇推文都不必成为一件设计作品。<strong>你负责内容，它负责让内容更体面地抵达读者。</strong>' } },
+  { type:'image', c:{ text:'图片占位 — 建议放 4 套主题并排对比图' } },
+  { type:'caption', c:{ text:'图注：同一篇文章，四种气质 —— 杂志 / 东方 / 卡片 / 暖文艺' } },
+  { type:'h2', c:{ text:'为什么做它？因为我想把排版这一步变简单' } },
+  { type:'p', c:{ text:'我也认真想过：要不要一开始就收费？答案其实没有那么复杂。' } },
+  { type:'p', c:{ text:'我越来越相信，做个人 IP 最好的自我介绍，不是反复强调自己懂什么，而是先拿出一个真正能够解决问题的东西。' } },
+  { type:'p', c:{ text:'这个号叫「Crush带你玩转海外市场营销」。以后，我会继续在这里分享海外营销的实战方法、内容生产的效率工具，以及一个人如何把自己的专业经验，逐步沉淀成可以持续积累的内容资产。' } },
+  { type:'p', c:{ text:'我不想只告诉你"应该怎么做"。我更希望把自己正在使用的方法、工具，以及一路踩过的坑，慢慢整理出来交给你。' } },
+  { type:'p', c:{ text:'对一个长期做内容的人来说，信任不是靠一次成交建立的，而是靠一次次真实、有用、可以验证的交付积累出来的。' } },
+  { type:'p', c:{ text:'免费版不是只开放几套模板：35 套视觉主题、16 套文章结构、31 个区块组件、本地备份、发布预检和微信清洁复制都可以使用。已领取的当前版本可以长期使用；我也计划持续维护影响正常使用的兼容问题。' } },
+  { type:'h2', c:{ text:'三步开始，把时间还给内容' } },
+  { type:'card', c:{ title:'🎁 示例领取说明（请替换）', body:'请在这里填写真实领取方式、价格、更新范围和服务边界；发布前删除所有示例占位信息。' } },
+  { type:'step', c:{ items:[
+    '选择风格|挑选符合账号气质的主题',
+    '写入内容|载入示例或替换自己的文字',
+    '复制发布|粘贴、保存草稿并手机预览'
+  ] } },
+  { type:'tip', c:{ text:'小贴士：第一次使用时，建议先找一篇旧文章完整走一遍流程。熟悉之后，以后的每篇文章都可以重复使用。' } },
+  { type:'p', c:{ text:'如果你想学会把一篇文章排顺，或者想为账号定下一套可以反复使用的风格，我也会提供「单篇排版诊断／陪排」和「品牌排版预设」。我不想替你长期代做，而是带你走通一篇，留下以后能自己复用的项目和方法。' } },
+  { type:'h2', c:{ text:'把精力留给真正值得打磨的事' } },
+  { type:'p', c:{ text:'写公众号真正难的，通常不是写出第一篇文章，而是在忙碌和琐碎里，依然愿意发出下一篇。' } },
+  { type:'p', c:{ text:'真正让人放弃的，也未必是什么巨大的困难，往往只是一连串看起来很小、却每次都要重新处理的摩擦。排版，就是其中之一。' } },
+  { type:'p', c:{ text:'我做「拾光排版器」，只是想替你拿走一点阻力。' } },
+  { type:'quote2', c:{ text:'「内容的复利，不从"写完"开始，<br>而从一次次按下"发布"开始。」' } },
+  { type:'p', c:{ text:'希望它替你减少的，不只是重复调整格式的消耗，也包括下一次继续表达时的阻力。' } },
+  { type:'cta', c:{ text:'别让这篇停在"收藏"里——<br><strong>现在就去后台私信「排版」领工具，今天就发第一篇</strong>' } },
+  { type:'guide', c:{ text:'觉得有用，点个「在看」\n也转给那个总在排版里消耗耐心的朋友' } },
+  { type:'follow', c:{ text:'关注「Crush带你玩转海外市场营销」\n海外营销实战 · 内容效率工具 · 真实产品迭代' } },
+  { type:'footer', c:{ text:'愿我们都把时间留给内容，把表达留给自己。' } }
+];
+
+/* ============ 模板库（整套版式）============ */
+const TEMPLATES = [
+  { name:'干货教程型', desc:'步骤化教学，适合方法/教程', blocks:[
+    {type:'intro', c:{strong:'写在前面', body:'用一句话点出读者能学到什么，建立预期。'}},
+    {type:'h2', c:{text:'一、为什么需要它'}},
+    {type:'p', c:{text:'铺垫背景与痛点，让读者对号入座。'}},
+    {type:'step', c:{items:['准备工具|列出你需要的软件或账号','核心操作|分步演示关键步骤','验证效果|确认是否达到预期']}},
+    {type:'h2', c:{text:'二、常见坑与解法'}},
+    {type:'compare', c:{aTitle:'正确做法', aItems:['先理清目标再动手','用模板减少重复'], bTitle:'容易踩的坑', bItems:['一上来就堆功能','忽略兼容性']}},
+    {type:'stat', c:{label:'效果数据（请填真实记录）', value:'耗时变化：[待填写]\n问题减少：[待填写]'}},
+    {type:'cta', c:{text:'照着做了一遍？<br><strong>评论区交个作业</strong>'}}
+  ]},
+  { name:'个人故事型', desc:'第一人称叙事，强真实感', blocks:[
+    {type:'intro', c:{strong:'我的经历', body:'用"我"开头，三两句话把读者拉进场景。'}},
+    {type:'h2', c:{text:'一、事情是怎么开始的'}},
+    {type:'p', c:{text:'交代起因，带一点具体细节更有画面。'}},
+    {type:'quote2', c:{text:'「有时候改变不是想清楚才做，<br>而是做着做着就清楚了。」'}},
+    {type:'h2', c:{text:'二、中途的转折'}},
+    {type:'p', c:{text:'写清你遇到的阻碍，以及怎么跨过去的。'}},
+    {type:'image', c:{text:'图片占位 — 请替换为真实截图'}},
+    {type:'caption', c:{text:'图注：配一张有故事感的图'}},
+    {type:'h2', c:{text:'三、回头看，我学到了什么'}},
+    {type:'p', c:{text:'升华一下，但别说教，用体会收尾。'}},
+    {type:'cta', c:{text:'你有过类似时刻吗？<br><strong>说说你的故事</strong>'}}
+  ]},
+  { name:'清单盘点型', desc:'盘点/合集，易收藏', blocks:[
+    {type:'intro', c:{strong:'一口气盘点', body:'说明这份清单解决什么问题，值得收藏。'}},
+    {type:'h2', c:{text:'一、必看清单'}},
+    {type:'list', c:{items:['第一件值得收藏的事','第二件容易被忽略的细节','第三个性价比之选','第四个小众但好用','第五个避坑提醒']}},
+    {type:'h2', c:{text:'二、两个重点展开'}},
+    {type:'card', c:{title:'重点 A', body:'用一两句话解释它为什么重要。'}},
+    {type:'card', c:{title:'重点 B', body:'补充一个使用场景或案例。'}},
+    {type:'tags', c:{items:['干货','收藏','效率']}},
+    {type:'cta', c:{text:'哪一条最戳你？<br><strong>留言告诉我</strong>'}}
+  ]},
+  { name:'产品测评型', desc:'对比+数据，适合种草', blocks:[
+    {type:'intro', c:{strong:'真实测评', body:'先给结论：值不值得买，一句话说清。'}},
+    {type:'h2', c:{text:'一、上手初体验'}},
+    {type:'p', c:{text:'外观、手感、第一印象，写得具体。'}},
+    {type:'compare', c:{aTitle:'它强在哪', aItems:['核心功能确实好用','细节到位'], bTitle:'不足之处', bItems:['价格偏高','学习成本']}},
+    {type:'h2', c:{text:'二、关键数据'}},
+    {type:'stat', c:{label:'实测关键指标（请替换）', value:'指标一：[真实数据]\n指标二：[真实数据]'}},
+    {type:'twocol', c:{left:'适合谁\n追求效率的人\n愿意折腾', right:'不适合谁\n只要便宜\n拒绝学习'}},
+    {type:'guide', c:{text:'想看详细评测视频？\n点个「在看」，下期安排'}},
+    {type:'follow', c:{text:'关注我，测更多好物\n每周更新真实测评'}}
+  ]},
+  { name:'观点随笔型', desc:'表达态度，引发共鸣', blocks:[
+    {type:'intro', c:{strong:'一点想法', body:'抛出你的核心观点，哪怕有点争议。'}},
+    {type:'h2', c:{text:'一、我为什么这么想'}},
+    {type:'p', c:{text:'讲清楚逻辑和来源，别空喊口号。'}},
+    {type:'quote2', c:{text:'「多数共识，值得重新想一遍。」'}},
+    {type:'h2', c:{text:'二、一个反直觉的例子'}},
+    {type:'p', c:{text:'用具体事例支撑，比道理更有力。'}},
+    {type:'strong', c:{text:'真正的成长，往往来自反对的声音。'}},
+    {type:'h2', c:{text:'三、写在最后'}},
+    {type:'p', c:{text:'收个尾，留个开放问题给读者。'}},
+    {type:'cta', c:{text:'你同意吗？<br><strong>评论区见</strong>'}}
+  ]},
+  { name:'活动预告型', desc:'时间地点+号召，适合宣发', blocks:[
+    {type:'intro', c:{strong:'活动预告', body:'一句话说清这是什么活动、为什么该来。'}},
+    {type:'h2', c:{text:'一、时间 & 地点'}},
+    {type:'card', c:{title:'活动信息', body:'时间：X 月 X 日 晚 8 点\n地点：线上 / 某某空间'}},
+    {type:'h2', c:{text:'二、当天安排'}},
+    {type:'twocol', c:{left:'上半场\n主题分享\n案例演示', right:'下半场\n互动问答\n自由交流'}},
+    {type:'tags', c:{items:['状态待填写','费用待填写','名额待填写']}},
+    {type:'guide', c:{text:'感兴趣？点「在看」并留言报名\n名额有限，先到先得'}},
+    {type:'follow', c:{text:'关注我，第一时间获取开播提醒'}}
+  ]}
+];
+
+/* ============ V2 进阶模板库（10 套，载入自动切换进阶主题）============ */
+const V2_TEMPLATES = [
+  { name:'深度拆解型', desc:'品牌/案例拆解，长文专业感', themeId:'v2-ink', blocks:[
+    {type:'meta', c:{words:'约 3800 字', minutes:'阅读 10 分钟', fit:'适读：想搞懂底层逻辑的人'}},
+    {type:'intro', c:{strong:'这次拆什么', body:'一句话说清对象和结论：它做对了什么，值得你抄什么。'}},
+    {type:'h2', c:{text:'先看事实'}},
+    {type:'p', c:{text:'把关键事实摆出来，不急着下判断。数据和时间线最有说服力。'}},
+    {type:'quote', c:{text:'每节结尾放一句小结：这节我们看到了什么，下一节往哪看。'}},
+    {type:'h2', c:{text:'它做对了什么'}},
+    {type:'p', c:{text:'拆出 2-3 个关键动作，讲清楚「为什么有效」而不只是「做了什么」。'}},
+    {type:'table', c:{head:'动作|它怎么做|你可以抄什么', rows:'内容策略|每周固定栏目|先固定一个栏目跑三个月\n产品化|把方法论做成工具|把你的经验做成模板'}},
+    {type:'h2', c:{text:'普通人怎么抄作业'}},
+    {type:'step', c:{items:['第一步|选定一个可复制的动作','第二步|缩小范围先跑通','第三步|固定成自己的习惯']}},
+    {type:'quote2', c:{text:'「拆解的目的不是模仿，<br>是找到可迁移的规律。」'}},
+    {type:'cta', c:{text:'你最想拆解哪个案例？<br><strong>评论区点名，下期安排</strong>'}},
+    {type:'refs', c:{title:'REFERENCES · 参考资料', items:['《某某访谈》原文|2024 年公开访谈','某某年度报告|官网可下载','行业数据速查|第三方统计平台']}},
+    {type:'footer', c:{text:'— 全文完 —　感谢阅读 · 欢迎分享'}}
+  ]},
+  { name:'教程实操型', desc:'手把手教学，跟着做就出结果', themeId:'v2-forest', blocks:[
+    {type:'meta', c:{words:'约 2500 字', minutes:'阅读 6 分钟', fit:'适读：零基础也能跟上'}},
+    {type:'intro', c:{strong:'学完这篇你能', body:'① 做出 XX；② 避开 XX 的坑；③ 完成时间请按真实测试填写。'}},
+    {type:'h2', c:{text:'准备工作'}},
+    {type:'clist', c:{items:['账号准备|注册一个 XX 账号','工具下载|XX 客户端（免费版就够）','素材准备|2-3 张示例图片']}},
+    {type:'h2', c:{text:'核心操作：三步完成'}},
+    {type:'step', c:{items:['新建项目|选择空白模板，命好名字','导入素材|把准备的内容拖进对应区域','导出成果|选择发布格式，一键生成']}},
+    {type:'tip', c:{text:'避坑提示：第一次最容易卡在导入环节——记得先统一素材格式。'}},
+    {type:'h2', c:{text:'效果验证'}},
+    {type:'p', c:{text:'导出后按这个清单检查：清晰度、完整性、可分享性。三项都过再发布。'}},
+    {type:'recap', c:{title:'本篇要点回顾', items:['三步核心流程：新建 → 导入 → 导出','最容易卡住的点是素材格式','发布前过一遍三项检查清单']}},
+    {type:'triple', c:{}},
+    {type:'footer', c:{text:'— 全文完 —　感谢阅读 · 欢迎分享'}}
+  ]},
+  { name:'观点论述型', desc:'表达立场，引发共鸣与讨论', themeId:'v2-song', blocks:[
+    {type:'quote2', c:{text:'「多数人都在做的事，<br>值得你停下来想一遍。」'}},
+    {type:'intro', c:{strong:'我的观点', body:'先亮结论：我认为 XX。不同意没关系，看完推理过程再下判断。'}},
+    {type:'h2', c:{text:'为什么大家这么想'}},
+    {type:'h3', c:{text:'一个流行说法的来源'}},
+    {type:'p', c:{text:'追溯这个观点是怎么流行起来的——通常始于一个被误读的案例。'}},
+    {type:'h2', c:{text:'我为什么不同意'}},
+    {type:'quote', c:{text:'引用一句权威的话或一组数据，为你的反驳站台。'}},
+    {type:'compare', c:{aTitle:'我的看法', aItems:['关注长期复利','接受短期笨拙'], bTitle:'流行看法', bItems:['追求立竿见影','迷信技巧捷径']}},
+    {type:'strong', c:{text:'真正的分水岭，不是聪不聪明，是愿不愿意慢慢变好。'}},
+    {type:'h2', c:{text:'写在最后'}},
+    {type:'quote2', c:{text:'「慢，是另一种快。」'}},
+    {type:'cta', c:{text:'你怎么看？<br><strong>评论区聊聊你的立场</strong>'}}
+  ]},
+  { name:'清单合集型', desc:'工具/方法盘点，收藏率最高', themeId:'v2-ruby', blocks:[
+    {type:'intro', c:{strong:'一口气盘点', body:'这 5 个我全部亲测过：免费、好用、普通人上手无门槛，建议先收藏。'}},
+    {type:'h2', c:{text:'五件套总览'}},
+    {type:'clist', c:{items:['第一个|一句话说清它解决什么','第二个|一句话说清它解决什么','第三个|一句话说清它解决什么','第四个|一句话说清它解决什么','第五个|一句话说清它解决什么']}},
+    {type:'h2', c:{text:'重点展开两个'}},
+    {type:'card', c:{title:'最值得先装的', body:'为什么它排第一：使用频率、上手难度、替代成本，三个维度说清。'}},
+    {type:'card', c:{title:'最容易被忽略的', body:'它冷门但解决真痛点，附一个我的真实使用场景。'}},
+    {type:'tags', c:{items:['工具','收藏','效率']}},
+    {type:'hist', c:{items:['往期：5 个让你效率翻倍的习惯|2.3万阅读','往期：我如何用 XX 做时间管理|1.8万阅读']}},
+    {type:'triple', c:{}}
+  ]},
+  { name:'故事叙事型', desc:'第一人称复盘，真实感最强', themeId:'v2-kai', blocks:[
+    {type:'intro', c:{strong:'那天下午', body:'用一句有时间、有地点、有动作的话开场，把读者拉进画面。'}},
+    {type:'h2', c:{text:'事情是怎么开始的'}},
+    {type:'p', c:{text:'交代起因和当时的想法，细节越具体越可信。'}},
+    {type:'quote2', c:{text:'「改变不是想清楚才做，<br>是做着做着就清楚了。」'}},
+    {type:'h2', c:{text:'最难的那段'}},
+    {type:'p', c:{text:'写清楚卡在哪、怎么跨过去的——这是读者最需要的部分。'}},
+    {type:'image', c:{text:'图片占位 — 请替换为有故事感的现场图'}},
+    {type:'caption', c:{text:'图注：当时的状态，一看就懂'}},
+    {type:'h2', c:{text:'回头看，我学到三件事'}},
+    {type:'recap', c:{title:'三点启示', items:['第一件：做法层面的具体修正','第二件：心态层面的转变','第三件：策略层面的取舍']}},
+    {type:'next', c:{title:'下期预告', body:'下一篇写这件事的后续：我打算……（留个钩子让人想追更）'}},
+    {type:'footer', c:{text:'— 全文完 —　感谢阅读 · 欢迎分享'}}
+  ]},
+  { name:'测评对比型', desc:'维度化对比，适合选品决策', themeId:'v2-slate', blocks:[
+    {type:'meta', c:{words:'约 2200 字', minutes:'阅读 5 分钟', fit:'适读：正在二选一的人'}},
+    {type:'intro', c:{strong:'直接给结论', body:'先说答案：预算够选 A，预算紧选 B。下面是推理过程。'}},
+    {type:'h2', c:{text:'核心维度对比'}},
+    {type:'table', c:{head:'维度|产品 A|产品 B', rows:'价格|高|低\n上手难度|低|中\n适合人群|怕折腾的|爱折腾的'}},
+    {type:'h2', c:{text:'实测体验'}},
+    {type:'p', c:{text:'写你真实使用中发现的关键差异，一个细节胜过十个参数。'}},
+    {type:'stat', c:{label:'两周实测的关键数字', value:'A 效率高约 30%\nB 成本省约一半'}},
+    {type:'twocol', c:{left:'选 A 的理由\n省心\n售后好', right:'选 B 的理由\n便宜\n可玩性高'}},
+    {type:'guide', c:{text:'还在纠结？评论区写下预算和用途\n我直接给你答案'}},
+    {type:'follow', c:{text:'关注我，只测你用得上的东西'}}
+  ]},
+  { name:'方法论文型', desc:'体系化干货，建立专业标签', themeId:'v2-navy', blocks:[
+    {type:'meta', c:{words:'约 4000 字', minutes:'阅读 12 分钟', fit:'适读：想体系化提升的人'}},
+    {type:'intro', c:{strong:'解决什么问题', body:'大多数人不是不努力，是没有一套自己的方法论。这篇帮你搭框架。'}},
+    {type:'h2', c:{text:'问题出在哪'}},
+    {type:'p', c:{text:'描述典型困境：忙而无所得。指出缺的是「框架」而不是「努力」。'}},
+    {type:'h2', c:{text:'三层框架总览'}},
+    {type:'table', c:{head:'层级|管什么|典型动作', rows:'战略层|方向|每季度定一次重点\n执行层|节奏|每周固定复盘\n工具层|效率|选一套顺手的工具'}},
+    {type:'h2', c:{text:'逐层展开'}},
+    {type:'clist', c:{items:['战略层|少即是多：一次只主攻一件事','执行层|固定节奏比爆发更可持续','工具层|工具服务于流程，别反过来']}},
+    {type:'quote', c:{text:'引用一个案例或数据，佐证这套框架的有效性。'}},
+    {type:'h2', c:{text:'怎么开始用'}},
+    {type:'recap', c:{title:'行动清单', items:['今晚：写下你当前的三层现状','本周：给执行层定一个固定节奏','本月：跑完一个完整循环并复盘']}},
+    {type:'triple', c:{}}
+  ]},
+  { name:'周报复盘型', desc:'定期更新，养成读者预期', themeId:'v2-tea', blocks:[
+    {type:'meta', c:{words:'约 1200 字', minutes:'阅读 3 分钟', fit:'第 12 期 · 每周三更新'}},
+    {type:'intro', c:{strong:'本周一句话', body:'用一句话总结这周的主线：做了什么、最重要的发现是什么。'}},
+    {type:'stat', c:{label:'本周数据', value:'发文 2 篇 · 新增读者 86 人\n最佳文章阅读 4200+'}},
+    {type:'h2', c:{text:'本周三件事'}},
+    {type:'clist', c:{items:['内容|完成了 XX 专题的第一篇','实验|试了新的发布时间，数据变化明显','读者|收到 3 条高质量留言，都回复了']}},
+    {type:'h2', c:{text:'一个踩坑'}},
+    {type:'tip', c:{text:'本周踩的坑和修正动作，写具体一点，对读者最有参考价值。'}},
+    {type:'next', c:{title:'下周计划', body:'继续 XX 专题第二篇，另外想试一试……'}},
+    {type:'triple', c:{}},
+    {type:'footer', c:{text:'— 第 12 期完 —　每周三见'}}
+  ]},
+  { name:'访谈精华型', desc:'问答体呈现，干货密度高', themeId:'v2-cocoa', blocks:[
+    {type:'intro', c:{strong:'本期嘉宾', body:'一句话介绍：他是谁、做过什么、为什么值得听他聊这个话题。'}},
+    {type:'h2', c:{text:'关于选择'}},
+    {type:'h3', c:{text:'问：当时为什么下这个决定？'}},
+    {type:'p', c:{text:'嘉宾回答的精华整理：保留口语感，删掉冗余，长句拆短。'}},
+    {type:'h3', c:{text:'问：中间有没有后悔过？'}},
+    {type:'p', c:{text:'第二个问答：挑最有冲突感的问题，答案才有张力。'}},
+    {type:'quote2', c:{text:'「把嘉宾最有力的一句话放在这里。」'}},
+    {type:'h2', c:{text:'快问快答'}},
+    {type:'clist', c:{items:['最近在读|《XX》','最常用的工具|XX','给新人一句话|先做再优化']}},
+    {type:'follow', c:{text:'关注我，每周对话一位有趣的人'}}
+  ]},
+  { name:'快讯速报型', desc:'热点解读，抢时效性', themeId:'v2-ink2', blocks:[
+    {type:'meta', c:{words:'约 900 字', minutes:'阅读 2 分钟', fit:'今日热点 · 速览'}},
+    {type:'intro', c:{strong:'发生了什么', body:'30 字说清事件：谁、做了什么、影响谁。'}},
+    {type:'h2', c:{text:'关键信息'}},
+    {type:'p', c:{text:'列最重要的 2-3 个事实，每句一个信息点，不加评论。'}},
+    {type:'h2', c:{text:'意味着什么'}},
+    {type:'table', c:{head:'变化|之前|之后', rows:'规则|旧规则|新规则\n影响人群|部分用户|全部用户'}},
+    {type:'strong', c:{text:'一句话观点：短期看热闹，长期看 XX。'}},
+    {type:'hist', c:{items:['相关阅读：上一条热点分析|1.2万阅读','背景文章：XX 到底是什么|3.4万阅读']}},
+    {type:'footer', c:{text:'— 速报完 —　持续关注后续更新'}}
+  ]}
+];
+
+/* ============ DOM 引用 ============ */
+const editor = document.getElementById('editor');
+const phones = document.getElementById('phones');
+const stage = document.getElementById('stage');
+const app = document.getElementById('app');
+const props = document.getElementById('props');
+const propFields = document.getElementById('propFields');
+const propType = document.getElementById('propType');
+const undoBtn=document.getElementById('undoBtn');
+const redoBtn=document.getElementById('redoBtn');
+let historyStack=[];
+let historyIndex=-1;
+let historyTimer=null;
+let historyKey=null;
+let applyingHistory=false;
+
+function stateComparable(state){
+  const copy=cloneJson(state);
+  delete copy.revision; delete copy.updatedAt;
+  return JSON.stringify(copy);
+}
+function captureState(){ return cloneJson(documentState); }
+function updateHistoryButtons(){
+  undoBtn.disabled=historyIndex<=0;
+  redoBtn.disabled=historyIndex<0 || historyIndex>=historyStack.length-1;
+}
+function pushHistory(){
+  if(applyingHistory) return;
+  const snap=captureState();
+  if(historyIndex>=0 && stateComparable(historyStack[historyIndex])===stateComparable(snap)){ updateHistoryButtons(); return; }
+  historyStack=historyStack.slice(0,historyIndex+1);
+  historyStack.push(snap);
+  const stateSize=JSON.stringify(snap).length;
+  const historyLimit=stateSize>500000?10:stateSize>250000?20:MAX_HISTORY;
+  while(historyStack.length>historyLimit) historyStack.shift();
+  historyIndex=historyStack.length-1;
+  updateHistoryButtons();
+}
+function flushHistory(){
+  if(historyTimer){ clearTimeout(historyTimer); historyTimer=null; }
+  historyKey=null;
+  pushHistory();
+}
+function beginHistory(key){
+  if(historyKey && historyKey!==key) flushHistory();
+  historyKey=key;
+}
+function scheduleHistory(key){
+  beginHistory(key);
+  clearTimeout(historyTimer);
+  historyTimer=setTimeout(flushHistory,650);
+}
+function touchState(){
+  const revision=Number(documentState.revision);
+  documentState.revision=(Number.isSafeInteger(revision)&&revision>=0?revision:0)+1;
+  documentState.updatedAt=Date.now();
+}
+function syncAppearanceState(){
+  documentState.appearance=normalizeAppearance({
+    themeId:(ALL_THEMES[themeIndex]&&ALL_THEMES[themeIndex].id)||null,
+    scale:G.scale, space:G.space, primary:G.primaryOverride, tableMode:G.tableMode
+  });
+}
+function runMutation(label, mutator, options){
+  flushHistory();
+  mutator();
+  touchState(); syncAppearanceState();
+  if(!options || options.render!==false) renderDocument(options&&options.selectId);
+  pushHistory();
+  scheduleSave();
+}
+function stateWithinLimits(snapshot){
+  if(!snapshot||!Array.isArray(snapshot.blocks)||snapshot.blocks.length>MAX_BLOCKS) return false;
+  let total=0;
+  let renderUnits=snapshot.blocks.length;
+  const addRenderUnits=value=>{ renderUnits+=Math.max(0,Number(value)||0); return renderUnits<=MAX_RENDER_UNITS; };
+  const scalar=value=>{
+    if(value==null) return '';
+    return ['string','number','boolean'].includes(typeof value)?String(value):null;
+  };
+  const count=value=>{
+    const raw=scalar(value); if(raw===null)return false;
+    const text=sanitizePlainText(raw);
+    if(text.length>MAX_FIELD_CHARS) return false;
+    total+=text.length; return total<=MAX_TOTAL_CHARS;
+  };
+  if(snapshot.meta){
+    const title=scalar(snapshot.meta.title),author=scalar(snapshot.meta.author),summary=scalar(snapshot.meta.summary);
+    if(title===null||author===null||summary===null||sanitizePlainText(title).length>MAX_META_CHARS||sanitizePlainText(author).length>MAX_META_CHARS||sanitizePlainText(summary).length>MAX_META_CHARS)return false;
+    if(!count(title)||!count(author)||!count(summary)) return false;
+  }
+  for(const block of snapshot.blocks){
+    const def=block&&SCHEMA[block.type]; if(!def)continue;
+    for(const [key,,kind] of def.fields){
+      const hasValue=!!(block.content&&Object.prototype.hasOwnProperty.call(block.content,key));
+      const value=hasValue?block.content[key]:(DEFAULT_CONTENT[block.type]||{})[key];
+      if(kind==='list'||kind==='steplist'){
+        let items;
+        if(Array.isArray(value)){
+          if(value.some(item=>scalar(item)===null))return false;
+          items=value.map(item=>sanitizePlainText(scalar(item)).trim()).filter(Boolean);
+        }else{
+          const raw=scalar(value); if(raw===null)return false;
+          items=splitLines(sanitizePlainText(raw));
+        }
+        if(items.length>MAX_LIST_ITEMS)return false;
+        if(!addRenderUnits(items.length))return false;
+        for(const item of items){ const text=sanitizePlainText(item); if(text.length>MAX_LIST_ITEM_CHARS)return false; total+=text.length; if(total>MAX_TOTAL_CHARS)return false; }
+      }else{
+        const raw=scalar(value); if(raw===null)return false;
+        const measured=INLINE_FIELDS.has(block.type+'.'+key)?sanitizeInlineHtml(raw):raw;
+        const lineUnits=(measured.match(/\n/g)||[]).length;
+        const markupUnits=INLINE_FIELDS.has(block.type+'.'+key)?(measured.match(/</g)||[]).length:0;
+        if(!addRenderUnits(lineUnits+markupUnits))return false;
+        if(!count(measured)) return false;
+      }
+    }
+  }
+  return true;
+}
+function isValidState(snapshot){
+  if(!snapshot||snapshot.schemaVersion!==APP_SCHEMA||!Array.isArray(snapshot.blocks)||snapshot.blocks.length>MAX_BLOCKS)return false;
+  if(!snapshot.blocks.every(block=>block&&BLOCK_TYPES.has(block.type)&&block.content&&typeof block.content==='object'&&!Array.isArray(block.content)))return false;
+  return stateWithinLimits(snapshot);
+}
+function applyStateSnapshot(snapshot, shouldSave){
+  if(!isValidState(snapshot)) return false;
+  applyingHistory=true;
+  try{
+    const seenIds=new Set();
+    const blocks=snapshot.blocks.map(b=>{
+      let id=normalizeBlockId(b.id); if(seenIds.has(id)) id=newBlockId(); seenIds.add(id);
+      return createBlockRecord(b.type,b.content,id);
+    });
+    const rawRevision=safeNumber(snapshot.revision);
+    const meta=snapshot.meta&&typeof snapshot.meta==='object'&&!Array.isArray(snapshot.meta)?snapshot.meta:{};
+    const cleanMeta={title:sanitizePlainText(meta.title||''),author:sanitizePlainText(meta.author||''),summary:sanitizePlainText(meta.summary||'')};
+    if(!stateWithinLimits({blocks,meta:cleanMeta})) return false;
+    const nextState={
+      schemaVersion:APP_SCHEMA,
+      revision:Number.isSafeInteger(rawRevision)&&rawRevision>=0?rawRevision:0,
+      updatedAt:Number.isFinite(safeNumber(snapshot.updatedAt))?safeNumber(snapshot.updatedAt):Date.now(),
+      meta:cleanMeta,
+      appearance:normalizeAppearance(snapshot.appearance),
+      blocks
+    };
+    const migration=snapshot.migration&&typeof snapshot.migration==='object'&&!Array.isArray(snapshot.migration)?snapshot.migration:{};
+    const migrationRaw=safeNumber(migration.legacyComplexBlocks);
+    const migrationCount=Math.min(blocks.length,Math.max(0,Math.floor(Number.isFinite(migrationRaw)?migrationRaw:0)));
+    if(migrationCount) nextState.migration={source:['v1','html'].includes(migration.source)?migration.source:'legacy',legacyComplexBlocks:migrationCount,reviewRequired:migration.reviewRequired!==false};
+    documentState=nextState;
+    const appearance=documentState.appearance;
+    const idx=ALL_THEMES.findIndex(t=>t.id===appearance.themeId);
+    themeIndex=idx>=0?idx:DEFAULT_THEME;
+    G.scale=appearance.scale;
+    G.space=appearance.space;
+    G.primaryOverride=appearance.primary;
+    G.tableMode=appearance.tableMode;
+    titleInput.value=sanitizePlainText((documentState.meta&&documentState.meta.title)||'');
+    authorInput.value=sanitizePlainText((documentState.meta&&documentState.meta.author)||'');
+    documentState.meta=Object.assign({},documentState.meta,{title:titleInput.value,author:authorInput.value});
+    phTitle.textContent=titleInput.value||'在此预览标题';
+    phAuthor.textContent=authorInput.value?('文 / '+authorInput.value):'文 / 你的名字';
+    document.getElementById('fontScale').value=G.scale;
+    document.getElementById('spaceScale').value=G.space;
+    document.getElementById('fsVal').textContent=G.scale.toFixed(2)+'×';
+    document.getElementById('spVal').textContent=G.space.toFixed(1)+'×';
+    document.getElementById('primaryOverride').value=G.primaryOverride||THEMES[themeIndex].primary;
+    document.getElementById('keepWechatTable').checked=G.tableMode==='table';
+    renderThemes(); renderDocument(); if(selBlock) buildPanel(selBlock); syncCompareHeaders();
+    if(shouldSave) scheduleSave();
+    return true;
+  }finally{
+    applyingHistory=false;
+  }
+}
+function undo(){
+  flushHistory();
+  if(historyIndex<=0) return;
+  historyIndex--;
+  applyStateSnapshot(historyStack[historyIndex],false); touchState(); scheduleSave();
+  updateHistoryButtons();
+}
+function redo(){
+  flushHistory();
+  if(historyIndex>=historyStack.length-1) return;
+  historyIndex++;
+  applyStateSnapshot(historyStack[historyIndex],false); touchState(); scheduleSave();
+  updateHistoryButtons();
+}
+undoBtn.onclick=undo;
+redoBtn.onclick=redo;
+document.addEventListener('keydown',e=>{
+  if(!(e.metaKey||e.ctrlKey) || e.altKey) return;
+  const key=e.key.toLowerCase();
+  if(key==='z'){ e.preventDefault(); e.shiftKey?redo():undo(); }
+  else if(key==='y'){ e.preventDefault(); redo(); }
+});
+
+/* 插入 / 载入区块 */
+function renderBlockRecord(record, theme){ return makeBlock(record.type,theme||curTheme(),G,record.content,record.id); }
+/* 发布渲染与编辑器 DOM 解耦：不生成 data-content / contenteditable / draggable 等编辑状态。 */
+function renderPublishBlockRecord(record, theme, context, renderSettings){
+  const wrap=document.createElement('div');
+  const content=normalizeContent(record.type,record.content||{});
+  wrap.innerHTML=buildComponent(record.type,theme||curTheme(),renderSettings||G,content,'wechat',context||{},record);
+  return wrap.firstElementChild||null;
+}
+function findBlockElement(id){ return Array.from(editor.querySelectorAll('[data-block-id]')).find(el=>el.dataset.blockId===id)||null; }
+function renderDocument(selectId){
+  const wanted=selectId || (selBlock&&selBlock.dataset.blockId) || null;
+  const frag=document.createDocumentFragment();
+  documentState.blocks.forEach(record=>frag.appendChild(renderBlockRecord(record,curTheme())));
+  editor.replaceChildren(frag);
+  renumberHeadings(); ensureDraggable(); updateEmptyState();
+  if(wanted){
+    const next=findBlockElement(wanted);
+    if(next) selectBlock(next,!selectId); else clearSel();
+  }else clearSel();
+  if(compareMode) buildCompare();
+}
+function renderOneBlock(id){
+  const record=getBlockRecord(id);
+  const old=findBlockElement(id);
+  if(!record || !old) return;
+  const neo=renderBlockRecord(record,curTheme());
+  old.replaceWith(neo);
+  if(selBlock===old || (selBlock&&selBlock.dataset.blockId===id)) selectBlock(neo,true);
+  renumberHeadings(); ensureDraggable(); updateEmptyState();
+  if(compareMode) buildCompare();
+}
+function loadBlocks(blocks, label){
+  const records=(blocks||[]).filter(b=>b&&BLOCK_TYPES.has(b.type)).map(b=>createBlockRecord(b.type,b.c||b.content||{},b.id));
+  if(!stateWithinLimits(Object.assign({},documentState,{blocks:records}))){ flash('待载入内容超过区块或字符安全上限'); return false; }
+  runMutation(label||'载入内容',()=>{ documentState.blocks=records; delete documentState.migration; });
+  return true;
+}
+function addComponent(type){
+  if(documentState.blocks.length>=MAX_BLOCKS){ flash('区块数已达 '+MAX_BLOCKS+' 个上限'); return; }
+  const record=createBlockRecord(type,{});
+  if(!stateWithinLimits(Object.assign({},documentState,{blocks:documentState.blocks.concat(record)}))){ flash('新增后全文将超过安全容量上限'); return; }
+  runMutation('新增组件',()=>{ documentState.blocks.push(record); },{selectId:record.id});
+}
+
+/* ============ 主题应用（正文模型是唯一内容源）============ */
+function applyTheme(){
+  renderDocument();
+}
+function safeParse(s){ try{ return JSON.parse(s||'{}'); }catch(e){ return {}; } }
+
+/* ============ 顶部组件工具条 ============ */
+const toolbar = document.getElementById('toolbar');
+COMPONENT_GROUPS.forEach(grp=>{
+  const g = document.createElement('div'); g.className='tb-group';
+  const lab = document.createElement('span'); lab.className='tb-label'; lab.textContent=grp.name; g.appendChild(lab);
+  grp.items.forEach(([type,label])=>{
+    const policy=PUBLISH_POLICY[type],status=policy&&PUBLISH_STATUS[policy.status];
+    const b=document.createElement('button'); b.className='chip';
+    b.innerHTML=`${escapeHtml(label)}<span class="compat-badge compat-${policy.status}">${escapeHtml(status.label)}</span>`;
+    b.title=`微信发布：${status.description} · ${policy.note}`;
+    b.onclick=()=>addComponent(type); g.appendChild(b);
+  });
+  toolbar.appendChild(g);
+});
+
+/* ============ 模板库 ============ */
+const tplList = document.getElementById('tplList');
+TEMPLATES.forEach((tpl,i)=>{
+  const b=document.createElement('button'); b.className='tpl-btn';
+  b.innerHTML=`<b>${tpl.name}</b><span>${tpl.desc}</span>`;
+  b.onclick=()=>{
+    if(editor.children.length && !confirm('载入模板会替换当前正文，确定吗？')) return;
+    loadBlocks(tpl.blocks); flash('已载入模板：'+tpl.name);
+  };
+  tplList.appendChild(b);
+});
+
+/* ============ 场景结构库（载入时自动切换建议主题）============ */
+const tplListV2 = document.getElementById('tplListV2');
+V2_TEMPLATES.forEach(tpl=>{
+  const th = ALL_THEMES.find(x=>x.id===tpl.themeId);
+  const b=document.createElement('button'); b.className='tpl-btn';
+  b.innerHTML=`<b>${tpl.name}</b><span>${tpl.desc}</span><em style="display:inline-block;margin-top:5px;font-size:10px;font-style:normal;color:var(--accent);border:1px solid var(--accent);border-radius:20px;padding:1px 9px;">V2 · ${th?th.name:''}</em>`;
+  b.onclick=()=>{
+    if(editor.children.length && !confirm('载入场景结构会替换当前正文，并切换到「'+(th?th.name:'建议')+'」主题，确定吗？')) return;
+    if(th){ themeIndex = th.gIdx; renderThemes(); }
+    loadBlocks(tpl.blocks); flash('已载入场景结构：'+tpl.name);
+  };
+  tplListV2.appendChild(b);
+});
+
+/* ============ 模板分组折叠（V2 默认展开 / V1 默认折叠）============ */
+const tplCollapsed = { v2:false, v1:true };
+function loadTplCollapse(){ try{ const s=JSON.parse(localStorage.getItem('wx-tpl-collapse')); if(s&&typeof s==='object'){ if(typeof s.v2==='boolean') tplCollapsed.v2=s.v2; if(typeof s.v1==='boolean') tplCollapsed.v1=s.v1; } }catch(e){} }
+function saveTplCollapse(){ try{ localStorage.setItem('wx-tpl-collapse', JSON.stringify(tplCollapsed)); }catch(e){} }
+function applyTplCollapse(){
+  document.querySelectorAll('.tpl-head').forEach(h=>{
+    const key = h.dataset.tpl;
+    const body = h.nextElementSibling;
+    if(!body) return;
+    if(tplCollapsed[key]){ h.classList.add('collapsed'); body.classList.add('collapsed'); }
+    else { h.classList.remove('collapsed'); body.classList.remove('collapsed'); }
+  });
+}
+document.querySelectorAll('.tpl-head').forEach(h=>{
+  h.addEventListener('click', ()=>{
+    const key = h.dataset.tpl;
+    tplCollapsed[key] = !tplCollapsed[key];
+    applyTplCollapse();
+    saveTplCollapse();
+  });
+});
+loadTplCollapse(); applyTplCollapse();
+
+/* ============ 主题 ============ */
+const themeList = document.getElementById('themeList');
+const STORAGE_VER = '2'; // 存储结构版本；版本不符的旧数据自动失效，避免开发期脏数据残留
+const tierCollapsed = { v1:false, v2:false, v3:false, v4:false };
+function saveTierCollapse(){ try{ localStorage.setItem('wx-store-ver', STORAGE_VER); localStorage.setItem('wx-tier-collapse', JSON.stringify(tierCollapsed)); }catch(e){} }
+function loadTierCollapse(){
+  try{
+    if(localStorage.getItem('wx-store-ver')!==STORAGE_VER) return; // 旧版数据忽略，沿用新默认
+    const s=JSON.parse(localStorage.getItem('wx-tier-collapse'));
+    if(s&&typeof s==='object'){ TIERS.forEach(t=>{ if(typeof s[t.id]==='boolean') tierCollapsed[t.id]=s[t.id]; }); }
+  }catch(e){}
+}
+function initUnlock(){
+  loadTierCollapse();
+}
+function renderThemes(){
+  themeList.innerHTML='';
+  const mode = document.createElement('div'); mode.className='theme-access';
+  mode.innerHTML = '<span>35 套主题全部可用 · 点击分组可收起</span>';
+  themeList.appendChild(mode);
+  // 四组视觉主题：每组表头可点击，独立折叠 / 展开
+  TIERS.forEach(tier=>{
+    const collapsed = !!tierCollapsed[tier.id];
+    const head = document.createElement('div'); head.className='tier-head'+(collapsed?' collapsed':'');
+    head.innerHTML = `<span class="tier-arrow">▾</span><span class="tier-name">${tier.name}</span><span class="tier-badge">${tier.badge}</span><span class="tier-desc">${tier.desc}</span>`;
+    head.onclick = ()=>{ tierCollapsed[tier.id]=!tierCollapsed[tier.id]; saveTierCollapse(); renderThemes(); };
+    themeList.appendChild(head);
+    if(collapsed) return; // 折叠：仅显示表头
+    const wrap = document.createElement('div'); wrap.className='tier-themes';
+    THEME_DEFS[tier.id].forEach(t=>{
+      const d = document.createElement('div'); d.className='swatch'+(t.gIdx===themeIndex?' active':'');
+      d.innerHTML = `<span class="dot" style="background:${t.primary}"></span>${t.name}`;
+      d.onclick = ()=> setTheme(t.gIdx);
+      wrap.appendChild(d);
+    });
+    themeList.appendChild(wrap);
+  });
+}
+function setTheme(i){
+  flushHistory();
+  themeIndex=i; syncAppearanceState(); touchState();
+  renderThemes(); applyTheme();
+  pushHistory(); scheduleSave();
+}
+
+/* ============ 全局控件 ============ */
+document.getElementById('fontScale').oninput=e=>{ const key='appearance:scale'; beginHistory(key); G.scale=Math.min(1.25,Math.max(.9,parseFloat(e.target.value)||1)); document.getElementById('fsVal').textContent=G.scale.toFixed(2)+'×'; syncAppearanceState(); touchState(); applyTheme(); scheduleHistory(key); scheduleSave(); };
+document.getElementById('spaceScale').oninput=e=>{ const key='appearance:space'; beginHistory(key); G.space=Math.min(1.4,Math.max(.8,parseFloat(e.target.value)||1)); document.getElementById('spVal').textContent=G.space.toFixed(1)+'×'; syncAppearanceState(); touchState(); applyTheme(); scheduleHistory(key); scheduleSave(); };
+document.getElementById('primaryOverride').oninput=e=>{ const key='appearance:primary'; beginHistory(key); G.primaryOverride=/^#[0-9a-f]{6}$/i.test(e.target.value)?e.target.value:null; syncAppearanceState(); touchState(); applyTheme(); scheduleHistory(key); scheduleSave(); };
+document.getElementById('resetPrimary').onclick=()=>{ flushHistory(); G.primaryOverride=null; document.getElementById('primaryOverride').value=THEMES[themeIndex].primary; syncAppearanceState(); touchState(); applyTheme(); pushHistory(); scheduleSave(); };
+document.getElementById('keepWechatTable').onchange=e=>{
+  runMutation('切换微信表格发布模式',()=>{ G.tableMode=e.target.checked?'table':'cards'; },{render:false});
+  flash(G.tableMode==='table'?'已启用高风险真表格；发布后必须保存、重开并手机预览':'已恢复安全模式：真表格发布时转为纵向卡片');
+};
+
+/* ============ 选中块 / 属性面板 ============ */
+const blockTools=document.getElementById('blockTools');
+let selBlock=null;
+function selectBlock(b, skipPanel){
+  if(selBlock) selBlock.classList.remove('sel');
+  selBlock=b; if(!b) return;
+  b.classList.add('sel');
+  blockTools.style.display='flex';
+  app.classList.add('show-props');
+  if(!skipPanel) buildPanel(b);
+}
+function clearSel(){
+  if(selBlock){ selBlock.classList.remove('sel'); selBlock=null; }
+  blockTools.style.display='none';
+  app.classList.remove('show-props');
+}
+function sibling(el,dir){ let n=dir<0?el.previousElementSibling:el.nextElementSibling; while(n&&!n.hasAttribute('data-type')) n=dir<0?n.previousElementSibling:n.nextElementSibling; return n; }
+function ensureDraggable(){ editor.querySelectorAll('[data-type]').forEach(el=> el.setAttribute('draggable',el.dataset.directEdit==='true'?'false':'true')); }
+
+editor.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('a')) e.preventDefault(); const b=e.target.closest('[data-type]'); if(b) selectBlock(b); else clearSel(); });
+document.addEventListener('click',e=>{ if(!editor.contains(e.target)&&!blockTools.contains(e.target)&&!props.contains(e.target)&&!toolbar.contains(e.target)) clearSel(); });
+
+/* 属性面板构建 */
+function buildPanel(el){
+  const type=el.dataset.type;
+  const blockId=el.dataset.blockId;
+  const def=SCHEMA[type]; if(!def){ propType.textContent='该区块暂无可编辑字段'; propFields.innerHTML=''; return; }
+  const record=getBlockRecord(blockId);
+  if(!record){ clearSel(); return; }
+  const c=cloneJson(record.content||{});
+  propType.textContent=def.name;
+  propFields.innerHTML='';
+  def.fields.forEach(([key,label,kind])=>{
+    const f=document.createElement('div'); f.className='prop-field';
+    const lab=document.createElement('label'); lab.textContent=label; f.appendChild(lab);
+    let input;
+    const rich=INLINE_FIELDS.has(type+'.'+key);
+    if(rich){
+      input=document.createElement('div'); input.className='prop-rich'; input.contentEditable='true'; input.innerHTML=sanitizeInlineHtml(c[key]||'');
+      input.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('a')) e.preventDefault(); });
+      input.addEventListener('paste',e=>{ e.preventDefault(); if(insertSafeClipboardAtSelection(input,e.clipboardData)) input.dispatchEvent(new Event('input',{bubbles:true})); });
+      input.addEventListener('drop',e=>{ e.preventDefault(); if(insertSafeClipboardAtSelection(input,e.dataTransfer)) input.dispatchEvent(new Event('input',{bubbles:true})); });
+      input.addEventListener('compositionstart',()=>{ input.dataset.composing='true'; });
+      input.addEventListener('compositionend',()=>{ input.dataset.composing='false'; input.dispatchEvent(new Event('input',{bubbles:true})); });
+      input.addEventListener('beforeinput',e=>{
+        if(e.inputType==='insertFromDrop'){ e.preventDefault(); return; }
+        if(e.inputType==='insertParagraph'||e.inputType==='insertLineBreak'){ e.preventDefault(); insertPlainTextAtSelection(input,'\n'); input.dispatchEvent(new Event('input',{bubbles:true})); }
+      });
+    }
+    else if(kind==='area'){ input=document.createElement('textarea'); input.rows=3; input.value=sanitizePlainText(c[key]||''); }
+    else if(kind==='list'||kind==='steplist'){ input=document.createElement('textarea'); input.rows=4; input.value=(c[key]||[]).join('\n'); }
+    else { input=document.createElement('input'); input.value=sanitizePlainText(c[key]||''); }
+    input.dataset.field=key;
+    f.appendChild(input); propFields.appendChild(f);
+    input.addEventListener('input',()=>{
+      if(rich&&input.dataset.composing==='true') return;
+      const historyToken='field:'+blockId+':'+key;
+      beginHistory(historyToken);
+      const selectionOffset=rich?captureSelectionOffset(input):null;
+      const rawRich=rich?input.innerHTML:'';
+      let val=rich?sanitizeInlineHtml(rawRich):input.value;
+      if(kind==='list') val=splitLines(val);
+      else if(kind==='steplist') val=splitLines(val);
+      else if(rich) val=sanitizeInlineHtml(val);
+      else val=sanitizePlainText(val);
+      if(rich&&rawRich!==val){ input.innerHTML=val; if(!restoreSelectionOffset(input,selectionOffset)) placeCaretAtEnd(input); }
+      const current=getBlockRecord(blockId);
+      if(!current) return;
+      const previous=cloneJson(current.content);
+      current.content=normalizeContent(type,Object.assign({},current.content,{[key]:val}));
+      if(!stateWithinLimits(documentState)){
+        current.content=previous;
+        if(rich){ input.innerHTML=sanitizeInlineHtml(previous[key]||''); placeCaretAtEnd(input); }
+        else if(kind==='list'||kind==='steplist') input.value=(previous[key]||[]).join('\n');
+        else input.value=sanitizePlainText(previous[key]||'');
+        flash('该字段或全文已超过安全容量上限，本次输入已取消'); return;
+      }
+      touchState();
+      renderOneBlock(blockId);
+      scheduleHistory(historyToken);
+      scheduleSave();
+    });
+  });
+  const hint=document.createElement('div'); hint.className='prop-hint';
+  hint.textContent=DIRECT_EDITABLE.has(type)?'编辑即时生效；此类简单文字也可直接在正文中修改。':'编辑即时生效；此类结构组件请通过本面板修改，避免破坏排版结构。';
+  propFields.appendChild(hint);
+}
+
+/* 块操作：上移/下移/复制/删除 */
+function moveBlock(b,dir){
+  if(!b)return;
+  const id=b.dataset.blockId, idx=getBlockIndex(id), next=idx+dir;
+  if(idx<0 || next<0 || next>=documentState.blocks.length) return;
+  runMutation('移动组件',()=>{ const item=documentState.blocks.splice(idx,1)[0]; documentState.blocks.splice(next,0,item); },{selectId:id});
+}
+function delBlock(b){
+  if(!b)return;
+  const id=b.dataset.blockId, idx=getBlockIndex(id); if(idx<0)return;
+  runMutation('删除组件',()=>{ documentState.blocks.splice(idx,1); });
+}
+function dupBlock(b){
+  if(!b)return;
+  if(documentState.blocks.length>=MAX_BLOCKS){ flash('区块数已达 '+MAX_BLOCKS+' 个上限'); return; }
+  const id=b.dataset.blockId, idx=getBlockIndex(id); if(idx<0)return;
+  const copy=createBlockRecord(documentState.blocks[idx].type,documentState.blocks[idx].content);
+  const candidateBlocks=documentState.blocks.slice(); candidateBlocks.splice(idx+1,0,copy);
+  if(!stateWithinLimits(Object.assign({},documentState,{blocks:candidateBlocks}))){ flash('复制后全文将超过安全容量上限'); return; }
+  runMutation('复制组件',()=>{ documentState.blocks=candidateBlocks; },{selectId:copy.id});
+}
+blockTools.querySelector('.up').onclick=()=>moveBlock(selBlock,-1);
+blockTools.querySelector('.down').onclick=()=>moveBlock(selBlock,1);
+blockTools.querySelector('.dup').onclick=()=>dupBlock(selBlock);
+blockTools.querySelector('.del').onclick=()=>delBlock(selBlock);
+document.getElementById('pUp').onclick=()=>moveBlock(selBlock,-1);
+document.getElementById('pDown').onclick=()=>moveBlock(selBlock,1);
+document.getElementById('pDup').onclick=()=>dupBlock(selBlock);
+document.getElementById('pDel').onclick=()=>delBlock(selBlock);
+
+/* ============ 拖拽排序 ============ */
+let dragEl=null;
+editor.addEventListener('dragstart',e=>{
+  const b=e.target.closest('[data-type]');
+  if(!b || b.dataset.directEdit==='true' || b.getAttribute('draggable')!=='true'){ dragEl=null; return; }
+  dragEl=b; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain',''); }catch(_){}
+});
+editor.addEventListener('dragover',e=>{ e.preventDefault(); });
+editor.addEventListener('drop',e=>{
+  if(!dragEl) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  const b=e.target.closest('[data-type]');
+  if(b && b!==dragEl){
+    const r=b.getBoundingClientRect();
+    const dragId=dragEl.dataset.blockId, targetId=b.dataset.blockId;
+    const before=e.clientY < (r.top+r.bottom)/2;
+    runMutation('拖动排序',()=>{
+      const from=getBlockIndex(dragId); if(from<0)return;
+      const item=documentState.blocks.splice(from,1)[0];
+      let to=getBlockIndex(targetId); if(!before) to++;
+      documentState.blocks.splice(Math.max(0,to),0,item);
+    },{selectId:dragId});
+  }
+  dragEl=null;
+});
+editor.addEventListener('dragend',()=>{ dragEl=null; });
+
+/* ============ 文章信息 ============ */
+const titleInput=document.getElementById('titleInput'), authorInput=document.getElementById('authorInput');
+const phTitle=document.getElementById('phTitle'), phAuthor=document.getElementById('phAuthor');
+titleInput.oninput=()=>{ const key='meta:title'; beginHistory(key); documentState.meta.title=sanitizePlainText(titleInput.value); phTitle.textContent=titleInput.value||'在此预览标题'; touchState(); if(compareMode) syncCompareHeaders(); scheduleHistory(key); scheduleSave(); };
+authorInput.oninput=()=>{ const key='meta:author'; beginHistory(key); documentState.meta.author=sanitizePlainText(authorInput.value); phAuthor.textContent=authorInput.value?('文 / '+authorInput.value):'文 / 你的名字'; touchState(); if(compareMode) syncCompareHeaders(); scheduleHistory(key); scheduleSave(); };
+
+/* ============ 导入 / 清空 / 示例 ============ */
+function parseImportedText(raw){
+  const clean=sanitizePlainText(raw);
+  if(clean.length>MAX_TOTAL_CHARS) throw new Error('导入文本超过 100 万字符上限');
+  const lines=clean.split('\n');
+  const blocks=[];
+  let paragraph=[];
+  let list=[];
+  const flushParagraph=()=>{ if(paragraph.length){ blocks.push({type:'p',c:{text:textToInlineHtml(paragraph.join('\n'))}}); paragraph=[]; } };
+  const flushList=()=>{ if(list.length){ blocks.push({type:'list',c:{items:list.slice()}}); list=[]; } };
+  lines.forEach(line=>{
+    const text=line.trim();
+    if(!text){ flushParagraph(); flushList(); return; }
+    const heading=text.match(/^(#{1,3})\s+(.+)$/);
+    const bullet=text.match(/^(?:[-*•]|\d+[.)、])\s*(.+)$/);
+    const quote=text.match(/^>\s*(.+)$/);
+    if(heading){ flushParagraph(); flushList(); blocks.push({type:heading[1].length===1?'h1':heading[1].length===2?'h2':'h3',c:{text:heading[2]}}); }
+    else if(bullet){ flushParagraph(); list.push(bullet[1]); }
+    else if(quote){ flushParagraph(); flushList(); blocks.push({type:'quote',c:{text:textToInlineHtml(quote[1])}}); }
+    else { flushList(); paragraph.push(text); }
+  });
+  flushParagraph(); flushList();
+  if(blocks.length>MAX_BLOCKS) throw new Error('识别出的区块超过 '+MAX_BLOCKS+' 个上限');
+  return blocks;
+}
+document.getElementById('doImport').onclick=()=>{
+  const ta=document.getElementById('import');
+  let blocks; try{ blocks=parseImportedText(ta.value); }catch(err){ flash(err.message||'导入内容过大'); return; }
+  if(!blocks.length){ flash('没有可导入的内容'); return; }
+  if(documentState.blocks.length && !confirm('识别到 '+blocks.length+' 个区块，将追加到当前文章末尾。确定继续吗？')) return;
+  const records=blocks.map(b=>createBlockRecord(b.type,b.c));
+  const candidate=Object.assign({},documentState,{blocks:documentState.blocks.concat(records)});
+  if(!stateWithinLimits(candidate)){ flash('追加后文章超过区块或字符上限，已取消导入'); return; }
+  runMutation('导入正文',()=>{ documentState.blocks.push(...records); },{selectId:records[0].id});
+  ta.value=''; flash('已安全导入 '+records.length+' 个区块');
+};
+document.getElementById('clearAll').onclick=()=>{ if(documentState.blocks.length && !confirm('确定清空全部内容？清空后可用“撤销”或“恢复版本”找回。')) return; runMutation('清空正文',()=>{ documentState.blocks=[]; delete documentState.migration; }); };
+document.getElementById('topSample').onclick=loadSampleArticle;
+document.getElementById('esSample').onclick=loadSampleArticle;
+document.getElementById('esBlank').onclick=()=>{ emptyState.style.display='none'; editor.focus(); };
+
+function loadSampleArticle(){
+  if(documentState.blocks.length && !confirm('载入示例文章会替换当前正文；可通过撤销或恢复版本找回。确定吗？')) return;
+  loadBlocks(SAMPLE_ARTICLE,'载入示例文章');
+}
+
+/* ============ 对比主题 ============ */
+const compareBtn=document.getElementById('compareBtn');
+const phoneLabel=document.getElementById('phoneLabel');
+const emptyState=document.getElementById('emptyState');
+compareBtn.onclick=()=>{
+  compareMode=!compareMode;
+  compareBtn.classList.toggle('on',compareMode);
+  stage.classList.toggle('compare',compareMode);
+  phoneLabel.textContent = compareMode ? '对比主题 · 同一内容不同配色（点配色名可切换）' : '手机预览 · 414px 宽度模拟';
+  if(compareMode) buildCompare(); else document.querySelectorAll('.phone-wrap.cmp').forEach(e=>e.remove());
+};
+function buildCompare(){
+  document.querySelectorAll('.phone-wrap.cmp').forEach(e=>e.remove());
+  const others=THEMES.map((t,i)=>i).filter(i=>i!==themeIndex).slice(0,2);
+  others.forEach(idx=>{
+    const wrap=document.createElement('div'); wrap.className='phone-wrap cmp';
+    wrap.innerHTML=`<div class="phone"><div class="phone-header"><div class="ph-title"></div><div class="ph-meta"></div></div><div class="cmp-body"></div></div><div class="cmp-label" data-idx="${idx}">${THEMES[idx].name}</div>`;
+    phones.appendChild(wrap);
+    wrap.querySelector('.cmp-label').onclick=()=>setTheme(idx);
+    restyleClone(wrap.querySelector('.cmp-body'), idx);
+  });
+  syncCompareHeaders();
+}
+function restyleClone(container, idx){
+  const frag=document.createDocumentFragment();
+  documentState.blocks.forEach(record=>{
+    const el=renderBlockRecord(record,getTheme(idx));
+    el.contentEditable='false'; el.removeAttribute('draggable');
+    frag.appendChild(el);
+  });
+  container.replaceChildren(frag);
+  renumberHeadingsInRoot(container,getTheme(idx));
+}
+function syncCompareHeaders(){
+  document.querySelectorAll('.phone-wrap.cmp').forEach(wrap=>{
+    wrap.querySelector('.ph-title').textContent=phTitle.textContent;
+    wrap.querySelector('.ph-meta').textContent=phAuthor.textContent;
+  });
+}
+
+/* ============ 复制 / 导出 ============ */
+const WECHAT_TAGS=new Set(['SECTION','P','DIV','SPAN','STRONG','B','EM','I','U','BR','HR','BLOCKQUOTE','UL','OL','LI','TABLE','TBODY','THEAD','TFOOT','TR','TH','TD']);
+const WECHAT_CSS=new Set([
+  'color','background','background-color','font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-align','text-decoration','text-decoration-line','text-decoration-style','text-decoration-color','text-decoration-thickness','text-transform',
+  'margin','margin-top','margin-right','margin-bottom','margin-left','padding','padding-top','padding-right','padding-bottom','padding-left',
+  'border','border-top','border-right','border-bottom','border-left','border-color','border-style','border-width','border-radius',
+  'border-top-color','border-right-color','border-bottom-color','border-left-color','border-top-style','border-right-style','border-bottom-style','border-left-style',
+  'border-top-width','border-right-width','border-bottom-width','border-left-width','border-top-left-radius','border-top-right-radius','border-bottom-right-radius','border-bottom-left-radius',
+  'display','width','height','max-width','min-width','min-height','vertical-align','opacity','border-collapse','border-spacing','list-style','list-style-type','white-space','word-break','overflow-wrap'
+]);
+/* Chromium 会把纯色 background / 普通 border 展开成这些默认 longhand；它们不是视觉降级。 */
+const CSSOM_DEFAULTS=Object.freeze({
+  'background-attachment':'scroll','background-clip':'border-box','background-image':'none','background-origin':'padding-box',
+  'background-position-x':'0%','background-position-y':'0%','background-repeat':'repeat','background-size':'auto',
+  'border-image-source':'none','border-image-slice':'100%','border-image-width':'1','border-image-outset':'0','border-image-repeat':'stretch'
+});
+function normalizeCssomDefaults(style,report){
+  const present=new Set(Array.from(style));
+  Object.entries(CSSOM_DEFAULTS).forEach(([prop,expected])=>{
+    if(!present.has(prop)) return;
+    const actual=style.getPropertyValue(prop).trim().toLowerCase().replace(/\s+/g,' ');
+    // Chromium 对同一条纯色 background / 普通 border，在不同上下文会返回具体默认值或 initial。
+    if(actual!==expected&&actual!=='initial') return;
+    style.removeProperty(prop);
+    report.stats.cssomNormalized=(report.stats.cssomNormalized||0)+1;
+  });
+}
+function cleanWechatTree(root, report){
+  const dangerousTags=new Set(['SCRIPT','STYLE','IFRAME','OBJECT','EMBED','SVG','MATH','FORM','INPUT','BUTTON','LINK','META','IMG','VIDEO','AUDIO']);
+  Array.from(root.querySelectorAll('*')).forEach(el=>{
+    if(!WECHAT_TAGS.has(el.tagName)){
+      report.removed.push('tag:'+el.tagName.toLowerCase());
+      if(dangerousTags.has(el.tagName)){ report.blockers.push('发现并移除了危险标签 <'+el.tagName.toLowerCase()+'>'); el.remove(); }
+      else el.replaceWith(...Array.from(el.childNodes));
+      return;
+    }
+    Array.from(el.attributes).forEach(attr=>{
+      const name=attr.name.toLowerCase();
+      if(name==='style' || name==='colspan' || name==='rowspan') return;
+      if(name.startsWith('on') || name==='srcdoc') report.blockers.push('发现并移除了危险属性 '+name);
+      if(name==='class'||name==='id'||name.startsWith('data-')||name==='draggable'||name==='contenteditable'||name==='spellcheck'||name==='tabindex'||name.startsWith('aria-')) report.stats.metadataRemoved++;
+      else report.removed.push('attr:'+name);
+      el.removeAttribute(attr.name);
+    });
+    if(el.hasAttribute('style')){
+      normalizeCssomDefaults(el.style,report);
+      Array.from(el.style).forEach(prop=>{
+        const value=el.style.getPropertyValue(prop);
+        const lower=value.toLowerCase();
+        const displayOk=prop!=='display' || /^(block|inline|inline-block|table|table-row|table-cell|table-row-group)$/.test(lower.trim());
+        const safeValue=!/(url\s*\(|expression\s*\(|javascript:|vbscript:|data:|file:|blob:|@import|!important|var\s*\(|attr\s*\(|gradient\s*\(|behavior|-moz-binding)/i.test(value);
+        const backgroundOk=!/^background(?:-color)?$/.test(prop) || /^(?:#[0-9a-f]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\)|transparent|white|black|none)$/i.test(value.trim());
+        if(!WECHAT_CSS.has(prop) || !displayOk || !safeValue || !backgroundOk){
+          report.removed.push('css:'+prop);
+          report.stats.visualCssRemoved=(report.stats.visualCssRemoved||0)+1;
+          el.style.removeProperty(prop);
+        }
+      });
+      if(!el.getAttribute('style')) el.removeAttribute('style');
+    }
+  });
+}
+function componentName(type){ return (SCHEMA[type]&&SCHEMA[type].name)||type; }
+function collectPublishAssets(records){
+  const assets={images:[],links:[]};
+  (records||[]).forEach((record,index)=>{
+    if(record.type==='image'){
+      assets.images.push({index:assets.images.length+1,block:index+1,blockId:record.id,label:inlineHtmlToText(fieldValue(record.content,'text','图片占位')).trim()||'图片占位'});
+    }
+    const def=SCHEMA[record.type]; if(!def)return;
+    def.fields.forEach(([key,,kind])=>{
+      const value=record.content&&record.content[key];
+      const values=Array.isArray(value)?value:[value];
+      values.forEach((raw,itemIndex)=>{
+        if(raw==null)return;
+        let remaining=sanitizePlainText(String(raw));
+        if(INLINE_FIELDS.has(record.type+'.'+key)){
+          const template=document.createElement('template'); template.innerHTML=sanitizeInlineHtml(remaining);
+          Array.from(template.content.querySelectorAll('a')).forEach(anchor=>{
+            const url=normalizeHttpUrl(anchor.getAttribute('href')); if(!url)return;
+            assets.links.push({index:assets.links.length+1,block:index+1,blockId:record.id,type:record.type,field:key,item:itemIndex+1,label:(anchor.textContent||'').trim()||url,url,source:'anchor'});
+            anchor.remove();
+          });
+          remaining=template.content.textContent||'';
+        }
+        const matches=remaining.match(/https?:\/\/[^\s<>"'）)】]+/gi)||[];
+        matches.forEach(candidate=>{
+          const url=normalizeHttpUrl(candidate); if(!url)return;
+          assets.links.push({index:assets.links.length+1,block:index+1,blockId:record.id,type:record.type,field:key,item:itemIndex+1,label:url,url,source:'plain-url'});
+        });
+      });
+    });
+  });
+  return assets;
+}
+function collectComponentPolicies(records){
+  const counts={stable:0,degrade:0,'local-only':0,'high-risk':0};
+  const byType=new Map();
+  (records||[]).forEach(record=>{
+    const policy=PUBLISH_POLICY[record.type];
+    if(!policy||!PUBLISH_STATUS[policy.status]) return;
+    counts[policy.status]=(counts[policy.status]||0)+1;
+    if(!byType.has(record.type)) byType.set(record.type,{type:record.type,name:componentName(record.type),status:policy.status,label:PUBLISH_STATUS[policy.status].label,note:policy.note,count:0});
+    byType.get(record.type).count++;
+  });
+  return {counts,items:Array.from(byType.values())};
+}
+function normalizePublishText(value){ return sanitizePlainText(inlineHtmlToText(value==null?'':String(value))).replace(/\s+/g,' ').trim(); }
+function validateModelForPublish(report,records){
+  (records||documentState.blocks).forEach((record,index)=>{
+    const keys=PLACEHOLDER_CORE[record.type]||[];
+    const defaults=DEFAULT_CONTENT[record.type]||{};
+    const bad=keys.filter(key=>{
+      const value=record.content&&record.content[key];
+      if(Array.isArray(value)){
+        const current=value.map(normalizePublishText);
+        const baseline=Array.isArray(defaults[key])?defaults[key].map(normalizePublishText):[];
+        const baselineSet=new Set(baseline.filter(Boolean));
+        return !current.length || current.some(item=>!item || baselineSet.has(item));
+      }
+      const current=normalizePublishText(value);
+      const baseline=Object.prototype.hasOwnProperty.call(defaults,key)?normalizePublishText(defaults[key]):'';
+      return !current || (!!baseline&&current===baseline);
+    });
+    if(bad.length){
+      const name=(SCHEMA[record.type]&&SCHEMA[record.type].name)||record.type;
+      report.blockers.push('第 '+(index+1)+' 个「'+name+'」仍有空字段或默认占位内容');
+    }
+  });
+}
+function splitPublishPair(value){
+  const raw=sanitizePlainText(value==null?'':String(value));
+  const idx=raw.indexOf('|');
+  return {title:(idx<0?raw:raw.slice(0,idx)).trim(),description:(idx<0?'':raw.slice(idx+1)).trim()};
+}
+function validateMobileCopyForPublish(report,records){
+  (records||documentState.blocks).forEach((record,index)=>{
+    if(record.type!=='clist'&&record.type!=='step') return;
+    const risky=(record.content&&Array.isArray(record.content.items)?record.content.items:[]).some(item=>{
+      const pair=splitPublishPair(item);
+      return Array.from(pair.title).length>10 || Array.from(pair.description).length>26;
+    });
+    if(risky){
+      const name=(SCHEMA[record.type]&&SCHEMA[record.type].name)||record.type;
+      report.warnings.push('第 '+(index+1)+' 个「'+name+'」含较长标题或说明；建议标题不超过 10 字、说明不超过 26 字，并重点检查 320–375px 手机预览');
+    }
+  });
+}
+function validatePublishTables(root,records,report,context){
+  const tableRecords=records.filter(record=>record.type==='table');
+  const expected=context&&context.tableMode==='table'?tableRecords.length:0;
+  const tables=Array.from(root.querySelectorAll('table'));
+  const semanticRoots=Array.from(root.querySelectorAll('[data-type="table"]'));
+  const rogue=tables.filter(table=>{ const owner=table.closest('[data-type]'); return !owner||owner.getAttribute('data-type')!=='table'; });
+  const malformed=context&&context.tableMode==='table'?semanticRoots.filter(block=>block.querySelectorAll('table').length!==1):[];
+  report.stats.expectedTables=expected;
+  report.stats.renderedTables=tables.length;
+  if(rogue.length||malformed.length||tables.length!==expected){
+    report.blockers.push('发布结构异常：当前模式应输出 '+expected+' 张真实表格，实际为 '+tables.length+'；非数据组件禁止使用表格布局');
+  }
+}
+function wechatPlainText(root){
+  const blockTags=new Set(['SECTION','P','DIV','BLOCKQUOTE','UL','OL','LI','TABLE','TR','HR']);
+  function read(node){
+    if(node.nodeType===Node.TEXT_NODE) return node.nodeValue||'';
+    if(node.nodeType!==Node.ELEMENT_NODE) return '';
+    if(node.tagName==='BR') return '\n';
+    if(node.tagName==='HR') return '\n——\n';
+    let value=Array.from(node.childNodes).map(read).join('');
+    if(node.tagName==='TD'||node.tagName==='TH') value+='\t';
+    if(blockTags.has(node.tagName)) value+='\n';
+    return value;
+  }
+  return Array.from(root.childNodes).map(read).join('').replace(/[ \t]+\n/g,'\n').replace(/\t+\n/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+function currentPublishAppearance(){
+  const theme=ALL_THEMES[themeIndex]||ALL_THEMES[DEFAULT_THEME]||THEMES[DEFAULT_THEME];
+  return normalizeAppearance({themeId:theme.id,scale:G.scale,space:G.space,primary:G.primaryOverride,tableMode:G.tableMode});
+}
+function themeForPublishAppearance(value){
+  const appearance=normalizeAppearance(value);
+  const base=ALL_THEMES.find(theme=>theme.id===appearance.themeId)||ALL_THEMES[DEFAULT_THEME]||THEMES[DEFAULT_THEME];
+  return appearance.primary?Object.assign({},base,{primary:appearance.primary}):base;
+}
+/*
+ * 纯微信序列化核心：只读 records 和 appearance，不碰 documentState / history / autosave。
+ * 正常文章与可复用结构均共用这一条微信安全链。
+ */
+function serializeWechatRecords(sourceRecords,options){
+  options=Object.assign({dropPlaceholders:false,tableMode:'cards',templateMode:false,metaTitle:'',migrationCount:0,legacyReviewRequired:false},options||{});
+  options.tableMode=options.tableMode==='table'?'table':'cards';
+  const appearance=normalizeAppearance(Object.assign({},options.appearance||{}, {tableMode:options.tableMode}));
+  const invalidRecords=(Array.isArray(sourceRecords)?sourceRecords:[]).filter(record=>!record||!BLOCK_TYPES.has(record.type));
+  const records=(Array.isArray(sourceRecords)?sourceRecords:[]).filter(record=>record&&BLOCK_TYPES.has(record.type)).map(record=>createBlockRecord(record.type,record.content||{},record.id));
+  const migrationCount=Number(options.migrationCount)||0;
+  const legacyReviewRequired=!!options.legacyReviewRequired;
+  const assets=collectPublishAssets(records);
+  const policy=collectComponentPolicies(records);
+  const report={
+    ok:false,html:'',text:'',blockers:[],warnings:[],normalizations:[],degradations:[],removed:[],
+    manualChecks:{images:assets.images,links:assets.links,highRisk:[]},componentPolicies:policy.items,
+    stats:{rendererVersion:WECHAT_RENDERER_VERSION,blocks:records.length,images:assets.images.length,links:assets.links.length,metadataRemoved:0,cssomNormalized:0,visualCssRemoved:0,legacyReviewRequired,expectedTables:0,renderedTables:0,tableMode:options.tableMode,templateMode:!!options.templateMode,policyCounts:policy.counts}
+  };
+  if(invalidRecords.length) report.blockers.push('含有 '+invalidRecords.length+' 个不支持的区块类型');
+  if(!records.length) report.blockers.push('正文为空');
+  if(!stateWithinLimits({schemaVersion:APP_SCHEMA,meta:{title:options.metaTitle||'',author:'',summary:''},appearance,blocks:records})) report.blockers.push('内容超过安全容量或渲染复杂度上限');
+  if(Object.keys(PUBLISH_POLICY).length!==BLOCK_TYPES.size || Array.from(BLOCK_TYPES).some(type=>!PUBLISH_POLICY[type])) report.blockers.push('发布策略不完整：31 类组件中存在未声明的微信兼容策略');
+  if(report.stats.images && !options.dropPlaceholders) report.blockers.push('仍有 '+report.stats.images+' 个图片占位；请按插图清单上传实图，或选择“生成无占位草稿”后再复制');
+  if(legacyReviewRequired) report.blockers.push('该稿件由旧版迁移，包含 '+migrationCount+' 个复杂区块；请与原文件逐块核对并确认后再复制');
+  validateModelForPublish(report,records);
+  validateMobileCopyForPublish(report,records);
+  policy.items.filter(item=>item.status==='degrade').forEach(item=>report.degradations.push('「'+item.name+'」采用微信安全结构：'+item.note));
+  if(assets.links.length) report.degradations.push('检测到 '+assets.links.length+' 处链接；已保留链接文字和 URL，请按链接清单在微信后台核对可点击状态');
+  const tableCount=records.filter(record=>record.type==='table').length;
+  if(tableCount&&options.tableMode==='cards') report.degradations.push(tableCount+' 个三列表格已默认转为纵向卡片，避免微信重排和手机横向溢出');
+  if(tableCount&&options.tableMode==='table') report.manualChecks.highRisk.push({type:'table',count:tableCount,label:'真实表格',note:'已显式保留真实表格；必须在微信保存草稿、重新打开，并在 320–375px 手机预览逐表核对'});
+  const root=document.createElement('div');
+  const publishRecords=records.filter(record=>record.type!=='image');
+  const context={tableMode:options.tableMode};
+  const theme=themeForPublishAppearance(appearance);
+  const renderSettings={scale:appearance.scale,space:appearance.space,primaryOverride:appearance.primary,tableMode:appearance.tableMode};
+  publishRecords.forEach(record=>{
+    const block=renderPublishBlockRecord(record,theme,context,renderSettings);
+    if(block) root.appendChild(block);
+    else report.blockers.push('区块「'+record.type+'」无法生成微信发布结构');
+  });
+  renumberHeadingsInRoot(root,theme,publishRecords,renderSettings);
+  validatePublishTables(root,publishRecords,report,context);
+  cleanWechatTree(root,report);
+  const cleanedTables=root.querySelectorAll('table').length;
+  if(cleanedTables!==report.stats.expectedTables) report.blockers.push('微信清洗后的数据表数量异常：预期 '+report.stats.expectedTables+'，实际 '+cleanedTables);
+  report.html=root.innerHTML;
+  report.text=wechatPlainText(root);
+  if(!report.text) report.blockers.push('清理后正文为空');
+  if(!options.templateMode&&/在此输入|待填写|待确认|请替换|示例数据|示例领取说明|(^|[^A-Za-z])XX([^A-Za-z]|$)|图片位\s*\d*[^\n]*删除本行/i.test(report.text)) report.blockers.push('正文仍含“待填写 / 待确认 / 请替换 / XX / 图片位”等事实闸门或示例占位内容');
+  if(!options.templateMode&&!sanitizePlainText(options.metaTitle).trim()) report.warnings.push('文章标题尚未填写；复制正文后仍需在微信后台填写并核对标题');
+  if(options.dropPlaceholders && report.stats.images) report.degradations.push('已从复制正文移除 '+report.stats.images+' 个仅编辑器图片占位；插图清单仍保留位置与说明');
+  if(report.stats.cssomNormalized) report.normalizations.push('浏览器展开的 '+report.stats.cssomNormalized+' 条默认 CSS 已归一化；不属于视觉丢失');
+  if(report.stats.visualCssRemoved) report.degradations.push('有 '+report.stats.visualCssRemoved+' 处真实装饰效果已自动简化，正文内容不受影响');
+  const removedTags=report.removed.filter(item=>item.startsWith('tag:')).length;
+  if(removedTags) report.degradations.push('已移除 '+removedTags+' 个微信不支持的结构，请检查手机预览');
+  if(/<(?:script|style|iframe|object|embed|svg|math|form|img)\b/i.test(report.html) || /\s(?:class|id|data-[\w-]+|draggable|contenteditable|on\w+)\s*=/i.test(report.html)) report.blockers.push('清洁输出仍含不允许的标签或属性');
+  report.blockers=Array.from(new Set(report.blockers));
+  report.warnings=Array.from(new Set(report.warnings));
+  report.normalizations=Array.from(new Set(report.normalizations));
+  report.degradations=Array.from(new Set(report.degradations));
+  report.ok=report.blockers.length===0 && !!report.text;
+  return report;
+}
+function serializeForWechat(options){
+  options=options&&typeof options==='object'?Object.assign({},options):{};
+  const externalRecords=Array.isArray(options.records);
+  const records=externalRecords?options.records:documentState.blocks;
+  const appearance=normalizeAppearance(options.appearance||currentPublishAppearance());
+  const tableMode=(options.tableMode||(appearance.tableMode==='table'?'table':'cards'))==='table'?'table':'cards';
+  const migrationCount=!externalRecords&&documentState.migration?Number(documentState.migration.legacyComplexBlocks)||0:0;
+  const legacyReviewRequired=!externalRecords&&migrationCount>0&&documentState.migration.reviewRequired!==false;
+  return serializeWechatRecords(records,Object.assign({},options,{
+    appearance,tableMode,migrationCount,legacyReviewRequired,
+    metaTitle:externalRecords?(options.metaTitle||''):sanitizePlainText(documentState.meta&&documentState.meta.title)
+  }));
+}
+async function writeRichClipboard(html,text){
+  if(navigator.clipboard && navigator.clipboard.write && globalThis.ClipboardItem){
+    try{
+      await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);
+      return 'rich';
+    }catch(_){ /* file:// 常见权限限制，继续使用受控兼容复制 */ }
+  }
+  const helper=document.createElement('div');
+  helper.contentEditable='true'; helper.style.cssText='position:fixed;left:-10000px;top:0;width:1px;height:1px;overflow:hidden;'; helper.innerHTML=html;
+  document.body.appendChild(helper);
+  const active=document.activeElement;
+  const selection=window.getSelection();
+  const oldRanges=[];
+  for(let i=0;i<selection.rangeCount;i++) oldRanges.push(selection.getRangeAt(i).cloneRange());
+  try{
+    helper.focus(); const range=document.createRange(); range.selectNodeContents(helper); selection.removeAllRanges(); selection.addRange(range);
+    const ok=document.execCommand('copy');
+    if(!ok) throw new Error('execCommand returned false');
+    return 'fallback';
+  }finally{
+    helper.remove();
+    try{ selection.removeAllRanges(); oldRanges.forEach(r=>selection.addRange(r)); }catch(_){}
+    try{ if(active&&active.isConnected&&active.focus) active.focus(); }catch(_){}
+  }
+}
+function showPreflight(result,title){
+  document.getElementById('modalTitle').textContent=title || (result.ok?'静态发布预检通过':'发布前仍需处理');
+  const lines=[];
+  const section=(titleText,items,color,emptyText)=>`<div class="preflight-section"><p class="preflight-title" style="color:${color};">${escapeHtml(titleText)}</p>${items.length?'<ul>'+items.map(x=>`<li>${escapeHtml(x)}</li>`).join('')+'</ul>':`<p>${escapeHtml(emptyText)}</p>`}</div>`;
+  lines.push(section('① 浏览器默认规范化',result.normalizations||[],'#47705d','0 项；没有把浏览器默认展开误报成视觉丢失。'));
+  lines.push(section('② 真正视觉降级',result.degradations||[],'#986114','0 项；清洁前后没有检测到可见装饰损失。'));
+  lines.push(section('③ 内容阻断项',result.blockers||[],'#b23b32','0 项；正文内容层面可以进入微信人工验收。'));
+  if((result.warnings||[]).length) lines.push(section('人工提示',result.warnings,'#6b5b78','无'));
+  const checks=result.manualChecks||{images:[],links:[],highRisk:[]};
+  if(checks.images&&checks.images.length){
+    lines.push(`<div class="preflight-section"><p class="preflight-title">图片清单 · ${checks.images.length} 处</p><ul class="asset-list">${checks.images.map(item=>`<li>图片 ${item.index} · 第 ${item.block} 块：${escapeHtml(item.label)}</li>`).join('')}</ul></div>`);
+  }
+  if(checks.links&&checks.links.length){
+    lines.push(`<div class="preflight-section"><p class="preflight-title">链接清单 · ${checks.links.length} 处</p><ul class="asset-list">${checks.links.map(item=>`<li>链接 ${item.index} · 第 ${item.block} 块：${escapeHtml(item.label)}<br><code>${escapeHtml(item.url)}</code></li>`).join('')}</ul></div>`);
+  }
+  if(checks.highRisk&&checks.highRisk.length){
+    lines.push(`<div class="preflight-section"><p class="preflight-title" style="color:#a33b2e;">高风险人工验收</p><ul>${checks.highRisk.map(item=>`<li>${escapeHtml(item.label)} × ${item.count}：${escapeHtml(item.note)}</li>`).join('')}</ul></div>`);
+  }
+  if(result.componentPolicies&&result.componentPolicies.length){
+    lines.push(`<div class="preflight-section"><p class="preflight-title">本稿组件兼容状态</p><p>${result.componentPolicies.map(item=>`<span class="compat-badge compat-${item.status}" title="${escapeHtml(item.note)}">${escapeHtml(item.name)} · ${escapeHtml(item.label)}</span>`).join(' ')}</p></div>`);
+  }
+  if(!result.blockers.length) lines.push('<div class="preflight-section"><p>静态预检已通过。请继续完成：微信后台粘贴 → 保存草稿 → 重新打开 → 手机预览。</p></div>');
+  const body=document.getElementById('modalBody'); body.innerHTML=lines.join('');
+  const removedCounts=(result.removed||[]).reduce((map,item)=>{ map[item]=(map[item]||0)+1; return map; },{});
+  body.dataset.preflightDiagnostics=JSON.stringify({stats:result.stats||{},removedCounts,normalizations:result.normalizations||[],degradations:result.degradations||[],blockers:result.blockers||[],manualChecks:result.manualChecks||{}});
+  if(checks.images&&checks.images.length){
+    const withoutImages=serializeForWechat({dropPlaceholders:true,tableMode:G.tableMode});
+    if(withoutImages.ok){
+      const copyWithout=document.createElement('button'); copyWithout.type='button'; copyWithout.textContent='生成无图片占位草稿并复制';
+      copyWithout.onclick=()=>{ modal.classList.remove('show'); copyRich({dropPlaceholders:true,tableMode:G.tableMode}); };
+      body.appendChild(copyWithout);
+      const exportWithout=document.createElement('button'); exportWithout.type='button'; exportWithout.textContent='导出无图片占位复制页（含资产清单）';
+      exportWithout.style.background='#5d6b64';
+      exportWithout.onclick=()=>{ modal.classList.remove('show'); exportWechatPage({dropPlaceholders:true,tableMode:G.tableMode}); };
+      body.appendChild(exportWithout);
+    }
+  }
+  if(result.stats&&result.stats.legacyReviewRequired){
+    const confirmReview=document.createElement('button'); confirmReview.type='button'; confirmReview.textContent='我已与原文件逐块核对复杂区块';
+    confirmReview.onclick=()=>{
+      if(!confirm('请确认：你已对照原文件，核对了所有卡片、列表、表格、步骤等复杂区块的文字与顺序。')) return;
+      runMutation('确认旧稿迁移核对',()=>{ if(documentState.migration) documentState.migration.reviewRequired=false; },{render:false});
+      modal.classList.remove('show'); flash('已记录旧稿核对确认，请重新运行发布预检');
+    };
+    body.appendChild(confirmReview);
+  }
+  modal.classList.add('show');
+}
+function showManualCopy(result){
+  document.getElementById('modalTitle').textContent='自动复制失败，请手动复制';
+  const body=document.getElementById('modalBody'); body.innerHTML='<p style="margin-bottom:10px;">点击下方只读清洁稿会自动全选，然后按 Ctrl/⌘+C。该区域不接受粘贴或拖入内容。</p>';
+  const box=document.createElement('div'); box.tabIndex=0; box.setAttribute('role','document'); box.setAttribute('aria-label','只读清洁微信草稿'); box.style.cssText='max-height:300px;overflow:auto;border:1px solid #ddd;padding:12px;background:#fff;user-select:text;cursor:text;'; box.innerHTML=result.html; body.appendChild(box);
+  const selectAll=()=>{ try{ const range=document.createRange(),selection=window.getSelection(); range.selectNodeContents(box); selection.removeAllRanges(); selection.addRange(range); }catch(_){} };
+  box.addEventListener('click',selectAll);
+  box.addEventListener('keydown',e=>{ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='a'){ e.preventDefault(); selectAll(); } });
+  modal.classList.add('show'); box.focus(); selectAll();
+}
+async function copyRich(options){
+  const result=serializeForWechat(options&&typeof options==='object'&&!('currentTarget' in options)?options:undefined);
+  if(!result.ok){ showPreflight(result); return; }
+  try{
+    const mode=await writeRichClipboard(result.html,result.text);
+    flash(mode==='rich'?'已复制清洁富文本，请去微信后台粘贴':'已复制清洁富文本（兼容模式，纯文本换行可能由浏览器调整）');
+    if(result.warnings.length||result.degradations.length||(result.manualChecks&&result.manualChecks.highRisk&&result.manualChecks.highRisk.length)) setTimeout(()=>showPreflight(result,'已复制，但仍有发布提示'),250);
+  }catch(_){ showManualCopy(result); }
+}
+document.getElementById('copyBtn').onclick=()=>copyRich();
+function downloadBlob(name,content,type){
+  const url=URL.createObjectURL(new Blob([content],{type:type||'text/plain'}));
+  const a=document.createElement('a'); a.href=url; a.download=name; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function standaloneScriptJson(value){
+  return JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
+}
+function buildStandaloneCopyPage(result){
+  const title=sanitizePlainText(documentState.meta&&documentState.meta.title).trim()||'公众号文章';
+  const author=sanitizePlainText(documentState.meta&&documentState.meta.author).trim();
+  const checks=result.manualChecks||{images:[],links:[]};
+  const artifact=standaloneScriptJson({rendererVersion:WECHAT_RENDERER_VERSION,html:result.html,text:result.text,assets:{images:checks.images||[],links:checks.links||[]},stats:result.stats||{}});
+  const assets=[];
+  if(checks.images&&checks.images.length) assets.push(`<section class="assets"><strong>图片清单 · ${checks.images.length} 处</strong><ol>${checks.images.map(item=>`<li>第 ${item.block} 块：${escapeHtml(item.label)}</li>`).join('')}</ol></section>`);
+  if(checks.links&&checks.links.length) assets.push(`<section class="assets"><strong>链接清单 · ${checks.links.length} 处</strong><ol>${checks.links.map(item=>`<li>第 ${item.block} 块：${escapeHtml(item.label)}<br><code>${escapeHtml(item.url)}</code></li>`).join('')}</ol></section>`);
+  return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} · 微信复制页</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#25332d;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}.bar{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid #e2e7e4;padding:12px 16px;text-align:center}.copy{border:0;border-radius:9px;background:#1f4d3a;color:#fff;padding:11px 22px;font-size:15px;font-weight:700;cursor:pointer}.status{min-height:20px;margin:7px 0 0;font-size:12px;color:#68766f}.shell{width:min(100%,446px);margin:22px auto;padding:0 16px 30px}.meta{margin-bottom:12px;color:#66746d;font-size:12px;line-height:1.7}.meta strong{display:block;color:#25332d;font-size:18px}.article{background:#fff;padding:20px 16px;border-radius:12px;box-shadow:0 4px 20px rgba(27,63,48,.06)}.assets{margin:12px 0;padding:12px 14px;border:1px solid #d8dfdb;border-radius:10px;background:#f8faf9;font-size:12px;line-height:1.7}.assets ol{margin:6px 0 0;padding-left:20px}.assets code{overflow-wrap:anywhere}.note{font-size:12px;color:#7a8781;line-height:1.7;margin:14px 2px 0}</style></head><body><div class="bar"><button class="copy" id="copyButton">复制公众号富文本</button><p class="status" id="copyStatus">仅复制白色正文区域；资产清单不会进入正文</p></div><div class="shell"><div class="meta"><strong>${escapeHtml(title)}</strong>${author?'作者：'+escapeHtml(author)+' · ':''}发布渲染器 ${escapeHtml(WECHAT_RENDERER_VERSION)}</div>${assets.join('')}<main class="article" id="articleContent" data-renderer="${escapeHtml(WECHAT_RENDERER_VERSION)}">${result.html}</main><p class="note">静态预检不等于微信最终效果。请继续完成：粘贴 → 保存草稿 → 重新打开 → 手机预览。</p></div><script>const ARTIFACT=${artifact};const button=document.getElementById('copyButton'),status=document.getElementById('copyStatus'),article=document.getElementById('articleContent');function selectArticle(){const selection=window.getSelection(),range=document.createRange();range.selectNodeContents(article);selection.removeAllRanges();selection.addRange(range)}button.addEventListener('click',async()=>{try{if(navigator.clipboard&&navigator.clipboard.write&&window.ClipboardItem){await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([ARTIFACT.html],{type:'text/html'}),'text/plain':new Blob([ARTIFACT.text],{type:'text/plain'})})]);status.textContent='已复制清洁富文本，请去微信后台粘贴';return}selectArticle();const ok=document.execCommand('copy');if(!ok)throw new Error('copy failed');status.textContent='已复制（兼容模式），请去微信后台粘贴'}catch(_){selectArticle();status.textContent='自动复制失败：正文已全选，请按 ⌘/Ctrl+C 手动复制'}});<\/script></body></html>`;
+}
+function exportWechatPage(options){
+  const result=serializeForWechat(options);
+  if(!result.ok){ showPreflight(result); return; }
+  downloadBlob('wechat-article-copy.html',buildStandaloneCopyPage(result),'text/html');
+  flash('已导出微信复制页；正文来自同一发布渲染器');
+}
+document.getElementById('exportBtn').onclick=()=>exportWechatPage();
+
+/* ============ 微信发布静态预检 ============ */
+function wechatCheck(){ return serializeForWechat(); }
+const modal=document.getElementById('modal');
+document.getElementById('checkBtn').onclick=()=>{
+  showPreflight(wechatCheck());
+};
+document.getElementById('modalClose').onclick=()=> modal.classList.remove('show');
+modal.addEventListener('click',e=>{ if(e.target===modal) modal.classList.remove('show'); });
+
+/* ============ 本机数据管理（只展示数量与体积，不读取正文做诊断）============ */
+const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse'];
+function productStorageKeys(){
+  const keys=new Set([KEY,LEGACY_KEY,LEGACY_BACKUP_KEY,SNAPSHOT_KEY,...PRODUCT_SETTING_KEYS]);
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const key=localStorage.key(i);
+      if(key&&key.startsWith(CORRUPT_BACKUP_PREFIX)) keys.add(key);
+    }
+  }catch(_){}
+  return Array.from(keys);
+}
+function byteSize(value){ try{ return new Blob([String(value||'')]).size; }catch(_){ return String(value||'').length; } }
+function formatBytes(bytes){
+  const value=Math.max(0,Number(bytes)||0);
+  if(value<1024) return value+' B';
+  if(value<1024*1024) return (value/1024).toFixed(1)+' KB';
+  return (value/1024/1024).toFixed(2)+' MB';
+}
+function localDataStats(){
+  let totalBytes=0,currentDraftBytes=0,preferenceCount=0,legacyBackupCount=0,corruptBackupCount=0;
+  const keys=productStorageKeys();
+  for(const key of keys){
+    let value=null; try{ value=localStorage.getItem(key); }catch(_){}
+    if(value==null) continue;
+    const size=byteSize(key)+byteSize(value); totalBytes+=size;
+    if(key===KEY) currentDraftBytes=size;
+    if(PRODUCT_SETTING_KEYS.includes(key)) preferenceCount++;
+    if(key===LEGACY_KEY||key===LEGACY_BACKUP_KEY) legacyBackupCount++;
+    if(key.startsWith(CORRUPT_BACKUP_PREFIX)) corruptBackupCount++;
+  }
+  let snapshotCount=0; try{ const value=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]'); snapshotCount=Array.isArray(value)?value.length:0; }catch(_){}
+  return {
+    product:'拾光排版器',version:'4.1',schemaVersion:APP_SCHEMA,rendererVersion:WECHAT_RENDERER_VERSION,
+    blockCount:Array.isArray(documentState.blocks)?documentState.blocks.length:0,
+    snapshotCount,currentDraftBytes,totalBytes,preferenceCount,
+    legacyBackupCount,corruptBackupCount,
+    containsArticleText:false,containsTitleOrAuthor:false,containsAccountOrPaymentData:false
+  };
+}
+async function copySafeDiagnostics(stats){
+  const text=JSON.stringify(stats,null,2);
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); flash('已复制无正文诊断摘要'); return; }
+  }catch(_){}
+  window.prompt('请复制下面的无正文诊断摘要：',text);
+}
+function resetCurrentDraft(){
+  const blank={schemaVersion:APP_SCHEMA,revision:0,updatedAt:Date.now(),meta:{title:'',author:'',summary:''},appearance:normalizeAppearance({}),blocks:[]};
+  try{ localStorage.removeItem(KEY); localStorage.removeItem(SNAPSHOT_KEY); }catch(_){ flash('清除失败：浏览器拒绝访问本地存储'); return false; }
+  if(!applyStateSnapshot(blank,false)){ flash('清除失败：无法建立空白稿'); return false; }
+  historyStack=[]; historyIndex=-1; pushHistory();
+  storageConflict=false; recoverySavePaused=false; dirtySinceSave=false;
+  const payload=JSON.stringify(documentState);
+  try{ localStorage.setItem(KEY,payload); lastSavedPayload=payload; saveState.textContent='已清除当前草稿'; }
+  catch(_){ lastSavedPayload=''; saveState.textContent='草稿已清空，但空白状态未保存'; }
+  return true;
+}
+function showDataManager(){
+  const stats=localDataStats();
+  document.getElementById('modalTitle').textContent='本机数据管理';
+  document.getElementById('modalBody').innerHTML=`<div style="font-size:13px;color:#5a5566;line-height:1.75;">
+    <p style="margin:0;">这里只显示数量和占用空间，不展示正文、标题、作者、微信号或付款数据。</p>
+    <div class="data-summary">
+      <div class="data-card"><b>${stats.blockCount}</b><span>当前区块</span></div>
+      <div class="data-card"><b>${stats.snapshotCount}</b><span>本地快照</span></div>
+      <div class="data-card"><b>${formatBytes(stats.currentDraftBytes)}</b><span>当前草稿</span></div>
+      <div class="data-card"><b>${formatBytes(stats.totalBytes)}</b><span>拾光本机数据</span></div>
+    </div>
+    <p style="margin:8px 0 0;color:#8b8794;font-size:12px;">旧稿/恢复备份 ${stats.legacyBackupCount+stats.corruptBackupCount} 份 · 偏好设置 ${stats.preferenceCount} 项。清理浏览器数据或更换电脑不会自动同步，请先导出项目备份。</p>
+    <div class="data-actions">
+      <button id="dataBackup" type="button">先导出项目备份</button>
+      <button id="dataDiagnostics" type="button">复制无正文诊断摘要</button>
+      <button id="dataClearDraft" class="danger" type="button">清除当前草稿和快照</button>
+      <button id="dataClearAll" class="danger" type="button">清除拾光全部本机数据</button>
+    </div>
+  </div>`;
+  modal.classList.add('show');
+  document.getElementById('dataBackup').onclick=()=>document.getElementById('backupBtn').click();
+  document.getElementById('dataDiagnostics').onclick=()=>copySafeDiagnostics(localDataStats());
+  document.getElementById('dataClearDraft').onclick=()=>{
+    if(!confirm('这会清除当前草稿和本地快照。建议先导出项目备份。确定继续吗？')) return;
+    if(resetCurrentDraft()){ modal.classList.remove('show'); flash('当前草稿和快照已清除'); }
+  };
+  document.getElementById('dataClearAll').onclick=()=>{
+    if(!confirm('这会清除当前草稿、快照、旧稿备份和偏好设置，且无法撤销。确定继续吗？')) return;
+    try{ productStorageKeys().forEach(key=>localStorage.removeItem(key)); location.reload(); }
+    catch(_){ flash('清除失败：浏览器拒绝访问本地存储'); }
+  };
+}
+document.getElementById('dataBtn').onclick=showDataManager;
+
+
+
+/* ============ 使用教程弹窗 ============ */
+const helpHTML = `<div style="font-size:13px;color:#5a5566;line-height:1.85;">
+  <p style="margin:0 0 4px;font-weight:700;color:#1f1b29;">四步把文章安全送到公众号：</p>
+  <p style="margin:10px 0 2px;"><b>① 导入或新建内容</b><br>使用「安全导入正文」，会识别 Markdown 标题、列表和引用；也可以从空白稿开始。重要文章先点「项目备份」，本地草稿可在「本机数据」中查看和清理。</p>
+  <p style="margin:10px 0 2px;"><b>② 选结构和视觉</b><br>模板决定文章结构，主题只改变视觉。组件按钮旁会标注「稳定 / 降级 / 仅本地 / 高风险」；卡片、表格、步骤等请用右侧属性面板编辑。</p>
+  <p style="margin:10px 0 2px;"><b>③ 发布预检与复制</b><br>先点「发布预检」，再点「复制微信草稿」。预检会分别显示浏览器默认规范化、真实视觉降级和内容阻断项，并生成图片与链接清单。链接会保留文字和 URL；图片仍需在微信后台上传。</p>
+  <p style="margin:10px 0 2px;"><b>表格说明</b><br>三列表格默认转成纵向卡片。只有确实需要二维表格且愿意完成微信保存、重开和手机预览验收时，才勾选「保留真实表格（高风险模式）」。</p>
+  <p style="margin:10px 0 2px;"><b>④ 微信真实验收</b><br>粘贴到微信后台 → 保存草稿 → 重新打开 → 手机预览。只有这条链路完成，才能确认实际样式。</p>
+  <p style="margin:12px 0 0;color:#8b8794;font-size:12px;">静态预检只能发现已知风险，不能替代微信后台的清洗结果与手机预览。</p>
+</div>`;
+document.getElementById('helpBtn').onclick=()=>{
+  document.getElementById('modalTitle').textContent='使用教程 · 4 步上手';
+  document.getElementById('modalBody').innerHTML=helpHTML;
+  modal.classList.add('show');
+};
+
+/* ============ 关于弹窗（客户发行版不包含内部授权生成器）============ */
+const PRODUCT_EDITION = {"id":"free","label":"免费版"};
+const aboutHTML = `<div style="font-size:13px;color:#5a5566;line-height:1.85;">
+  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.1 · 开源免费版</b><br>完整安全复制内核与 35 套主题，适合先体验完整工作流。</p>
+  <p style="margin:10px 0 2px;"><b>完整能力</b><br>安全复制、发布预检、本地草稿、项目备份、35 套主题与 16 套文章结构均可直接使用；版本之间不通过阉割核心发布能力制造差异。</p>
+  <p style="margin:10px 0 2px;"><b>开源版范围</b><br>安全复制、备份、35 套主题、16 套文章结构和 31 个区块均可完整使用，不需要注册或付费解锁。</p>
+  <p style="margin:10px 0 2px;"><b>更新与服务边界</b><br>已交付版本可长期使用；拾光计划长期维护，V4.x 优先修复影响正常使用的可复现兼容问题。新功能、大版本、一对一指导与个性化服务另行说明。</p>
+  <p style="margin:10px 0 2px;"><b>功能边界（重要）</b><br>本工具只做「排版美化 + 复制」，不提供自动发布、内容采集或批量搬运。复制后请在微信<b>官方后台手动粘贴、检查、发布</b>。</p>
+  <p style="margin:10px 0 0;color:#8b8794;font-size:12px;">发布预检是本地静态检查，不等于微信兼容认证；最终必须以微信保存草稿、重新打开和手机预览为准。</p>
+  <p style="margin:10px 0 0;padding-top:10px;border-top:1px solid #eee;color:#7a6f8c;font-size:12px;">由 Crush 制作 · <a href="https://github.com/xiangxiuchen/shiguang-wechat-typesetter" target="_blank" rel="noopener" style="color:#1f4d3a;">GitHub 开源地址</a><br>兼容更新与主题建议：公众号【Crush带你玩转海外市场营销】，回复【GitHub拾光】。</p>
+</div>`;
+document.getElementById('aboutBtn').onclick=()=>{
+  document.getElementById('modalTitle').textContent='关于 · 拾光排版器 免费版';
+  document.getElementById('modalBody').innerHTML=aboutHTML;
+  modal.classList.add('show');
+};
+
+/* ============ 变更、直接编辑与标题序号 ============ */
+/* h2 自动序号只修改展示层，正文模型始终保留无序号标题 */
+function cnNum(n){
+  const d=['零','一','二','三','四','五','六','七','八','九'];
+  if(n<10) return d[n];
+  if(n===10) return '十';
+  if(n<20) return '十'+d[n-10];
+  if(n<100){ const t2=Math.floor(n/10), o=n%10; return d[t2]+'十'+(o?d[o]:''); }
+  return String(n);
+}
+function renumberHeadingsInRoot(root,theme,records,renderSettings){
+  const th=theme||{};
+  const settings=renderSettings||G;
+  const reCn=/^(?:[零一二三四五六七八九十]{1,3})、/;
+  const re01=/^\d{1,2}\s*\|\s*/;
+  if(th.tier==='v4' && th.signature!=='number') return; // V4 其他 signature 保留专属装饰，不自动编号
+  const useRecords=Array.isArray(records);
+  const headingRecords=useRecords?records.filter(record=>record&&record.type==='h2'):[];
+  let headingIndex=0;
+  let n=0;
+  root.querySelectorAll('[data-type="h2"]').forEach(el=>{
+    /* 发布根节点不带 data-block-id，必须按顺序读取模型原文，不能从已带 01 装饰的 DOM 反推。 */
+    const record=useRecords?headingRecords[headingIndex++]:getBlockRecord(el.dataset.blockId);
+    let txt=useRecords?textField(record&&record.content,'text',''):(record&&record.content?textField(record.content,'text','小标题'):(el.textContent||''));
+    txt=txt.replace(reCn,'').replace(re01,'');
+    if(!txt.trim()){ el.innerHTML=''; return; }
+    n++;
+    const safeTxt=escapeHtml(txt);
+    let want;
+    if(th.tier==='v4' && th.signature==='number'){
+      want=`<div style="font-size:${42*settings.scale}px;line-height:1;font-weight:700;color:${th.accent};opacity:.20;letter-spacing:2px;margin-bottom:6px;">${String(n).padStart(2,'0')}</div><div style="font-weight:700;color:${th.text};">${safeTxt}</div>`;
+    } else if(th.titleStyle==='editorial'){
+      want=`<span style="color:${th.accent};font-size:${16*settings.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;font-family:-apple-system,'Helvetica Neue',sans-serif;">${String(n).padStart(2,'0')}</span><span style="border-left:1px solid #ccc;padding-left:12px;">${safeTxt}</span>`;
+    } else {
+      const mode01 = th.numStyle === '01';
+      want = mode01 ? (String(n).padStart(2,'0')+' | '+safeTxt) : (cnNum(n)+'、'+safeTxt);
+    }
+    if(el.innerHTML!==want) el.innerHTML=want;
+  });
+}
+function renumberHeadings(){ renumberHeadingsInRoot(editor,curTheme(),undefined,G); }
+function updateEmptyState(){ emptyState.style.display = documentState.blocks.length===0 ? 'flex':'none'; }
+let compareFrame=0;
+function queueCompare(){ if(!compareMode)return; cancelAnimationFrame(compareFrame); compareFrame=requestAnimationFrame(buildCompare); }
+function syncDirectBlock(block){
+  if(!block || !DIRECT_EDITABLE.has(block.dataset.type)) return;
+  const record=getBlockRecord(block.dataset.blockId); if(!record)return;
+  const previous=record.content;
+  const next=normalizeContent(record.type,Object.assign({},record.content,{text:sanitizeInlineHtml(block.innerHTML)}));
+  record.content=next; const withinLimits=stateWithinLimits(documentState); record.content=previous;
+  if(!withinLimits){ renderOneBlock(record.id); flash('该区块或全文已超过安全容量上限，本次输入已取消'); return; }
+  const historyToken='direct:'+record.id;
+  beginHistory(historyToken);
+  record.content=next;
+  block.dataset.content=JSON.stringify(record.content);
+  if(selBlock&&selBlock.dataset.blockId===record.id){
+    const field=propFields.querySelector('[data-field="text"]');
+    if(field&&field!==document.activeElement){
+      if(field.classList.contains('prop-rich')) field.innerHTML=sanitizeInlineHtml(record.content.text||'');
+      else field.value=inlineHtmlToText(record.content.text||'');
+    }
+  }
+  touchState(); updateEmptyState(); queueCompare(); scheduleHistory(historyToken); scheduleSave();
+}
+function captureSelectionOffset(host){
+  try{
+    const selection=window.getSelection(); if(!selection.rangeCount)return null;
+    const range=selection.getRangeAt(0); if(!host.contains(range.commonAncestorContainer))return null;
+    const before=range.cloneRange(); before.selectNodeContents(host); before.setEnd(range.startContainer,range.startOffset);
+    const through=range.cloneRange(); through.selectNodeContents(host); through.setEnd(range.endContainer,range.endOffset);
+    return {start:before.toString().length,end:through.toString().length};
+  }catch(_){ return null; }
+}
+function restoreSelectionOffset(host,offset){
+  if(!offset)return false;
+  try{
+    const walker=document.createTreeWalker(host,NodeFilter.SHOW_TEXT);
+    const nodes=[]; let total=0,node; while((node=walker.nextNode())){ nodes.push({node,start:total}); total+=node.nodeValue.length; }
+    const point=value=>{
+      const safe=Math.max(0,Math.min(total,value));
+      for(const item of nodes){ const end=item.start+item.node.nodeValue.length; if(safe<=end)return [item.node,safe-item.start]; }
+      return [host,host.childNodes.length];
+    };
+    const [startNode,startOffset]=point(offset.start),[endNode,endOffset]=point(offset.end);
+    const range=document.createRange(),selection=window.getSelection(); range.setStart(startNode,startOffset); range.setEnd(endNode,endOffset); selection.removeAllRanges(); selection.addRange(range); return true;
+  }catch(_){ return false; }
+}
+function placeCaretAtEnd(host){
+  try{ const selection=window.getSelection(),range=document.createRange(); range.selectNodeContents(host); range.collapse(false); selection.removeAllRanges(); selection.addRange(range); }catch(_){}
+}
+function insertPlainTextAtSelection(host,text){
+  const clean=sanitizePlainText(text);
+  if(clean.length>MAX_FIELD_CHARS){ flash('单次粘贴或拖入超过 '+MAX_FIELD_CHARS+' 字符上限，已拦截'); return false; }
+  const selection=window.getSelection();
+  let range=selection.rangeCount?selection.getRangeAt(0):null;
+  if(!range || !host.contains(range.commonAncestorContainer)){ range=document.createRange(); range.selectNodeContents(host); range.collapse(false); }
+  range.deleteContents();
+  const frag=document.createDocumentFragment();
+  clean.split('\n').forEach((line,i)=>{ if(i) frag.appendChild(document.createElement('br')); frag.appendChild(document.createTextNode(line)); });
+  const last=frag.lastChild; range.insertNode(frag);
+  if(last){ range.setStartAfter(last); range.collapse(true); selection.removeAllRanges(); selection.addRange(range); }
+  return true;
+}
+function insertSafeClipboardAtSelection(host,dataTransfer){
+  const html=dataTransfer&&typeof dataTransfer.getData==='function'?dataTransfer.getData('text/html'):'';
+  const plain=dataTransfer&&typeof dataTransfer.getData==='function'?dataTransfer.getData('text/plain'):'';
+  if(html&&/<img\b/i.test(html)){
+    flash('检测到图片：为避免静默丢图，本次粘贴已拦截。请新增“图片占位”，发布预检会生成插图清单。');
+    return false;
+  }
+  const safe=html?sanitizeInlineHtml(html):textToInlineHtml(plain);
+  if(inlineHtmlToText(safe).length>MAX_FIELD_CHARS){ flash('单次粘贴或拖入超过 '+MAX_FIELD_CHARS+' 字符上限，已拦截'); return false; }
+  const selection=window.getSelection();
+  let range=selection.rangeCount?selection.getRangeAt(0):null;
+  if(!range||!host.contains(range.commonAncestorContainer)){ range=document.createRange(); range.selectNodeContents(host); range.collapse(false); }
+  range.deleteContents();
+  const template=document.createElement('template'); template.innerHTML=safe;
+  const frag=template.content.cloneNode(true),last=frag.lastChild;
+  range.insertNode(frag);
+  if(last){ range.setStartAfter(last); range.collapse(true); selection.removeAllRanges(); selection.addRange(range); }
+  return true;
+}
+editor.addEventListener('beforeinput',e=>{
+  const block=e.target.closest&&e.target.closest('[data-direct-edit="true"]');
+  if(block && (e.inputType==='insertParagraph' || e.inputType==='insertLineBreak')){ e.preventDefault(); if(insertPlainTextAtSelection(block,'\n')) syncDirectBlock(block); }
+});
+editor.addEventListener('paste',e=>{
+  const block=e.target.closest&&e.target.closest('[data-direct-edit="true"]'); if(!block)return;
+  e.preventDefault(); if(insertSafeClipboardAtSelection(block,e.clipboardData)) syncDirectBlock(block);
+});
+editor.addEventListener('drop',e=>{
+  if(dragEl) return;
+  e.preventDefault();
+  const block=e.target.closest&&e.target.closest('[data-direct-edit="true"]');
+  if(!block){ flash('外部拖入已拦截；请使用“安全导入正文”'); return; }
+  if(insertSafeClipboardAtSelection(block,e.dataTransfer)) syncDirectBlock(block);
+});
+editor.addEventListener('input',e=>{
+  const block=e.target.closest&&e.target.closest('[data-direct-edit="true"]');
+  if(block) syncDirectBlock(block);
+});
+editor.addEventListener('focusout',e=>{
+  const block=e.target.closest&&e.target.closest('[data-direct-edit="true"]'); if(!block)return;
+  const id=block.dataset.blockId;
+  setTimeout(()=>{ if(getBlockRecord(id)) renderOneBlock(id); },0);
+});
+
+/* ============ 自动保存、版本与项目备份 ============ */
+const saveState=document.getElementById('saveState');
+let saveT;
+let lastSavedPayload='';
+let dirtySinceSave=false;
+let storageConflict=false;
+let recoverySavePaused=false;
+function readSnapshots(){
+  try{ const list=JSON.parse(localStorage.getItem(SNAPSHOT_KEY)||'[]'); return Array.isArray(list)?list.filter(x=>x&&isValidState(x.state)):[]; }
+  catch(_){ return []; }
+}
+function writeSnapshots(state){
+  let list=readSnapshots();
+  const comparable=stateComparable(state);
+  if(!list.length || stateComparable(list[list.length-1].state)!==comparable) list.push({savedAt:Date.now(),state:cloneJson(state)});
+  list=list.slice(-MAX_SNAPSHOTS);
+  while(list.length>1 && JSON.stringify(list).length>2*1024*1024) list.shift();
+  localStorage.setItem(SNAPSHOT_KEY,JSON.stringify(list));
+}
+function saveNow(){
+  clearTimeout(saveT);
+  if(recoverySavePaused){ saveState.textContent='损坏原稿备份失败，自动保存已暂停'; return false; }
+  if(storageConflict){ saveState.textContent='其他窗口已更新，自动保存已暂停'; return false; }
+  syncAppearanceState();
+  documentState.meta=Object.assign({},documentState.meta,{title:sanitizePlainText(titleInput.value),author:sanitizePlainText(authorInput.value)});
+  if(!stateWithinLimits(documentState)){ dirtySinceSave=true; saveState.textContent='当前稿件超过安全容量上限，已阻止保存；请精简或分篇'; return false; }
+  const payload=JSON.stringify(documentState);
+  try{
+    const currentStored=localStorage.getItem(KEY);
+    if(lastSavedPayload&&currentStored!==lastSavedPayload){ storageConflict=true; saveState.textContent='检测到其他窗口新版本，本次未覆盖'; return false; }
+    localStorage.setItem(KEY,payload);
+    lastSavedPayload=payload;
+    dirtySinceSave=false;
+    try{ writeSnapshots(documentState); saveState.textContent='已自动保存'; }
+    catch(_){ saveState.textContent='正文已保存，版本空间已满'; }
+    return true;
+  }catch(_){
+    saveState.textContent='保存失败，请导出项目备份';
+    return false;
+  }
+}
+function scheduleSave(){
+  dirtySinceSave=true;
+  if(recoverySavePaused){ clearTimeout(saveT); saveState.textContent='有未保存修改；损坏原稿备份失败，请先导出项目备份'; return; }
+  if(storageConflict){ clearTimeout(saveT); saveState.textContent='有未保存修改；其他窗口已更新，请先导出项目备份'; return; }
+  saveState.textContent='保存中…';
+  clearTimeout(saveT);
+  saveT=setTimeout(saveNow,500);
+}
+window.addEventListener('beforeunload',e=>{
+  if(!dirtySinceSave) return;
+  if(!storageConflict&&!recoverySavePaused) saveNow();
+  if(dirtySinceSave){ e.preventDefault(); e.returnValue=''; }
+});
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'&&dirtySinceSave&&!storageConflict&&!recoverySavePaused) saveNow(); });
+window.addEventListener('storage',e=>{
+  if(e.key!==KEY || e.newValue===lastSavedPayload) return;
+  storageConflict=true; clearTimeout(saveT);
+  saveState.textContent=dirtySinceSave?'有未保存修改；检测到其他窗口新版本':'检测到其他窗口新版本，已暂停保存';
+  flash('另一窗口更新了草稿；本窗口已暂停保存，请导出备份后刷新');
+});
+
+/* 旧稿只在 inert template 中解析，绝不直接挂入页面 */
+function recordsFromLegacyHtml(html){
+  const template=document.createElement('template'); template.innerHTML=sanitizePlainText(html||'');
+  const sourceImageCount=template.content.querySelectorAll('img').length;
+  const typed=Array.from(template.content.querySelectorAll('[data-type]')).filter(el=>!el.parentElement||!el.parentElement.closest('[data-type]'));
+  let records=[];
+  if(typed.length){
+    records=typed.map(el=>{
+      const type=BLOCK_TYPES.has(el.dataset.type)?el.dataset.type:'p';
+      let content=safeParse(el.getAttribute('data-content'));
+      if(DIRECT_EDITABLE.has(type)) content=Object.assign({},content,{text:sanitizeInlineHtml(el.innerHTML)});
+      return createBlockRecord(type,content);
+    });
+  }else{
+    const semanticSelector='h1,h2,h3,p,blockquote,ul,ol,hr,img';
+    Array.from(template.content.querySelectorAll(semanticSelector)).filter(node=>!node.parentElement||!node.parentElement.closest(semanticSelector)).forEach(node=>{
+      const tag=node.tagName.toLowerCase();
+      if(tag==='h1'||tag==='h2'||tag==='h3') records.push(createBlockRecord(tag,{text:sanitizePlainText(node.textContent)}));
+      else if(tag==='p') records.push(createBlockRecord('p',{text:textToInlineHtml(node.textContent)}));
+      else if(tag==='blockquote') records.push(createBlockRecord('quote',{text:textToInlineHtml(node.textContent)}));
+      else if(tag==='ul'||tag==='ol') records.push(createBlockRecord('list',{items:Array.from(node.querySelectorAll(':scope > li')).map(li=>sanitizePlainText(li.textContent).trim()).filter(Boolean)}));
+      else if(tag==='hr') records.push(createBlockRecord('divider',{}));
+      else if(tag==='img') records.push(createBlockRecord('image',{text:'图片占位 — 请在公众号后台替换为实图'}));
+    });
+    if(!records.length){
+      const text=sanitizePlainText(template.content.textContent||'').trim();
+      if(text) parseImportedText(text).forEach(b=>records.push(createBlockRecord(b.type,b.c)));
+    }
+  }
+  const representedImages=records.filter(block=>block.type==='image').length;
+  const imageGaps=Math.max(0,sourceImageCount-representedImages);
+  for(let i=0;i<imageGaps;i++) records.push(createBlockRecord('image',{text:'旧稿图片位置待核对 — 请在公众号后台重新上传'}));
+  return {records,imageGaps};
+}
+function migrateLegacyDraft(raw){
+  let old; try{ old=JSON.parse(raw); }catch(_){ return null; }
+  const legacy=recordsFromLegacyHtml(old&&old.html);
+  const records=legacy.records;
+  const idx=old&&old.themeId?ALL_THEMES.findIndex(t=>t.id===old.themeId):(typeof old.theme==='number'?old.theme:DEFAULT_THEME);
+  const theme=ALL_THEMES[idx>=0?idx:DEFAULT_THEME]||ALL_THEMES[DEFAULT_THEME];
+  return {
+    schemaVersion:APP_SCHEMA,revision:1,updatedAt:Date.now(),
+    meta:{title:sanitizePlainText(old.title||''),author:sanitizePlainText(old.author||''),summary:''},
+    appearance:normalizeAppearance({themeId:theme.id,scale:old.scale,space:old.space,primary:old.primary}),
+    blocks:records,
+    migration:{source:'v1',legacyComplexBlocks:records.filter(block=>!DIRECT_EDITABLE.has(block.type)&&block.type!=='divider').length+legacy.imageGaps,reviewRequired:true}
+  };
+}
+function load(){
+  let loaded=null;
+  let corruptDraft=false;
+  let corruptBackupSaved=false;
+  let legacyMigrationFailed=false;
+  let currentRaw=null;
+  try{ currentRaw=localStorage.getItem(KEY); }catch(_){}
+  if(currentRaw){
+    try{ const parsed=JSON.parse(currentRaw); if(!isValidState(parsed)) throw new Error('invalid schema'); loaded=parsed; }
+    catch(_){
+      corruptDraft=true;
+      try{ localStorage.setItem(CORRUPT_BACKUP_PREFIX+Date.now(),currentRaw); corruptBackupSaved=true; }catch(_){}
+    }
+  }
+  if(!loaded){
+    const snapshots=readSnapshots();
+    if(snapshots.length) loaded=snapshots[snapshots.length-1].state;
+  }
+  if(!loaded){
+    let legacy=null;
+    try{ legacy=localStorage.getItem(LEGACY_KEY); }catch(_){}
+    if(legacy){
+      try{ localStorage.setItem(LEGACY_BACKUP_KEY,legacy); }catch(_){}
+      try{ const migrated=migrateLegacyDraft(legacy); loaded=isValidState(migrated)?migrated:null; legacyMigrationFailed=!loaded; }catch(_){ loaded=null; legacyMigrationFailed=true; }
+    }
+  }
+  if(!loaded) loaded=cloneJson(documentState);
+  if(!applyStateSnapshot(loaded,false)){
+    if(currentRaw&&!corruptDraft){
+      corruptDraft=true;
+      try{ localStorage.setItem(CORRUPT_BACKUP_PREFIX+Date.now(),currentRaw); corruptBackupSaved=true; }catch(_){}
+    }else if(!currentRaw){ legacyMigrationFailed=true; }
+    const fallback={schemaVersion:APP_SCHEMA,revision:0,updatedAt:Date.now(),meta:{title:'',author:'',summary:''},appearance:normalizeAppearance({}),blocks:[]};
+    applyStateSnapshot(fallback,false);
+  }
+  historyStack=[]; historyIndex=-1; pushHistory();
+  if(documentState.migration&&Number(documentState.migration.legacyComplexBlocks)>0) setTimeout(()=>flash('旧版复杂区块可能含过期隐藏数据，请与原文件逐块核对'),180);
+  if(corruptDraft){
+    dirtySinceSave=false;
+    recoverySavePaused=!corruptBackupSaved;
+    saveState.textContent=corruptBackupSaved?'检测到损坏草稿，原串已备份，本次未自动覆盖':'检测到损坏草稿；备份失败，已暂停自动保存';
+    setTimeout(()=>flash(corruptBackupSaved?'已保留损坏草稿备份；建议先导出项目备份再继续编辑':'损坏原稿备份失败；请立即导出项目备份，不要关闭页面'),150);
+  }
+  else if(legacyMigrationFailed){ dirtySinceSave=false; saveState.textContent='旧稿超出安全容量或格式异常，本次未自动迁移'; setTimeout(()=>flash('旧稿原键和备份仍保留；请从旧版分批导出后手动导入'),150); }
+  else saveNow();
+}
+
+document.getElementById('backupBtn').onclick=()=>{
+  flushHistory(); syncAppearanceState();
+  downloadBlob('拾光排版器_项目备份_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(documentState,null,2),'application/json');
+  flash('已导出项目备份');
+};
+document.getElementById('versionsBtn').onclick=()=>{
+  const list=readSnapshots().slice().reverse();
+  document.getElementById('modalTitle').textContent='恢复本地版本';
+  const body=document.getElementById('modalBody'); body.replaceChildren();
+  if(!list.length){ body.innerHTML='<p>还没有可恢复的本地版本。建议先导出项目备份。</p>'; }
+  list.forEach((item,index)=>{
+    const button=document.createElement('button'); button.type='button'; button.style.cssText='width:100%;margin:5px 0;padding:9px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#4a4458;cursor:pointer;';
+    button.textContent=new Date(item.savedAt).toLocaleString()+' · '+item.state.blocks.length+' 个区块';
+    button.onclick=()=>{
+      if(!confirm('恢复这个版本会替换当前画布，但仍可用撤销找回。确定吗？'))return;
+      flushHistory();
+      if(!applyStateSnapshot(item.state,false)){ flash('该版本无法安全恢复，当前文章未替换'); return; }
+      touchState(); pushHistory(); scheduleSave(); modal.classList.remove('show'); flash('已恢复本地版本');
+    };
+    body.appendChild(button);
+  });
+  modal.classList.add('show');
+};
+document.getElementById('importLegacy').onclick=()=>document.getElementById('legacyFile').click();
+document.getElementById('legacyFile').onchange=async e=>{
+  const file=e.target.files&&e.target.files[0]; if(!file)return;
+  try{
+    if(file.size>5*1024*1024) throw new Error('文件过大');
+    const text=await file.text();
+    const name=file.name.toLowerCase();
+    let imported=null,sourceLabel='V4.1 项目备份';
+    if(name.endsWith('.json')){
+      const parsed=JSON.parse(text);
+      if(isValidState(parsed)) imported=parsed;
+      else if(parsed&&typeof parsed==='object'&&typeof parsed.html==='string'){ imported=migrateLegacyDraft(text); sourceLabel='旧版 V1 草稿'; }
+      else throw new Error('不支持的 JSON schema');
+      if(!imported||!isValidState(imported)) throw new Error('无法迁移 JSON');
+      if(!confirm('导入项目备份会替换当前文章，确定继续吗？'))return;
+      flushHistory();
+      if(!applyStateSnapshot(imported,false)) throw new Error('项目归一化后超过安全容量或结构异常');
+      touchState(); pushHistory(); scheduleSave(); flash(sourceLabel+'导入成功');
+    }else if(name.endsWith('.html')||name.endsWith('.htm')){
+      const legacy=recordsFromLegacyHtml(text);
+      const records=legacy.records;
+      if(!records.length) throw new Error('未识别到正文');
+      const legacyCandidate={schemaVersion:APP_SCHEMA,blocks:records,meta:{},appearance:{}};
+      if(!stateWithinLimits(legacyCandidate)) throw new Error('旧稿超过安全容量或渲染复杂度上限');
+      if(!confirm('从旧稿识别到 '+records.length+' 个区块，将替换当前文章。确定继续吗？'))return;
+      const legacyComplexBlocks=records.filter(block=>!DIRECT_EDITABLE.has(block.type)&&block.type!=='divider').length+legacy.imageGaps;
+      runMutation('导入旧稿',()=>{ documentState.blocks=records; documentState.migration={source:'html',legacyComplexBlocks,reviewRequired:legacyComplexBlocks>0}; });
+      flash(legacyComplexBlocks?'旧稿已迁移；复杂区块请与原文件逐块核对':'旧稿已安全迁移');
+    }else throw new Error('只支持 JSON/HTML');
+  }catch(err){ flash('导入失败：'+(err&&err.message?err.message:'文件格式无法识别')); }
+  finally{ e.target.value=''; }
+};
+/* ============ 提示 ============ */
+function flash(msg){
+  let el=document.getElementById('flash');
+  if(!el){ el=document.createElement('div'); el.id='flash'; el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1f1b29;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:99;opacity:0;transition:.2s;'; document.body.appendChild(el); }
+  el.textContent=msg; el.style.opacity='1'; clearTimeout(el._t); el._t=setTimeout(()=>el.style.opacity='0',1800);
+}
+/* ============ 启动 ============ */
+initUnlock();
+renderThemes();
+load();
+</script>
+</body>
+</html>

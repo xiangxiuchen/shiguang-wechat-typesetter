@@ -1,0 +1,24 @@
+name: 主题建议
+description: 建议一种更适合公众号内容的视觉方向
+title: "[主题建议] "
+labels: ["theme"]
+body:
+  - type: input
+    id: scene
+    attributes:
+      label: 内容场景
+      placeholder: 例如 AI 工具教程、个人成长、海外营销复盘
+    validations:
+      required: true
+  - type: textarea
+    id: mood
+    attributes:
+      label: 希望呈现的气质
+      placeholder: 请描述颜色、阅读感觉和适合的内容，不要上传无权使用的完整模板。
+    validations:
+      required: true
+  - type: input
+    id: existing
+    attributes:
+      label: 目前最接近的拾光主题
+

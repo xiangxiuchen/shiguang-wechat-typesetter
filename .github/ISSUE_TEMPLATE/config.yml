@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 使用说明与支持边界
+    url: https://github.com/xiangxiuchen/shiguang-wechat-typesetter/blob/main/SUPPORT.md
+    about: 提交前先确认问题属于公开项目支持范围
+
