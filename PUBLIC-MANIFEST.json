@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "product": "拾光排版器",
-  "version": "4.1.2",
+  "version": "4.1.3",
   "edition": "open-source-free",
   "license": "MPL-2.0",
   "source": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter",
@@ -18,11 +18,13 @@
   "files": [
     {
       "path": "docs/app/index.html",
-      "bytes": 234360,
-      "sha256": "39525ca53c4372c8812d377be4edd12f9f01a039afbce04103f236bf7ba10ccb"
+      "packagePath": "shiguang-wechat-typesetter-v4.1.3.html",
+      "bytes": 269240,
+      "sha256": "a5c522a2160df576edc390bcecd31d5de06de94acb3f3ff673bddb4d48f8ac55"
     },
     {
       "path": "examples/shiguang-launch-example.json",
+      "packagePath": "examples/shiguang-launch-example.json",
       "bytes": 14090,
       "sha256": "ab863deb81b161e4940b04f211bdcd6dc67eb0f317134c733c178f78e2ede49c"
     }
