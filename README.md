@@ -78,7 +78,7 @@ Created and maintained by **Crush / [xiangxiuchen](https://github.com/xiangxiuch
 
 ## 项目状态
 
-- 当前公开版本：`V4.1.2`
+- 当前公开版本：`V4.1.3`
 - 微信发布渲染器：`4.2.0-wechat-compat-1`
 - 维护状态：持续维护
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)
