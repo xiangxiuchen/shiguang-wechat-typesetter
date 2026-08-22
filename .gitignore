@@ -1,5 +1,5 @@
 .DS_Store
-dist/
+dist/*
+!dist/shiguang-wechat-typesetter-latest.html
 *.log
 *.tmp
-

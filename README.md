@@ -5,7 +5,7 @@
 **无需注册、文章不上传的微信公众号排版工具**  
 *A local-first WeChat Official Account typesetter*
 
-[在线使用](https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/) · [下载免费版](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest) · [3 分钟上手](QUICKSTART.md) · [English](README_EN.md)
+[在线使用](https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/) · [下载免费 ZIP](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip) · [3 分钟上手](QUICKSTART.md) · [English](README_EN.md)
 
 35 套主题 · 16 套文章结构 · 33 个区块 · 单 HTML 双击即用
 
@@ -18,7 +18,8 @@
 ## 立即使用
 
 - **在线体验：** [打开拾光排版器](https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/)
-- **离线使用：** [下载最新 Release](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest)
+- **离线使用：** [下载固定最新 ZIP](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip)
+- **单 HTML：** [下载固定最新 HTML](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html)
 - **示例项目：** [下载可导入示例](examples/shiguang-launch-example.json)
 
 ## 3 分钟上手
@@ -39,6 +40,7 @@
 - **技术内容不再静默丢失：** 围栏代码逐字符保留；公式保留 LaTeX 并进入公式图片清单；Markdown 图片和链接进入可核对资产清单。
 - **容易备份：** 支持本地草稿、快照和项目 JSON 导入导出。
 - **发布更稳：** 编辑预览和微信发布输出分开，复制前经过专用清洁与预检。
+- **同一地址持续更新：** 在线版地址不变；离线版可点击左上角版本号检查新版，但不会自动覆盖本地文件。
 
 ## 微信兼容边界
 
@@ -56,7 +58,7 @@
 
 ## 隐私
 
-离线版不需要联网，文章和草稿保存在你自己的浏览器中。GitHub Pages 在线版同样不向拾光服务器上传正文，但页面本身由 GitHub 托管，基础访问数据适用 GitHub 的隐私规则。详细说明见 [PRIVACY.md](PRIVACY.md)。
+核心排版可以断网使用，文章和草稿保存在你自己的浏览器中。V4.1.6 起，联网时每 24 小时最多读取一次公开版本号，请求不包含正文、标题或草稿；失败时不影响编辑。GitHub Pages 页面和版本请求的基础访问数据适用 GitHub 的隐私规则。详细说明见 [PRIVACY.md](PRIVACY.md)。
 
 ## 反馈与支持
 
@@ -79,7 +81,7 @@ Created and maintained by **Crush / [xiangxiuchen](https://github.com/xiangxiuch
 
 ## 项目状态
 
-- 当前公开版本：`V4.1.5`
+- 当前公开版本：`V4.1.6`
 - 微信发布渲染器：`4.3.0-markdown-tech-1`
 - 维护状态：持续维护
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)

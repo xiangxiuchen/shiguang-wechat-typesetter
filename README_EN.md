@@ -13,12 +13,15 @@ Shiguang is a local-first, single-HTML typesetting editor for WeChat Official Ac
 ## Try it
 
 - [Open the web app](https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/)
-- [Download the latest release](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest)
+- [Download the latest free ZIP](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip)
+- [Download the latest single HTML](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html)
 - [Chinese documentation](README.md)
 
 Before publishing, always verify the result in WeChat through: paste → save draft → reopen → mobile preview. Images, title, summary, and cover must be handled in the official WeChat editor.
 
 Fastest workflow: copy the complete article or select a local `.md` file, open **One-click article layout**, keep **Replace current article** selected, review the detected structure, and generate. Fenced code is preserved character-for-character. Formula LaTeX is kept in a formula asset list and must be replaced with uploaded images before stable WeChat publishing. An existing brand ending is preserved; otherwise Shiguang adds a generic like/follow/thank-you ending.
+
+Since V4.1.6, clicking the version badge checks a fixed public `version.json` at most once every 24 hours. The request contains no article, title, author, or draft data. Offline files are never overwritten automatically.
 
 ## License and attribution
 

@@ -6,9 +6,11 @@
 
 ## 离线使用
 
-1. 在 [Releases](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest) 下载最新 ZIP。
-2. 解压后双击 `shiguang-wechat-typesetter-v4.1.5.html`。
+1. [下载固定最新免费 ZIP](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip)。这个地址以后不用更换。
+2. 解压后打开免费版文件夹，双击 `拾光排版器-V4.1-免费版.html`。
 3. 如果系统询问使用哪个应用，请选择 Chrome、Edge 或其他现代浏览器。
+
+离线版可点击左上角版本号检查新版。工具只读取公开版本号，不上传文章；更新前请先导出重要项目备份。
 
 ## 排版与发布
 

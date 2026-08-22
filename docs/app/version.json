@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "currentVersion": "4.1.6",
+  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.6",
+  "onlineUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/",
+  "latestHtmlUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html",
+  "freeZipUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip",
+  "publishedAt": "2026-08-22T00:00:00+08:00",
+  "notes": [
+    "新增轻量检查更新，可查看当前版本和最新版本。",
+    "在线使用地址保持不变，离线版提供固定最新版下载入口。",
+    "检查更新只读取公开版本清单，不上传文章、标题或草稿。"
+  ]
+}
