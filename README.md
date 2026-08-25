@@ -95,3 +95,4 @@ Created and maintained by **Crush / [xiangxiuchen](https://github.com/xiangxiuch
 - 微信发布渲染器：`4.3.0-markdown-tech-1`
 - 维护状态：持续维护
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)
+- 版本总账与验收状态：[VERSION_LEDGER.md](VERSION_LEDGER.md)
