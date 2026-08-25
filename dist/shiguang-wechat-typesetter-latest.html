@@ -9,7 +9,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>拾光排版器 V4.1.7 · 开源免费版</title>
+<title>拾光排版器 V4.1.8 · 开源免费版</title>
 <style>
   :root{
     --accent:#6a4c93; --accent-2:#b39ddb; --accent-soft:#f1ecf7;
@@ -149,6 +149,12 @@
   .restore-banner .restore-actions{ display:flex; gap:7px; flex:none; }
   .restore-banner button{ border:1px solid #ddd3ea; border-radius:8px; background:#fff; color:var(--accent); padding:6px 9px; font:600 11px inherit; cursor:pointer; }
   .restore-banner button.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .quick-start-banner{ display:flex; max-width:720px; margin:0 auto 14px; padding:11px 13px; border:1px solid #ddd3ea; border-radius:12px; background:#fbf8ff; color:#5a5165; font-size:12px; line-height:1.55; align-items:center; justify-content:space-between; gap:12px; }
+  .quick-start-banner[hidden]{ display:none; }
+  .quick-start-banner b{ display:block; color:#3f3550; font-size:13px; margin-bottom:2px; }
+  .quick-start-actions{ display:flex; align-items:center; gap:7px; flex:none; }
+  .quick-start-actions button{ border:1px solid #ddd3ea; border-radius:8px; background:#fff; color:var(--accent); padding:7px 10px; font:600 11px inherit; cursor:pointer; white-space:nowrap; }
+  .quick-start-actions button.primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
 
   /* 属性面板 */
   .props{ width:252px; flex:none; background:var(--panel); border-left:1px solid var(--border); display:none; flex-direction:column; min-height:0; }
@@ -172,6 +178,9 @@
   .modal-box button{ margin-top:16px; width:100%; padding:11px; border:none; border-radius:11px; background:var(--accent); color:#fff; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
   .modal-box.oneclick-modal{ width:680px; }
   .oneclick-intro{ margin:0 0 13px!important; padding:10px 12px; border-radius:10px; background:#f5f1fa; color:#5d526b!important; }
+  .oneclick-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; margin:0 0 12px; }
+  .oneclick-step{ padding:7px 8px; border:1px solid var(--border); border-radius:9px; background:var(--panel-2); color:var(--muted); font-size:11px; font-weight:700; text-align:center; }
+  .oneclick-step.active{ border-color:var(--accent-2); background:var(--accent-soft); color:var(--accent); }
   .oneclick-field{ margin-top:12px; }
   .oneclick-field>label{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:5px; color:#393243; font-size:12px; font-weight:700; }
   .oneclick-field textarea,.oneclick-field input,.oneclick-field select{ width:100%; border:1px solid var(--border); border-radius:10px; background:var(--panel-2); color:var(--text); padding:10px 11px; font:13px/1.55 inherit; }
@@ -191,7 +200,7 @@
   .oneclick-more-body{ padding:0 11px 11px; }
   .oneclick-check{ display:flex; align-items:flex-start; gap:8px; margin-top:10px; color:#5f5868; font-size:11px; line-height:1.5; }
   .oneclick-check input{ width:auto; margin:2px 0 0; accent-color:var(--accent); }
-  .oneclick-actions{ display:flex; gap:9px; margin-top:14px; }
+  .oneclick-actions{ position:sticky; bottom:-20px; z-index:3; display:flex; gap:9px; margin:14px -20px -20px; padding:10px 20px 18px; border-top:1px solid var(--border); background:linear-gradient(to bottom,rgba(255,255,255,.94),#fff 28%); }
   .oneclick-actions button{ margin:0; }
   .oneclick-actions .secondary{ background:var(--panel-2); color:#5a5566; border:1px solid var(--border); }
   .preflight-section{ margin-top:12px; padding-top:10px; border-top:1px solid var(--border); }
@@ -215,6 +224,9 @@
     .modal{ align-items:stretch; }
     .modal-box.oneclick-modal{ width:100%; max-width:none; max-height:none; border-radius:0; padding:18px; }
     .oneclick-grid,.oneclick-modes{ grid-template-columns:1fr; }
+    .oneclick-actions{ bottom:-18px; margin-right:-18px; margin-left:-18px; padding-right:18px; padding-left:18px; }
+    .quick-start-banner{ margin:0 0 12px; align-items:flex-start; }
+    .quick-start-actions{ flex-direction:column; align-items:stretch; }
   }
   
 </style>
@@ -222,22 +234,22 @@
   <meta name="author" content="Crush / xiangxiuchen">
   <meta name="license" content="MPL-2.0">
   <meta name="shiguang-edition" content="open-source-free">
-  <meta name="shiguang-build" content="2026-08-25T03:09:59.412Z">
+  <meta name="shiguang-build" content="2026-08-25T04:17:44.668Z">
 </head>
 <body>
   <div class="screen-warning">当前版本为电脑端编辑工具；建议使用宽度 1024px 以上的浏览器编辑，手机端只做发布后预览。</div>
   <div class="topbar">
-    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.7 · 开源免费版</span></div>
+    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.8 · 开源免费版</span></div>
     <div class="top-right">
       <button class="btn-check" id="undoBtn" disabled>撤销</button>
       <button class="btn-check" id="redoBtn" disabled>重做</button>
-      <button class="btn-check" id="versionsBtn">恢复版本</button>
-      <button class="btn-check" id="backupBtn">项目备份</button>
+      <button class="btn-check" id="versionsBtn">文章历史</button>
+      <button class="btn-check" id="backupBtn">文章备份</button>
       <button class="btn-check" id="dataBtn">本机数据</button>
       
       <span class="save-state" id="saveState">尚未保存</span>
-      <button class="btn-sample btn-oneclick" id="oneClickLayoutBtn">一键排版文章</button>
-      <button class="btn-check" id="checkBtn">发布预检</button>
+      <button class="btn-sample btn-oneclick" id="oneClickLayoutBtn">① 粘贴全文并排版</button>
+      <button class="btn-check" id="checkBtn">详细检查</button>
       <button class="btn-toggle" id="compareBtn">对比主题</button>
       <button class="btn-check" id="helpBtn">使用教程</button>
       <button class="btn-check" id="aboutBtn">关于</button>
@@ -283,25 +295,26 @@
           <input id="authorInput" maxlength="500" placeholder="作者名">
         </div>
         <div class="group">
-          <p class="group-title">一键排版 / 导入</p>
+          <p class="group-title">文章排版 / 备份</p>
           <textarea id="import" placeholder="也可以先把整篇文章粘贴到这里…" style="width:100%;height:70px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--panel-2);color:var(--text);"></textarea>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
-            <button class="chip" id="doImport">打开一键排版</button>
-            <button class="chip" id="importLegacy">导入旧稿或项目备份</button>
+            <button class="chip" id="doImport">开始排版新文章</button>
+            <button class="chip" id="importLegacy">恢复文章备份 / 导入旧稿</button>
             <button class="chip" id="clearAll">清空</button>
             <input type="file" id="legacyFile" accept=".html,.htm,.json" hidden>
           </div>
         </div>
       </div>
       <div class="actions">
-        <button class="btn-copy" id="copyBtn">复制微信草稿</button>
-        <button class="btn-ghost" id="exportBtn">导出微信复制页</button>
+        <button class="btn-copy" id="copyBtn">③ 检查并复制</button>
+        <button class="btn-ghost" id="exportBtn">复制备用页</button>
       </div>
     </aside>
 
     <main class="stage" id="stage">
       <div class="phone-label" id="phoneLabel">手机预览 · 414px 宽度模拟</div>
-      <div class="restore-banner" id="restoreBanner"><span id="restoreText"></span><span class="restore-actions"><button id="restoreContinue">继续编辑</button><button class="primary" id="restoreNew">新文章一键排版</button></span></div>
+      <div class="quick-start-banner" id="quickStartBanner"><span><b>第一次使用？示例不用删除</b>只做 3 步：① 粘贴全文　② 生成排版　③ 检查并复制到微信。</span><span class="quick-start-actions"><button class="primary" id="quickStartBtn">开始第 1 步</button><button id="quickStartDismiss">我会用了</button></span></div>
+      <div class="restore-banner" id="restoreBanner"><span id="restoreText"></span><span class="restore-actions"><button id="restoreContinue">继续编辑</button><button class="primary" id="restoreNew">开始排版新文章</button></span></div>
       <div class="phones" id="phones">
         <div class="phone-wrap" id="mainPhone">
           <div class="phone">
@@ -584,7 +597,7 @@ const PUBLISH_POLICY=Object.freeze({
   hist:publishPolicy('stable','往期推荐文字清单')
 });
 const APP_SCHEMA = 2;
-const APP_VERSION = '4.1.7';
+const APP_VERSION = '4.1.8';
 const WECHAT_RENDERER_VERSION = '4.3.0-markdown-tech-1';
 const SHIGUANG_ONE_CLICK_LAYOUT_V1 = '1.1.0';
 const SHIGUANG_UPDATE_MANIFEST_URL = 'https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/version.json';
@@ -2060,6 +2073,29 @@ const ONE_CLICK_TYPES=Object.freeze({
   general:{label:'工具福利发布',themeId:'v2-navy',recipeId:'tool-benefit-release'}
 });
 let SHIGUANG_MARKDOWN_ENGINE=null;
+function isInlineFormulaBody(value){
+  const body=sanitizePlainText(value==null?'':value).trim();
+  if(!body) return false;
+  const compact=body.replace(/\s+/g,'');
+  const priceLike=/^\d{1,3}(?:,\d{3})*(?:\.\d+)?(?:元|块|人民币|RMB|CNY|USD|美元|元?\/(?:月|年|天|次)(?:起)?)?$/i;
+  if(priceLike.test(compact)||/^[+-]?\d+(?:\.\d+)?$/.test(compact)) return false;
+  return /[A-Za-z\u0370-\u03ff\u1f00-\u1fff\\_^=+*/()[\]{}<>≤≥≠≈∞∑∫√±×÷]/u.test(compact);
+}
+function markdownBareLinkParts(token){
+  const raw=sanitizePlainText(token&&token.raw||'');
+  const fallbackHref=sanitizePlainText(token&&token.href||'');
+  const fallbackLabel=sanitizePlainText(token&&token.text||fallbackHref);
+  if(!/^https?:\/\//i.test(raw)||raw.startsWith('<')) return {href:fallbackHref,label:fallbackLabel,suffix:''};
+  const boundary=raw.search(/[。，、；！？：”’」』】）》）…]/u);
+  if(boundary<=0) return {href:fallbackHref,label:fallbackLabel,suffix:''};
+  return {href:raw.slice(0,boundary),label:raw.slice(0,boundary),suffix:raw.slice(boundary)};
+}
+function markdownImageData(token){
+  return {text:sanitizePlainText(token&&token.text||'图片').trim()||'图片',url:normalizeHttpUrl(token&&token.href||''),title:sanitizePlainText(token&&token.title||'')};
+}
+function markdownTokensContainImage(tokens){
+  return (Array.isArray(tokens)?tokens:[]).some(token=>token&&((token.type==='image')||markdownTokensContainImage(token.tokens)));
+}
 function shiguangMarkdownEngine(){
   if(SHIGUANG_MARKDOWN_ENGINE) return SHIGUANG_MARKDOWN_ENGINE;
   if(!globalThis.marked||typeof globalThis.marked.Marked!=='function') throw new Error('Markdown 解析组件未加载，请刷新页面后重试');
@@ -2085,7 +2121,10 @@ function shiguangMarkdownEngine(){
     },
     tokenizer(src){
       let match=/^\\\(((?:\\.|[^\\\n])+?)\\\)/.exec(src);
-      if(!match) match=/^\$(?![\s\d$])((?:\\.|[^\\$\n])+?)\$(?!\d)/.exec(src);
+      if(!match){
+        const candidate=/^\$(?![\s$])((?:\\.|[^\\$\n])+?)\$(?!\d)/.exec(src);
+        if(candidate&&isInlineFormulaBody(candidate[1])) match=candidate;
+      }
       if(!match) return undefined;
       return {type:'inlineFormula',raw:match[0],text:sanitizePlainText(match[1])};
     }
@@ -2162,14 +2201,15 @@ function markdownInlineToSafeHtml(tokens,diagnostics){
     }
     if(token.type==='br') return '<br>';
     if(token.type==='link'){
-      const label=markdownInlineToSafeHtml(token.tokens,diagnostics)||escapeHtml(token.text||token.href||'');
-      const href=normalizeHttpUrl(token.href||'');
-      if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(token.href||'')); return label+'（已拦截不安全链接）'; }
+      const bare=markdownBareLinkParts(token);
+      const label=bare.suffix?escapeHtml(bare.label):(markdownInlineToSafeHtml(token.tokens,diagnostics)||escapeHtml(token.text||token.href||''));
+      const href=normalizeHttpUrl(bare.href||'');
+      if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(bare.href||token.href||'')); return label+'（已拦截不安全链接）'+escapeHtml(bare.suffix); }
       diagnostics.links.push({text:oneClickPlain(label),url:href,title:sanitizePlainText(token.title||'')});
-      return `<a href="${escapeHtml(href)}">${label}</a>`;
+      return `<a href="${escapeHtml(href)}">${label}</a>${escapeHtml(bare.suffix)}`;
     }
     if(token.type==='image'){
-      const image={text:sanitizePlainText(token.text||'图片').trim()||'图片',url:normalizeHttpUrl(token.href||''),title:sanitizePlainText(token.title||'')};
+      const image=markdownImageData(token);
       diagnostics.images.push(image);
       return '';
     }
@@ -2187,14 +2227,15 @@ function markdownInlineVisibleText(tokens,diagnostics){
     if(token.type==='inlineFormula'){ diagnostics.inlineFormulas.push(sanitizePlainText(token.text||'')); return sanitizePlainText(token.text||''); }
     if(token.type==='br') return '\n';
     if(token.type==='link'){
-      const label=markdownInlineVisibleText(token.tokens,diagnostics)||sanitizePlainText(token.text||token.href||'');
-      const href=normalizeHttpUrl(token.href||'');
-      if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(token.href||'')); return label+'（已拦截不安全链接）'; }
+      const bare=markdownBareLinkParts(token);
+      const label=bare.suffix?bare.label:(markdownInlineVisibleText(token.tokens,diagnostics)||sanitizePlainText(token.text||token.href||''));
+      const href=normalizeHttpUrl(bare.href||'');
+      if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(bare.href||token.href||'')); return label+'（已拦截不安全链接）'+bare.suffix; }
       diagnostics.links.push({text:label,url:href,title:sanitizePlainText(token.title||'')});
-      return label+(label!==href?'（'+href+'）':'');
+      return label+(label!==href?'（'+href+'）':'')+bare.suffix;
     }
     if(token.type==='image'){
-      const image={text:sanitizePlainText(token.text||'图片').trim()||'图片',url:normalizeHttpUrl(token.href||''),title:sanitizePlainText(token.title||'')};
+      const image=markdownImageData(token);
       diagnostics.images.push(image);
       return '';
     }
@@ -2262,11 +2303,40 @@ function parseOneClickArticle(raw){
   (tokens||[]).forEach((token,tokenIndex)=>{
     if(!token||token.type==='space'||token.type==='def') return;
     const imageStart=diagnostics.images.length;
+    const inlineTokens=Array.isArray(token.tokens)?token.tokens:[];
+    const directInlineImages=inlineTokens.filter(part=>part&&part.type==='image');
+    const linkedInlineImage=inlineTokens.some(part=>part&&part.type==='link'&&markdownTokensContainImage(part.tokens));
+    const nestedInlineImage=inlineTokens.some(part=>part&&part.type!=='image'&&markdownTokensContainImage(part.tokens));
+    if((directInlineImages.length||nestedInlineImage)&&token.type!=='paragraph'&&token.type!=='text') throw new Error('图片嵌在标题、列表或其他结构中，请把图片单独放在一行后重试');
+    if(linkedInlineImage) throw new Error('链接包裹图片暂不支持，请把图片和链接拆成两行后重试');
+    if(nestedInlineImage) throw new Error('嵌套图片暂不支持，请把图片单独放在一行后重试');
     if(token.type==='heading'){
       const plain=markdownInlineVisibleText(token.tokens,diagnostics).trim();
       if(token.depth===1&&!firstMarkdownTitleTaken&&!title){ title=plain; firstMarkdownTitleTaken=true; }
       else blocks.push({type:token.depth===1?'h1':token.depth===2?'h2':'h3',c:{text:plain}});
     }else if(token.type==='paragraph'||token.type==='text'){
+      if(directInlineImages.length){
+        let segment=[];
+        const flushSegment=()=>{
+          if(!segment.length) return;
+          const inline=markdownInlineToSafeHtml(segment,diagnostics);
+          if(inline.replace(/<br\s*\/?\s*>/gi,'').trim()){
+            const onlyStrong=segment.length===1&&segment[0].type==='strong';
+            blocks.push({type:onlyStrong?'strong':'p',c:{text:inline}});
+          }
+          segment=[];
+        };
+        inlineTokens.forEach(part=>{
+          if(part&&part.type==='image'){
+            flushSegment();
+            const image=markdownImageData(part);
+            diagnostics.images.push(image);
+            blocks.push({type:'image',c:image});
+          }else segment.push(part);
+        });
+        flushSegment();
+        return;
+      }
       const plainLines=sanitizePlainText(token.text||'').split('\n').map(line=>line.trim()).filter(Boolean);
       const stepLines=plainLines.map(oneClickStepItem);
       if(plainLines.length>1&&stepLines.every(Boolean)){
@@ -2586,13 +2656,16 @@ function oneClickIsPlaceholderEnding(block){
   const type=block&&block.type;
   const text=oneClickBlockAuditText(block,false);
   if(!text) return true;
-  if(/请替换|待填写|待确认|阅读数据请替换|来源说明|往期文章标题|下一篇文章，我想聊聊|示例|(^|[^A-Za-z])XX([^A-Za-z]|$)/i.test(text)) return true;
   const content=oneClickBlockContent(block);
   const defaults=DEFAULT_CONTENT[type]||{};
   const schemaFields=(SCHEMA[type]&&SCHEMA[type].fields||[]).map(field=>field[0]);
-  if(schemaFields.length&&schemaFields.every(key=>oneClickSameValue(content[key],defaults[key]))) return true;
-  const required=PLACEHOLDER_CORE[type]||[];
-  return required.some(key=>Object.prototype.hasOwnProperty.call(defaults,key)&&oneClickSameValue(content[key],defaults[key]));
+  const populated=schemaFields.filter(key=>{
+    const value=oneClickComparableValue(content[key]);
+    return Array.isArray(value)?value.length>0:!!value;
+  });
+  /* 只有所有已填写字段仍与内置默认值完全一致时才视为占位。
+     任意真实自定义字段都会保留整块，不能因“示例、待确认”等普通词语被静默删除。 */
+  return populated.length>0&&populated.every(key=>Object.prototype.hasOwnProperty.call(defaults,key)&&oneClickSameValue(content[key],defaults[key]));
 }
 function splitOneClickProtectedTail(blocks,options){
   options=options||{};
@@ -2652,7 +2725,7 @@ function oneClickPublishPairParts(value){
   const raw=String(value==null?'':value),index=raw.indexOf('|');
   return index<0?[raw]:[raw.slice(0,index),raw.slice(index+1)];
 }
-function oneClickSerializedOrderParts(block,skipGenerated){
+function oneClickSerializedOrderParts(block,skipGenerated,tableMode){
   if(!block||typeof block!=='object') return [];
   const c=oneClickBlockContent(block);
   if(block.type==='triple'){
@@ -2675,7 +2748,16 @@ function oneClickSerializedOrderParts(block,skipGenerated){
   }
   if(block.type==='table'){
     const model=normalizeTableModel(c);
-    return model.rows.flatMap(row=>row.map(value=>String(value==null?'':value)));
+    if(tableMode==='table'){
+      return model.head.concat(model.rows.flat()).map(value=>String(value==null?'':value));
+    }
+    if(tableMode!=='cards'){
+      return model.rows.flatMap(row=>row.map(value=>String(value==null?'':value)));
+    }
+    return model.rows.flatMap(row=>model.head.flatMap((heading,index)=>[
+      String(heading==null?'':heading),
+      String(row[index]==null?'':row[index])
+    ]));
   }
   if(['clist','step','refs','hist'].includes(block.type)){
     const generated=new Set(skipGenerated&&block.audit&&Array.isArray(block.audit.generatedFields)?block.audit.generatedFields:[]);
@@ -2686,19 +2768,16 @@ function oneClickSerializedOrderParts(block,skipGenerated){
   }
   return oneClickSemanticParts(block,skipGenerated);
 }
-function oneClickSerializedCountParts(block,skipGenerated){
+function oneClickSerializedCountParts(block,skipGenerated,tableMode){
   if(!block||typeof block!=='object') return [];
-  if(block.type!=='table') return oneClickSerializedOrderParts(block,skipGenerated);
-  const model=normalizeTableModel(oneClickBlockContent(block));
-  const rowValues=model.rows.flatMap(row=>row.map(value=>String(value==null?'':value)));
-  const repeatedHeaders=model.rows.flatMap(()=>model.head.map(value=>String(value==null?'':value)));
-  return rowValues.concat(repeatedHeaders);
+  return oneClickSerializedOrderParts(block,skipGenerated,tableMode);
 }
 function verifyOneClickSerializedText(parsed,serialized,finalRecords){
   const report=serialized&&typeof serialized==='object'?serialized:{text:serialized};
   const output=oneClickNormalizeSerializedAuditText(report.text||'');
+  const tableMode=report.stats&&['cards','table'].includes(report.stats.tableMode)?report.stats.tableMode:null;
   const publishable=block=>PUBLISH_POLICY[block&&block.type]&&PUBLISH_POLICY[block.type].status!=='local-only';
-  const parts=(parsed&&Array.isArray(parsed.blocks)?parsed.blocks:[]).filter(publishable).flatMap(block=>oneClickSerializedOrderParts(block,false)).map(oneClickNormalizeSerializedAuditText).filter(Boolean);
+  const parts=(parsed&&Array.isArray(parsed.blocks)?parsed.blocks:[]).filter(publishable).flatMap(block=>oneClickSerializedOrderParts(block,false,tableMode)).map(oneClickNormalizeSerializedAuditText).filter(Boolean);
   const problems=[]; let cursor=0;
   parts.forEach((part,index)=>{
     const found=output.indexOf(part,cursor);
@@ -2712,13 +2791,27 @@ function verifyOneClickSerializedText(parsed,serialized,finalRecords){
     expectedBlocks.forEach((block,index)=>{
       const actual=auditBlocks[index];
       if(!actual) return;
-      if(actual.type&&actual.type!==block.type){ problems.push('第 '+(index+1)+' 个微信区块类型异常'); return; }
+      if(actual.type!==block.type){ problems.push('第 '+(index+1)+' 个微信区块类型异常'); return; }
       const blockOutput=oneClickNormalizeSerializedAuditText(actual.text||'');
+      if(Object.prototype.hasOwnProperty.call(actual,'beforeText')){
+        const beforeOutput=oneClickNormalizeSerializedAuditText(actual.beforeText||'');
+        if(beforeOutput!==blockOutput) problems.push('第 '+(index+1)+' 个微信区块清理前后可见文字不一致');
+      }
       let blockCursor=0;
-      oneClickSerializedOrderParts(block,true).map(oneClickNormalizeSerializedAuditText).filter(Boolean).forEach(part=>{
+      oneClickSerializedOrderParts(block,true,tableMode).map(oneClickNormalizeSerializedAuditText).filter(Boolean).forEach(part=>{
         const found=blockOutput.indexOf(part,blockCursor);
         if(found<0) problems.push('第 '+(index+1)+' 个微信区块未找到原文「'+part.slice(0,28)+'」');
         else blockCursor=found+part.length;
+      });
+      const blockCountParts=oneClickSerializedCountParts(block,true,tableMode).map(oneClickNormalizeSerializedAuditText).filter(Boolean);
+      const expectedCorpus=blockCountParts.join('\u0000');
+      const expectedCounts=new Map();
+      blockCountParts.filter(part=>Array.from(part).length>=4).forEach(part=>{
+        if(!expectedCounts.has(part)) expectedCounts.set(part,oneClickCountOccurrences(expectedCorpus,part));
+      });
+      expectedCounts.forEach((expected,part)=>{
+        const actualCount=oneClickCountOccurrences(blockOutput,part);
+        if(actualCount!==expected) problems.push('第 '+(index+1)+' 个微信区块文字次数异常「'+part.slice(0,24)+'」：预期 '+expected+' 次，实际 '+actualCount+' 次');
       });
     });
     const auditedOutput=oneClickNormalizeSerializedAuditText(auditBlocks.map(block=>block&&block.text||'').join('\n'));
@@ -2726,7 +2819,7 @@ function verifyOneClickSerializedText(parsed,serialized,finalRecords){
     return {ok:problems.length===0,problems,parts:parts.length,checkedFields:expectedBlocks.length,auditMode:'blocks'};
   }
   /* 兼容旧的纯文本审计器：期望次数也必须包含短语在其他字段中的合法出现。 */
-  const countParts=expectedBlocks.flatMap(block=>oneClickSerializedCountParts(block,true)).map(oneClickNormalizeSerializedAuditText).filter(Boolean);
+  const countParts=expectedBlocks.flatMap(block=>oneClickSerializedCountParts(block,true,tableMode)).map(oneClickNormalizeSerializedAuditText).filter(Boolean);
   const expectedCorpus=countParts.join('\u0000');
   const expectedCounts=new Map();
   countParts.filter(part=>Array.from(part).length>=4).forEach(part=>{
@@ -3137,12 +3230,14 @@ function serializeWechatRecords(sourceRecords,options){
   renumberHeadingsInRoot(root,theme,publishRecords,renderSettings);
   validatePublishTables(root,publishRecords,report,context);
   validatePublishCode(root,publishRecords,report);
+  const auditBeforeTexts=auditNodes.map(node=>wechatPlainText(node));
   cleanWechatTree(root,report);
   report.auditBlocks=auditNodes.map((node,index)=>{
     let owner=node;
     while(owner&&owner!==root) owner=owner.parentNode;
     return {
-      type:auditTypes[index]||(publishRecords[index]&&publishRecords[index].type)||'',
+      type:auditTypes[index]||'',
+      beforeText:auditBeforeTexts[index]||'',
       text:owner===root?wechatPlainText(node):''
     };
   });
@@ -3234,6 +3329,13 @@ function showPreflight(result,title){
   const body=document.getElementById('modalBody'); body.innerHTML=lines.join('');
   const removedCounts=(result.removed||[]).reduce((map,item)=>{ map[item]=(map[item]||0)+1; return map; },{});
   body.dataset.preflightDiagnostics=JSON.stringify({stats:result.stats||{},removedCounts,normalizations:result.normalizations||[],degradations:result.degradations||[],blockers:result.blockers||[],manualChecks:result.manualChecks||{}});
+  if(result.ok&&!/^已复制/.test(title||'')){
+    const copyReady=document.createElement('button');
+    copyReady.type='button';
+    copyReady.textContent='③ 复制到微信公众号';
+    copyReady.onclick=()=>{ closeModal(); copyRich(); };
+    body.appendChild(copyReady);
+  }
   if((checks.images&&checks.images.length)||(checks.formulas&&checks.formulas.length)){
     const withoutAssets=serializeForWechat({dropPlaceholders:true,tableMode:G.tableMode});
     if(withoutAssets.ok){
@@ -3256,6 +3358,7 @@ function showPreflight(result,title){
     body.appendChild(confirmReview);
   }
   modal.classList.add('show');
+  modalBox.scrollTop=0;
 }
 function showManualCopy(result){
   document.getElementById('modalTitle').textContent='自动复制失败，请手动复制';
@@ -3271,7 +3374,7 @@ async function copyRich(options){
   if(!result.ok){ showPreflight(result); return; }
   try{
     const mode=await writeRichClipboard(result.html,result.text);
-    flash(mode==='rich'?'已复制清洁富文本，请去微信后台粘贴':'已复制清洁富文本（兼容模式，纯文本换行可能由浏览器调整）');
+    flash(mode==='rich'?'已复制。下一步：微信粘贴 → 保存草稿 → 重新打开 → 手机预览':'已复制（兼容模式）。下一步：微信粘贴 → 保存草稿 → 重新打开 → 手机预览');
     if(result.warnings.length||result.degradations.length||(result.manualChecks&&result.manualChecks.highRisk&&result.manualChecks.highRisk.length)) setTimeout(()=>showPreflight(result,'已复制，但仍有发布提示'),250);
   }catch(_){ showManualCopy(result); }
 }
@@ -3311,6 +3414,7 @@ const modalClose=document.getElementById('modalClose');
 function closeModal(){
   modal.classList.remove('show');
   modalBox.classList.remove('oneclick-modal');
+  modalBox.scrollTop=0;
   modalClose.hidden=false;
   modalClose.textContent='知道了';
 }
@@ -3332,7 +3436,7 @@ async function readOneClickClipboard(target,status){
       return {ok:false,message:'剪贴板为空'};
     }
     if(input){ input.value=text; input.dispatchEvent(new Event('input',{bubbles:true})); }
-    if(statusNode) statusNode.textContent='已读取剪贴板文字；你可以先检查，再生成排版稿。';
+    if(statusNode) statusNode.textContent='已从剪贴板粘贴；请确认这是你要排版的全文。';
     return {ok:true,text};
   }catch(error){
     if(statusNode) statusNode.textContent='无法自动读取剪贴板，请在这里手动粘贴。';
@@ -3374,19 +3478,23 @@ function openOneClickLayout(options){
   options=options||{};
   modalBox.classList.add('oneclick-modal');
   modalClose.hidden=true;
-  document.getElementById('modalTitle').textContent='一键排版文章';
+  document.getElementById('modalTitle').textContent='第 1 步｜粘贴文章';
   document.getElementById('modalBody').innerHTML=`<div data-feature="one-click-layout">
-    <p class="oneclick-intro"><b>文章只在本机处理，不会上传。</b><br>粘贴全文后，自动按文章类型组装导语、章节卡、重点、方法、总结和结尾。只做分组和视觉组织，不替你改写原文。</p>
-    <div class="oneclick-field"><label for="oneClickArticleInput"><span>文章内容 · 可粘贴或读取 Markdown 文件</span><span><button type="button" class="oneclick-inline-action" id="oneClickMarkdownFileBtn">选择 .md 文件</button> <button type="button" class="oneclick-inline-action" id="oneClickReadClipboardBtn">读取剪贴板</button></span></label><textarea id="oneClickArticleInput" placeholder="把整篇文章粘贴到这里。支持标题、强调、引用、任务清单、代码、公式、链接、图片和可变列表格。"></textarea><input type="file" id="oneClickMarkdownFile" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden><p class="oneclick-status" id="oneClickClipboardStatus"></p></div>
+    <div class="oneclick-steps"><div class="oneclick-step active">① 粘贴全文</div><div class="oneclick-step">② 生成排版</div><div class="oneclick-step">③ 检查并复制</div></div>
+    <p class="oneclick-intro"><b>第一次使用只需粘贴全文，其他选项不用改。</b><br>文章只在本机处理，不会上传；工具只负责分组和视觉组织，不替你改写原文。</p>
+    <div class="oneclick-field"><label for="oneClickArticleInput"><span>① 粘贴文章全文</span><span><button type="button" class="oneclick-inline-action" id="oneClickMarkdownFileBtn">选择 .md 文件</button> <button type="button" class="oneclick-inline-action" id="oneClickReadClipboardBtn">从剪贴板粘贴</button></span></label><textarea id="oneClickArticleInput" placeholder="把整篇文章粘贴到这里。支持标题、强调、引用、清单、代码、公式、链接、图片和表格。"></textarea><input type="file" id="oneClickMarkdownFile" accept=".md,.markdown,.txt,text/markdown,text/plain" hidden><p class="oneclick-status" id="oneClickClipboardStatus"></p></div>
     <div class="oneclick-field"><label for="oneClickTitleInput">文章标题（可修改）</label><input id="oneClickTitleInput" placeholder="未识别到标题，可稍后填写"></div>
-    <div class="oneclick-grid">
-      <div class="oneclick-field"><label for="oneClickTypeSelect">选一套文章配方</label><select id="oneClickTypeSelect"><option value="auto">自动判断（推荐）</option><option value="tutorial">专业教程</option><option value="opinion">深度观点</option><option value="story">暖文故事</option><option value="list">清单合集</option><option value="general">工具福利发布</option></select></div>
-      <div class="oneclick-field"><label for="oneClickOutputModeSelect">选择排版效果</label><select id="oneClickOutputModeSelect"><option value="wechat-stable" selected>公众号稳定版（推荐）</option><option value="visual-enhanced">视觉增强版（需微信验收）</option><option value="local-showcase">本地展示版（仅截图）</option></select></div>
-    </div>
-    <div class="oneclick-field" id="oneClickModeWrap"><label>生成方式</label><div class="oneclick-modes"><label class="oneclick-mode"><input type="radio" id="oneClickReplaceMode" name="oneClickMode" value="replace" checked><span><b>替换当前文章（推荐）</b><small>已有品牌文末会保留；没有时自动补上通用落尾</small></span></label><label class="oneclick-mode"><input type="radio" id="oneClickAppendMode" name="oneClickMode" value="append"><span><b>追加到文末</b><small>只在确实要合并两篇内容时使用，不自动添加落尾</small></span></label></div></div>
-    <details class="oneclick-more" id="oneClickMore"><summary>更多设置</summary><div class="oneclick-more-body"><div class="oneclick-field"><label for="oneClickStyleSelect">视觉主题（只改外观）</label><select id="oneClickStyleSelect"><option value="auto">自动搭配（推荐）</option><option value="keep">保持当前主题</option></select></div><label class="oneclick-check"><input type="checkbox" id="oneClickKeepArticleTail"><span><b>同时保留上一篇的总结、行动卡、参考资料和下期预告</b><br>默认不保留，避免旧文章内容混进新稿。</span></label><label class="oneclick-check"><input type="checkbox" id="oneClickReplaceAll"><span><b>连同固定品牌文末一起替换</b><br>只有确认不需要三连、关注提示和品牌页脚时再勾选。</span></label></div></details>
+    <details class="oneclick-more" id="oneClickMore"><summary>可选设置（第一次不用改）</summary><div class="oneclick-more-body">
+      <div class="oneclick-grid">
+        <div class="oneclick-field"><label for="oneClickTypeSelect">文章配方</label><select id="oneClickTypeSelect"><option value="auto">自动判断（推荐）</option><option value="tutorial">专业教程</option><option value="opinion">深度观点</option><option value="story">暖文故事</option><option value="list">清单合集</option><option value="general">工具福利发布</option></select></div>
+        <div class="oneclick-field"><label for="oneClickOutputModeSelect">排版效果</label><select id="oneClickOutputModeSelect"><option value="wechat-stable" selected>公众号稳定版（推荐）</option><option value="visual-enhanced">视觉增强版（需微信验收）</option><option value="local-showcase">本地展示版（仅截图）</option></select></div>
+      </div>
+      <div class="oneclick-field" id="oneClickModeWrap"><label>生成方式</label><div class="oneclick-modes"><label class="oneclick-mode"><input type="radio" id="oneClickReplaceMode" name="oneClickMode" value="replace" checked><span><b>替换当前文章（推荐）</b><small>已有品牌文末会保留；没有时自动补上通用落尾</small></span></label><label class="oneclick-mode"><input type="radio" id="oneClickAppendMode" name="oneClickMode" value="append"><span><b>追加到文末</b><small>只在确实要合并两篇内容时使用，不自动添加落尾</small></span></label></div></div>
+      <div class="oneclick-field"><label for="oneClickStyleSelect">视觉主题（只改外观）</label><select id="oneClickStyleSelect"><option value="auto">自动搭配（推荐）</option><option value="keep">保持当前主题</option></select></div>
+      <label class="oneclick-check"><input type="checkbox" id="oneClickKeepArticleTail"><span><b>同时保留上一篇的总结、行动卡、参考资料和下期预告</b><br>默认不保留，避免旧文章内容混进新稿。</span></label><label class="oneclick-check"><input type="checkbox" id="oneClickReplaceAll"><span><b>连同固定品牌文末一起替换</b><br>只有确认不需要三连、关注提示和品牌页脚时再勾选。</span></label>
+    </div></details>
     <div class="oneclick-result" id="oneClickRecognition">请先粘贴整篇文章。</div>
-    <div class="oneclick-actions"><button type="button" class="secondary" id="oneClickCancelBtn">取消</button><button type="button" id="oneClickGenerateBtn">生成排版稿</button></div>
+    <div class="oneclick-actions"><button type="button" class="secondary" id="oneClickCancelBtn">取消</button><button type="button" id="oneClickGenerateBtn">② 生成排版</button></div>
   </div>`;
   const articleInput=document.getElementById('oneClickArticleInput');
   const titleField=document.getElementById('oneClickTitleInput');
@@ -3416,7 +3524,7 @@ function openOneClickLayout(options){
       const theme=resolveOneClickTheme(type,styleSelect.value);
       const selectedMode=(document.querySelector('input[name="oneClickMode"]:checked')||{}).value||'replace';
       recognition.innerHTML=oneClickSummary(parsed,type,theme,outputModeSelect.value,selectedMode,replaceAll.checked?'all':'body',keepArticleTail.checked);
-      document.getElementById('oneClickGenerateBtn').textContent=outputModeSelect.value==='local-showcase'?'生成本地展示稿':'生成排版稿';
+      document.getElementById('oneClickGenerateBtn').textContent=outputModeSelect.value==='local-showcase'?'生成本地展示稿':'② 生成排版';
     }catch(error){ parsed=null; recognition.textContent=error&&error.message?error.message:'文章识别失败'; }
   };
   let refreshTimer=0;
@@ -3463,15 +3571,30 @@ function openOneClickLayout(options){
     document.getElementById('restoreBanner').classList.remove('show');
     closeModal();
     if(result.outputMode==='local-showcase') flash(`本地展示稿已生成：${result.count} 个区块 · 仅用于截图，如需发微信请改用公众号稳定版`);
-    else flash(result.mode==='append'?`已将 ${result.count} 个版式区块追加到文末 · 原文检查通过 · 可点顶部撤销`:`排版稿已生成：${result.count} 个正文区块 · ${ONE_CLICK_TYPES[result.type].label} · ${ONE_CLICK_OUTPUT_MODES[result.outputMode].label}${result.preservedEnding?' · 已保留 '+result.preservedEndingNames.join('、'):''}${result.systemEndingAdded?' · 已添加通用落尾':''} · 正文和微信输出检查通过 · 可点顶部撤销`);
+    else{
+      flash(result.mode==='append'?`已追加 ${result.count} 个版式区块。现在进入第 3 步：检查并复制`:`排版完成：${result.count} 个正文区块${result.preservedEnding?' · 已保留 '+result.preservedEndingNames.join('、'):''}${result.systemEndingAdded?' · 已添加通用落尾':''}。现在进入第 3 步：检查并复制`);
+      setTimeout(()=>showPreflight(wechatCheck(),'第 3 步｜检查并复制'),250);
+    }
   };
   articleInput.value=sanitizePlainText(options.text||'');
   modal.classList.add('show');
+  modalBox.scrollTop=0;
   if(articleInput.value){ refresh(); articleInput.focus(); }
-  else readOneClickClipboard(articleInput,status).then(result=>{ if(!result.ok) articleInput.focus(); });
+  else{
+    status.textContent='请粘贴全文，或主动点击“从剪贴板粘贴”。';
+    articleInput.focus();
+  }
 }
 document.getElementById('oneClickLayoutBtn').onclick=()=>openOneClickLayout();
 document.getElementById('esOneClick').onclick=()=>openOneClickLayout();
+const QUICK_START_KEY='wx-quick-start-v418';
+const quickStartBanner=document.getElementById('quickStartBanner');
+try{ quickStartBanner.hidden=localStorage.getItem(QUICK_START_KEY)==='1'; }catch(_){}
+document.getElementById('quickStartBtn').onclick=()=>openOneClickLayout();
+document.getElementById('quickStartDismiss').onclick=()=>{
+  quickStartBanner.hidden=true;
+  try{ localStorage.setItem(QUICK_START_KEY,'1'); }catch(_){}
+};
 function showRestoredDraftBanner(updatedAt){
   if(!documentState.blocks.length) return;
   const banner=document.getElementById('restoreBanner');
@@ -3487,7 +3610,7 @@ document.getElementById('restoreNew').onclick=()=>{
 };
 
 /* ============ 本机数据管理（只展示数量与体积，不读取正文做诊断）============ */
-const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse',UPDATE_LAST_CHECK_KEY];
+const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse',UPDATE_LAST_CHECK_KEY,QUICK_START_KEY];
 function productStorageKeys(){
   const keys=new Set([KEY,LEGACY_KEY,LEGACY_BACKUP_KEY,SNAPSHOT_KEY,...PRODUCT_SETTING_KEYS]);
   try{
@@ -3599,7 +3722,7 @@ document.getElementById('helpBtn').onclick=()=>{
 /* ============ 关于弹窗 ============ */
 const PRODUCT_EDITION = {"id":"free","label":"免费版"};
 const aboutHTML = `<div style="font-size:13px;color:#5a5566;line-height:1.85;">
-  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.7 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 35 套主题。</p>
+  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.8 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 35 套主题。</p>
   <p style="margin:10px 0 2px;"><b>完整能力</b><br>一键排版文章、安全复制、发布预检、本地草稿、项目备份、35 套主题与 16 套文章结构均可直接使用；版本之间不通过阉割核心发布能力制造差异。</p>
   <p style="margin:10px 0 2px;"><b>开源版范围</b><br>安全复制、备份、Markdown 技术内容识别、35 套主题、16 套文章结构和 33 个区块均可完整使用，不需要注册或付费解锁。</p>
   <p style="margin:10px 0 2px;"><b>更新与服务边界</b><br>已交付版本可长期使用；拾光计划长期维护，V4.x 优先修复影响正常使用的可复现兼容问题。新功能、大版本、一对一指导与个性化服务另行说明。</p>

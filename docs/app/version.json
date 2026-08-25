@@ -1,14 +1,16 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "4.1.7",
-  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.7",
+  "currentVersion": "4.1.8",
+  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.8",
   "onlineUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/",
   "latestHtmlUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html",
   "freeZipUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip",
   "publishedAt": "2026-08-25T00:00:00+08:00",
   "notes": [
-    "修复文件名、标题或短语在长句中合法重现时，被误判为“微信输出重复”的问题。",
-    "微信输出改为逐区块审计，真正的丢字、重复区块和顺序变化仍会阻断。",
-    "新增短语嵌套、代码语言和表头重现回归，主文件、免费版、工作台版和 GitHub 版保持一致。"
+    "首次使用统一为“粘贴全文并排版 → 生成排版 → 检查并复制到微信”三步，默认设置即可完成。",
+    "修复段中图片顺序、行内公式与价格符号区分、裸链接中文标点等 Markdown 技术内容边界。",
+    "微信输出审计新增区块内重复、清洗前后增删文字、组件类型缺失和表格表头缺失阻断。",
+    "在线版成为推荐主入口；离线 HTML 和 ZIP 保留为断网或长期留存备用，不再让新用户先处理下载与解压。",
+    "更新与备份提示明确区分排版器文件、文章备份 JSON 和微信复制页，减少换版本时找错文件或丢失草稿的风险。"
   ]
 }
