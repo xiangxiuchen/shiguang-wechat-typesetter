@@ -81,7 +81,7 @@ Created and maintained by **Crush / [xiangxiuchen](https://github.com/xiangxiuch
 
 ## 项目状态
 
-- 当前公开版本：`V4.1.6`
+- 当前公开版本：`V4.1.7`
 - 微信发布渲染器：`4.3.0-markdown-tech-1`
 - 维护状态：持续维护
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)

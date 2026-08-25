@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "currentVersion": "4.1.6",
-  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.6",
+  "currentVersion": "4.1.7",
+  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.7",
   "onlineUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/",
   "latestHtmlUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html",
   "freeZipUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip",
-  "publishedAt": "2026-08-22T00:00:00+08:00",
+  "publishedAt": "2026-08-25T00:00:00+08:00",
   "notes": [
-    "新增轻量检查更新，可查看当前版本和最新版本。",
-    "在线使用地址保持不变，离线版提供固定最新版下载入口。",
-    "检查更新只读取公开版本清单，不上传文章、标题或草稿。"
+    "修复文件名、标题或短语在长句中合法重现时，被误判为“微信输出重复”的问题。",
+    "微信输出改为逐区块审计，真正的丢字、重复区块和顺序变化仍会阻断。",
+    "新增短语嵌套、代码语言和表头重现回归，主文件、免费版、工作台版和 GitHub 版保持一致。"
   ]
 }
