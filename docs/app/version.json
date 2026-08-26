@@ -1,16 +1,50 @@
 {
-  "schemaVersion": 1,
-  "currentVersion": "4.1.8",
-  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.8",
+  "schemaVersion": 2,
+  "currentVersion": "4.1.9",
+  "appVersion": "4.1.9",
+  "releaseStatus": "released",
+  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.9",
   "onlineUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/",
+  "updatePageUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/updates/",
   "latestHtmlUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html",
   "freeZipUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip",
-  "publishedAt": "2026-08-25T00:00:00+08:00",
+  "publishedAt": "2026-08-26T21:20:01+08:00",
+  "candidateAt": null,
   "notes": [
-    "首次使用统一为“粘贴全文并排版 → 生成排版 → 检查并复制到微信”三步，默认设置即可完成。",
-    "修复段中图片顺序、行内公式与价格符号区分、裸链接中文标点等 Markdown 技术内容边界。",
-    "微信输出审计新增区块内重复、清洗前后增删文字、组件类型缺失和表格表头缺失阻断。",
-    "在线版成为推荐主入口；离线 HTML 和 ZIP 保留为断网或长期留存备用，不再让新用户先处理下载与解压。",
-    "更新与备份提示明确区分排版器文件、文章备份 JSON 和微信复制页，减少换版本时找错文件或丢失草稿的风险。"
-  ]
+    "自动识别“官方核验入口 / 参考资料”等纯链接列表，生成独立参考资料组件，不再套入圈号卡片。",
+    "微信复制稿保留 http/https 安全链接，并显示短域名兜底；链接数量、名称和顺序可在发布预检核对。",
+    "普通列表中的 Markdown 链接保持列表语义，移动端增加自动换行，长网址不再挤坏卡片。",
+    "新增“应用版本 + 内容包版本”双更新中心，后续新增教程或实战包不必假装成应用升级。",
+    "免费版与创作者工作台分别比较自己的内容包版本，不向免费版提示无法获得的工作台内容。",
+    "修复 24 小时缓存后更新圆点消失的问题；检查失败后下次启动会重新尝试。",
+    "继续保留固定 version.json、无凭证 GET 和不上传文章的隐私边界。"
+  ],
+  "app": {
+    "currentVersion": "4.1.9",
+    "notes": [
+      "自动识别“官方核验入口 / 参考资料”等纯链接列表，生成独立参考资料组件，不再套入圈号卡片。",
+      "微信复制稿保留 http/https 安全链接，并显示短域名兜底；链接数量、名称和顺序可在发布预检核对。",
+      "普通列表中的 Markdown 链接保持列表语义，移动端增加自动换行，长网址不再挤坏卡片。",
+      "新增“应用版本 + 内容包版本”双更新中心，后续新增教程或实战包不必假装成应用升级。",
+      "免费版与创作者工作台分别比较自己的内容包版本，不向免费版提示无法获得的工作台内容。",
+      "修复 24 小时缓存后更新圆点消失的问题；检查失败后下次启动会重新尝试。",
+      "继续保留固定 version.json、无凭证 GET 和不上传文章的隐私边界。"
+    ]
+  },
+  "contentPacks": {
+    "free": {
+      "currentVersion": "2026.08.0",
+      "label": "免费版内容包",
+      "notes": [
+        "免费版继续包含完整排版内核、快速上手、示例项目与发布说明。"
+      ]
+    },
+    "creator-workbench": {
+      "currentVersion": "2026.08.1",
+      "label": "创作者工作台内容包",
+      "notes": [
+        "新增“证据驱动长教程 / SOP 实战包”和可直接导入的 50 区块原创黄金项目。"
+      ]
+    }
+  }
 }

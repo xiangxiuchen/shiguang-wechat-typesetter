@@ -1,8 +1,10 @@
 {
   "schemaVersion": 1,
   "product": "拾光排版器",
-  "version": "4.1.8",
+  "version": "4.1.9",
+  "releaseStatus": "released",
   "edition": "open-source-free",
+  "contentPackVersion": "2026.08.0",
   "license": "MPL-2.0",
   "source": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter",
   "guarantees": {
@@ -21,45 +23,51 @@
   "files": [
     {
       "path": "docs/app/index.html",
-      "packagePath": "shiguang-wechat-typesetter-v4.1.8.html",
-      "bytes": 362031,
-      "sha256": "083f649c629377afd17df0e75f7efa230cbfbcbd906d86d18cefe87a4b10336d"
+      "packagePath": "shiguang-wechat-typesetter-v4.1.9.html",
+      "bytes": 382557,
+      "sha256": "d9ee1622629e544b2e38a87499d7b7acd3f92c6da11a2fd964cbb6bfb378865d"
     },
     {
       "path": "docs/app/version.json",
       "packagePath": "docs/app/version.json",
-      "bytes": 1269,
-      "sha256": "b295d2b07171c0562b40460a679ab188334cd826c708309a33f7cab43029f115"
+      "bytes": 3049,
+      "sha256": "ba69288c661adbc4874e1e0723adcb2429bbf508186c8b9b99c9badedf4a3988"
+    },
+    {
+      "path": "docs/updates/index.html",
+      "packagePath": "docs/updates/index.html",
+      "bytes": 5490,
+      "sha256": "ae0a7450c674c04baf59a802c74019a2e2f604b5bca3b2447f17cad539a8eac0"
     },
     {
       "path": "dist/shiguang-wechat-typesetter-latest.html",
       "packagePath": "shiguang-wechat-typesetter-latest.html",
-      "bytes": 362031,
-      "sha256": "083f649c629377afd17df0e75f7efa230cbfbcbd906d86d18cefe87a4b10336d"
+      "bytes": 382557,
+      "sha256": "d9ee1622629e544b2e38a87499d7b7acd3f92c6da11a2fd964cbb6bfb378865d"
     },
     {
-      "path": "dist/shiguang-wechat-typesetter-v4.1.8-free.zip",
-      "packagePath": "shiguang-wechat-typesetter-v4.1.8-free.zip",
-      "bytes": 123213,
-      "sha256": "0d84ae5edd8ecf93d5d8d4ad39d88b317cfad8fa22bed83d0866f53d7251891e"
+      "path": "dist/shiguang-wechat-typesetter-v4.1.9-free.zip",
+      "packagePath": "shiguang-wechat-typesetter-v4.1.9-free.zip",
+      "bytes": 128817,
+      "sha256": "0721f8a10af3c57fe0744f1acefbdf976f063049ed47df46966b0725584eead6"
     },
     {
       "path": "dist/shiguang-wechat-typesetter-free.zip",
       "packagePath": "shiguang-wechat-typesetter-free.zip",
-      "bytes": 123213,
-      "sha256": "0d84ae5edd8ecf93d5d8d4ad39d88b317cfad8fa22bed83d0866f53d7251891e"
+      "bytes": 128817,
+      "sha256": "0721f8a10af3c57fe0744f1acefbdf976f063049ed47df46966b0725584eead6"
     },
     {
       "path": "dist/RELEASE_NOTES.md",
       "packagePath": "RELEASE_NOTES.md",
-      "bytes": 1631,
-      "sha256": "fdaf61eec0dcad185aac2d05562fbc95df0684cc1457d4641737d23a524cc5c4"
+      "bytes": 1850,
+      "sha256": "44568f50318711fd9ce78528bc0475592bf8018897e2c6a3b50f4174acbf53d1"
     },
     {
       "path": "dist/SHA256SUMS.txt",
       "packagePath": "SHA256SUMS.txt",
       "bytes": 421,
-      "sha256": "175636e95757c6fdb5286f7377087c75a0894d63c0a6ac8e62d051cd638be81a"
+      "sha256": "4c6d0ba31063e4133c74495d20e985d9a4ee29dc65bab5fb2027f6f744a97dbf"
     },
     {
       "path": "examples/shiguang-launch-example.json",

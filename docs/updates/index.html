@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>拾光排版器更新中心</title>
+<meta name="description" content="拾光排版器应用版本、内容包版本、兼容说明与安全下载入口。">
+<style>
+  :root{--ink:#282332;--muted:#716b7b;--accent:#6a4c93;--soft:#f3edf8;--line:#e8e1ed;--paper:#fff;--bg:#f7f5f2;--warm:#9b631c}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.75}
+  main{width:min(920px,calc(100% - 32px));margin:0 auto;padding:48px 0 72px}.eyebrow{color:var(--accent);font-size:13px;font-weight:800;letter-spacing:.08em}
+  h1{font-size:clamp(30px,6vw,48px);line-height:1.18;margin:8px 0 14px}.lead{max-width:720px;color:var(--muted);font-size:16px;margin:0}
+  .hero,.section{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:26px;margin-top:22px;box-shadow:0 12px 36px rgba(55,42,71,.05)}
+  .status{display:inline-flex;align-items:center;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800}.status.candidate{background:#fff3dc;color:#8c5a16}.status.released{background:#e7f4eb;color:#276d48}
+  .versions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.version-card{padding:16px;border-radius:14px;background:var(--soft)}
+  .version-card span{display:block;color:var(--muted);font-size:12px}.version-card b{display:block;margin-top:3px;font-size:22px;color:var(--accent)}
+  h2{font-size:20px;margin:0 0 12px} ul,ol{padding-left:22px;margin:8px 0}.pack-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .pack-card{border:1px solid var(--line);border-radius:14px;padding:16px}.pack-card div{display:flex;justify-content:space-between;gap:12px}.pack-card b{color:var(--accent)}.pack-card p{color:var(--muted);margin:8px 0}.pack-card small{color:var(--warm)}
+  .notice{padding:12px 14px;border-radius:12px;background:#fff7e8;color:#765229}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.actions a{display:inline-flex;text-decoration:none;border-radius:11px;padding:10px 15px;font-weight:800;font-size:13px;background:var(--accent);color:#fff}.actions a.secondary{background:#fff;color:var(--accent);border:1px solid #d9cee2}
+  footer{color:var(--muted);font-size:12px;margin-top:24px;text-align:center}@media(max-width:640px){main{padding-top:28px}.hero,.section{padding:20px}.versions,.pack-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">SHIGUANG UPDATE CENTER</div>
+  <h1>拾光排版器更新中心</h1>
+  <p class="lead">应用功能和内容包分开记录。旧版本可以继续使用；更新不会自动覆盖你的 HTML、文章备份或本机草稿。</p>
+  <section class="hero">
+    <span class="status released">正式发布</span>
+    <div class="versions">
+      <div class="version-card"><span>当前正式版</span><b>V4.1.9</b></div>
+      <div class="version-card"><span>最新应用版</span><b>V4.1.9</b></div>
+    </div>
+
+  </section>
+  <section class="section"><h2>这次应用更新</h2><ul><li>自动识别“官方核验入口 / 参考资料”等纯链接列表，生成独立参考资料组件，不再套入圈号卡片。</li><li>微信复制稿保留 http/https 安全链接，并显示短域名兜底；链接数量、名称和顺序可在发布预检核对。</li><li>普通列表中的 Markdown 链接保持列表语义，移动端增加自动换行，长网址不再挤坏卡片。</li><li>新增“应用版本 + 内容包版本”双更新中心，后续新增教程或实战包不必假装成应用升级。</li><li>免费版与创作者工作台分别比较自己的内容包版本，不向免费版提示无法获得的工作台内容。</li><li>修复 24 小时缓存后更新圆点消失的问题；检查失败后下次启动会重新尝试。</li><li>继续保留固定 version.json、无凭证 GET 和不上传文章的隐私边界。</li></ul></section>
+  <section class="section"><h2>内容包版本</h2><div class="pack-grid">
+    <article class="pack-card">
+      <div><span>免费版内容包</span><b>2026.08.0</b></div>
+      <p>免费版继续包含完整排版内核、快速上手、示例项目与发布说明。</p>
+      <small>随免费版 ZIP 交付</small>
+    </article>
+    <article class="pack-card">
+      <div><span>创作者工作台内容包</span><b>2026.08.1</b></div>
+      <p>新增“证据驱动长教程 / SOP 实战包”和可直接导入的 50 区块原创黄金项目。</p>
+      <small>从原购买或交付渠道获取</small>
+    </article></div></section>
+  <section class="section">
+    <h2>安全升级方法</h2>
+    <ol><li>先保留旧版 HTML，不要直接删除。</li><li>从旧版导出文章备份 JSON。</li><li>打开新版并恢复备份，核对标题、区块、图片清单和固定结尾。</li><li>正式发布仍要完成微信粘贴、保存草稿、重新打开和手机预览。</li></ol>
+    <div class="actions"><a href="https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/">打开在线版</a><a class="secondary" href="https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest">查看 GitHub 最新 Release</a></div>
+  </section>
+  <footer>公众号：Crush带你玩转海外市场营销 · 更新关键词：GitHub拾光</footer>
+</main>
+</body>
+</html>

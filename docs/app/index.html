@@ -9,7 +9,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>拾光排版器 V4.1.8 · 开源免费版</title>
+<title>拾光排版器 V4.1.9 · 开源免费版</title>
 <style>
   :root{
     --accent:#6a4c93; --accent-2:#b39ddb; --accent-soft:#f1ecf7;
@@ -27,6 +27,8 @@
   .brand .ver{ position:relative; display:inline-flex; align-items:center; font-size:11px; color:#fff; background:var(--accent); border-radius:6px; padding:2px 7px; font-weight:700; cursor:pointer; user-select:none; outline:none; }
   .brand .ver:hover,.brand .ver:focus-visible{ box-shadow:0 0 0 3px rgba(106,76,147,.18); }
   .brand .ver.has-update::after{ content:""; position:absolute; width:8px; height:8px; right:-4px; top:-4px; border-radius:50%; background:#f28c45; border:2px solid #fff; }
+  .brand .ver.has-app-update::after{ background:#d94d45; }
+  .brand .ver.has-app-update.has-content-update::before{ content:""; position:absolute; width:7px; height:7px; right:6px; top:-4px; border-radius:50%; background:#f2a23a; border:2px solid #fff; }
   .top-right{ display:flex; align-items:center; gap:9px; min-width:0; overflow-x:auto; }
   .save-state{ font-size:12px; color:var(--muted); }
   .btn-toggle,.btn-check{ border:1px solid var(--border); background:var(--panel-2); color:#4a4458; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; }
@@ -234,12 +236,12 @@
   <meta name="author" content="Crush / xiangxiuchen">
   <meta name="license" content="MPL-2.0">
   <meta name="shiguang-edition" content="open-source-free">
-  <meta name="shiguang-build" content="2026-08-25T04:17:44.668Z">
+  <meta name="shiguang-build" content="2026-08-26T04:30:00.000Z">
 </head>
 <body>
   <div class="screen-warning">当前版本为电脑端编辑工具；建议使用宽度 1024px 以上的浏览器编辑，手机端只做发布后预览。</div>
   <div class="topbar">
-    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.8 · 开源免费版</span></div>
+    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.9 · 开源免费版</span></div>
     <div class="top-right">
       <button class="btn-check" id="undoBtn" disabled>撤销</button>
       <button class="btn-check" id="redoBtn" disabled>重做</button>
@@ -548,7 +550,7 @@ const SCHEMA = {
   meta:{ name:'阅读标签', fields:[['words','字数','text'],['minutes','阅读时长','text'],['fit','适读人群/期数','text']] },
   clist:{ name:'圈号列表', fields:[['items','条目（每行一条，可写"标题|说明"）','list']] },
   table:{ name:'数据表格（高风险）', fields:[['head','表头（Tab 或 | 分列）','grid-head'],['rows','数据行（每行一条，Tab 或 | 分列；发布前必须手机预览）','grid']] },
-  refs:{ name:'参考资料', fields:[['title','栏目标题','text'],['items','条目（每行：标题|来源说明）','list']] },
+  refs:{ name:'参考资料', fields:[['title','栏目标题','text'],['items','资料链接（每行：资料名称＋网址；来源可选）','refs']] },
   triple:{ name:'三连提示卡', fields:[['lead','引导句（不可点击）','area'],['acts','动作名（每行一个）','list'],['icons','图标（每行一个，emoji）','list'],['tail','底部文案','text']] },
   next:{ name:'下期预告', fields:[['title','标题','text'],['body','预告内容','area']] },
   hist:{ name:'往期推荐', fields:[['title','标题','text'],['items','文章（每行：标题|说明）','list']] },
@@ -592,18 +594,21 @@ const PUBLISH_POLICY=Object.freeze({
   follow:publishPolicy('degrade','关注动作降为静态文案'),tags:publishPolicy('degrade','标签降为静态胶囊'),
   image:publishPolicy('local-only','仅作为插图位置锚点，不直接复制'),caption:publishPolicy('stable','图注'),
   divider:publishPolicy('degrade','分割线改为容器上边框'),recap:publishPolicy('stable','要点回顾'),
-  refs:publishPolicy('stable','参考资料文字清单'),footer:publishPolicy('stable','结尾'),
+  refs:publishPolicy('stable','安全链接＋短域名兜底的参考资料清单'),footer:publishPolicy('stable','结尾'),
   triple:publishPolicy('degrade','点赞在看转发降为静态提示'),next:publishPolicy('stable','下期预告'),
   hist:publishPolicy('stable','往期推荐文字清单')
 });
 const APP_SCHEMA = 2;
-const APP_VERSION = '4.1.8';
-const WECHAT_RENDERER_VERSION = '4.3.0-markdown-tech-1';
-const SHIGUANG_ONE_CLICK_LAYOUT_V1 = '1.1.0';
+const APP_VERSION = '4.1.9';
+const WECHAT_RENDERER_VERSION = '4.4.0-link-reference-1';
+const SHIGUANG_ONE_CLICK_LAYOUT_V1 = '1.2.0';
+const CONTENT_PACK_EDITION = "free";
+const CONTENT_PACK_VERSION = "2026.08.0";
 const SHIGUANG_UPDATE_MANIFEST_URL = 'https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/version.json';
 const UPDATE_DOWNLOAD_URL = 'https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html';
 const UPDATE_FREE_ZIP_URL = 'https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip';
 const UPDATE_ONLINE_URL = 'https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/';
+const UPDATE_PAGE_URL = 'https://xiangxiuchen.github.io/shiguang-wechat-typesetter/updates/';
 const UPDATE_CHECK_INTERVAL_MS = 24*60*60*1000;
 const UPDATE_LAST_CHECK_KEY = 'wx-typesetter-update-check-v1';
 const KEY = 'wx-typesetter-v41';
@@ -711,7 +716,9 @@ function normalizeContent(type, content){
   def.fields.forEach(([key,,kind])=>{
     if(!Object.prototype.hasOwnProperty.call(src,key)) return;
     const value = src[key];
-    if(kind==='list' || kind==='steplist'){
+    if(kind==='refs'){
+      out[key] = normalizeReferenceItems(value);
+    }else if(kind==='list' || kind==='steplist'){
       out[key] = Array.isArray(value) ? value.map(v=>sanitizePlainText(v).trim()).filter(Boolean) : splitLines(sanitizePlainText(value||''));
     }else if(kind==='grid-head'){
       out[key]=normalizeTableHead(value);
@@ -765,6 +772,89 @@ function getTheme(idx){
   return (idx===themeIndex && safePrimary) ? Object.assign({},base,{primary:safePrimary}) : base;
 }
 function curTheme(){ return getTheme(themeIndex); }
+
+/* ============ 链接兼容基础（渲染 / 导入 / 发布共享）============ */
+function safeLinkDomain(value){
+  const href=normalizeHttpUrl(value);
+  if(!href) return '';
+  try{ return new URL(href).hostname.replace(/^www\./i,''); }
+  catch(_){ return ''; }
+}
+function markdownSafeHrefLiteral(value){
+  const href=normalizeHttpUrl(value);
+  return href?href.replace(/\(/g,'%28').replace(/\)/g,'%29'):'';
+}
+function listItemLinkParts(value){
+  const raw=sanitizePlainText(value==null?'':String(value));
+  const parts=[];
+  const pattern=/\[([^\]\n]+)\]\((https?:\/\/[^\s<>()]+)\)/gi;
+  let cursor=0,match;
+  while((match=pattern.exec(raw))){
+    const href=normalizeHttpUrl(match[2]);
+    if(!href) continue;
+    if(match.index>cursor) parts.push({type:'text',text:raw.slice(cursor,match.index)});
+    parts.push({type:'link',label:sanitizePlainText(match[1]).trim()||href,url:href});
+    cursor=match.index+match[0].length;
+  }
+  if(cursor<raw.length) parts.push({type:'text',text:raw.slice(cursor)});
+  return parts.length?parts:[{type:'text',text:raw}];
+}
+function listItemHasSafeLink(value){ return listItemLinkParts(value).some(part=>part.type==='link'); }
+function listItemVisibleText(value){ return listItemLinkParts(value).map(part=>part.type==='link'?part.label:part.text).join('').trim(); }
+function referenceItemData(value){
+  if(value&&typeof value==='object'){
+    const label=sanitizePlainText(value.label||value.title||'').trim();
+    const source=sanitizePlainText(value.source||value.description||'').trim();
+    const url=normalizeHttpUrl(value.url||value.href||'');
+    return {label:label||url||'未命名资料',source,url};
+  }
+  const raw=sanitizePlainText(value==null?'':String(value)).trim();
+  if(!raw) return {label:'',source:'',url:''};
+  if(raw[0]==='{'){
+    try{ const parsed=JSON.parse(raw); if(parsed&&parsed.sg==='ref1') return referenceItemData(parsed); }
+    catch(_){ /* 继续兼容旧格式 */ }
+  }
+  const markdown=raw.match(/^\[([^\]]+)\]\((https?:\/\/[^\s<>()]+)\)(?:\s*[｜|]\s*(.*))?$/i);
+  if(markdown) return {label:sanitizePlainText(markdown[1]).trim(),source:sanitizePlainText(markdown[3]||'').trim(),url:normalizeHttpUrl(markdown[2])};
+  const pieces=raw.split(/\s*[｜|]\s*/).map(part=>part.trim()).filter(Boolean);
+  let url='',urlIndex=-1;
+  pieces.forEach((part,index)=>{ if(!url){ const candidate=normalizeHttpUrl(part); if(candidate){ url=candidate; urlIndex=index; } } });
+  if(urlIndex>=0){ const rest=pieces.filter((_,index)=>index!==urlIndex); return {label:rest[0]||url,source:rest.slice(1).join('｜'),url}; }
+  const rawUrl=raw.match(/https?:\/\/[^\s<>()]+/i);
+  if(rawUrl){
+    url=normalizeHttpUrl(rawUrl[0]);
+    const label=raw.slice(0,rawUrl.index).replace(/[：:：\s｜|—-]+$/,'').trim();
+    const source=raw.slice((rawUrl.index||0)+rawUrl[0].length).replace(/^[\s｜|—-]+/,'').trim();
+    return {label:label||url,source,url};
+  }
+  return {label:pieces[0]||raw,source:pieces.slice(1).join('｜'),url:''};
+}
+function encodeReferenceItem(value){
+  const item=referenceItemData(value);
+  if(!item.label&&!item.url) return '';
+  return JSON.stringify({sg:'ref1',label:item.label||item.url,source:item.source||'',url:item.url||''});
+}
+function normalizeReferenceItems(value){
+  const rows=Array.isArray(value)?value:splitLines(sanitizePlainText(value||''));
+  return rows.map(encodeReferenceItem).filter(Boolean).slice(0,MAX_LIST_ITEMS);
+}
+function formatReferenceEditorItem(value){
+  const item=referenceItemData(value);
+  if(!item.label&&!item.url) return '';
+  const head=item.url?'['+(item.label||item.url)+']('+markdownSafeHrefLiteral(item.url)+')':item.label;
+  return head+(item.source?'｜'+item.source:'');
+}
+function formatReferenceEditorItems(value){ return (Array.isArray(value)?value:[]).map(formatReferenceEditorItem).filter(Boolean).join('\n'); }
+function parseReferenceEditorItems(value){ return normalizeReferenceItems(splitLines(value)); }
+function isReferenceHeadingText(value){
+  const text=sanitizePlainText(value==null?'':String(value)).replace(/[：:｜|·•\s]+$/g,'').trim();
+  return /^(?:官方核验(?:入口|链接)?|官方资料|参考资料|资料来源|信息来源|来源|相关链接|延伸阅读|参考文献|references?|sources?)$/i.test(text);
+}
+function referenceHeadingFromBlock(block){
+  if(!block||!['h2','h3','p','strong'].includes(block.type)) return '';
+  const text=oneClickPlain(oneClickBlockContent(block).text||'').trim();
+  return isReferenceHeadingText(text)?text.replace(/[：:｜|·•\s]+$/g,'').trim():'';
+}
 
 /* ============ 样式生成（全部内联）============ */
 function blockStyle(type, t, g){
@@ -907,7 +997,25 @@ function inlineValue(value, fallback){ return sanitizeInlineHtml(value==null?(fa
 function inlineField(content,key,fallback){ return inlineValue(fieldValue(content,key,fallback),''); }
 function textField(content,key,fallback){ return sanitizePlainText(fieldValue(content,key,fallback)); }
 function listField(content,key,fallback){ const value=fieldValue(content,key,fallback); return Array.isArray(value)?value:(fallback||[]); }
-function listItems(items, t, g){ return (items||[]).map(i=>`<li style="margin:6px 0;">${escapeHtml(i)}</li>`).join(''); }
+function safeAnchorHtml(label,url,t,scale){
+  const href=normalizeHttpUrl(url),text=sanitizePlainText(label||href).trim();
+  if(!href) return escapeHtml(text);
+  const domain=safeLinkDomain(href);
+  const color=t&&t.primary?t.primary:'#2f6f9f';
+  return `<a href="${escapeHtml(href)}" style="color:${color};text-decoration:underline;text-decoration-thickness:1px;overflow-wrap:anywhere;word-break:break-word;">${escapeHtml(text||domain||href)}</a>${domain?`<span style="font-size:${12*(scale||1)}px;color:#7a8781;overflow-wrap:anywhere;word-break:break-word;">（来源域名：${escapeHtml(domain)}）</span>`:''}`;
+}
+function linkedListItemHtml(value,t,g){
+  return listItemLinkParts(value).map(part=>part.type==='link'?safeAnchorHtml(part.label,part.url,t,g&&g.scale):escapeHtml(part.text)).join('');
+}
+function referenceRowsHtml(items,t,g){
+  const txt=t&&t.tier==='v4'?t.text:(t&&t.primary?t.primary:'#25332d');
+  return (items||[]).map((value,index)=>{
+    const item=referenceItemData(value),label=item.label||item.url||'未命名资料';
+    const title=item.url?safeAnchorHtml(label,item.url,t,g&&g.scale):escapeHtml(label);
+    return `<p style="font-size:${12*((g&&g.scale)||1)}px;color:#7a8781;line-height:1.7;margin:7px 0;text-align:left;letter-spacing:0;overflow-wrap:anywhere;word-break:break-word;"><strong style="color:${txt};margin-right:6px;">[${String(index+1).padStart(2,'0')}]</strong><span>${title}</span>${item.source?`<span style="display:block;margin-left:28px;color:#909b95;">${escapeHtml(item.source)}</span>`:''}</p>`;
+  }).join('');
+}
+function listItems(items, t, g){ return (items||[]).map(i=>`<li style="margin:6px 0;">${linkedListItemHtml(i,t,g)}</li>`).join(''); }
 function splitLines(s){ return sanitizePlainText(s||'').split(/\n+/).map(x=>x.trim()).filter(Boolean); }
 
 /* 共享章节表面：编辑预览与微信发布共用同一结构和安全关键样式。 */
@@ -1006,7 +1114,7 @@ function buildEditorComponent(type, t, g, c){
     }
     case 'refs': {
       const items=listField(c,'items',['资料一|来源说明','资料二|来源说明']);
-      return `<section data-type="refs" style="${s}"><div style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin-bottom:10px;letter-spacing:1px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','REFERENCES · 参考资料'))}</div>${items.map((it,i)=>{ const p=String(it).split('|'); return `<div style="font-size:${12*g.scale}px;color:#888;line-height:1.7;margin:5px 0;"><span style="color:${txt};">[${String(i+1).padStart(2,'0')}]</span> ${escapeHtml(p[0])}${p[1]?` <span style="color:#aaa;">— ${escapeHtml(p[1])}</span>`:''}</div>`; }).join('')}</section>`;
+      return `<section data-type="refs" style="${s}"><div style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin-bottom:10px;letter-spacing:1px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','REFERENCES · 参考资料'))}</div>${referenceRowsHtml(items,t,g)}</section>`;
     }
     case 'triple': {
       const acts=listField(c,'acts',['点赞','在看','转发']);
@@ -1054,19 +1162,23 @@ function publishInlineHtml(value,t){
   Array.from(template.content.querySelectorAll('a')).forEach(a=>{
     const href=normalizeHttpUrl(a.getAttribute('href'));
     const label=(a.textContent||'').trim()||href;
-    const wrap=document.createElement('span');
-    wrap.style.cssText='text-decoration:underline;';
-    while(a.firstChild) wrap.appendChild(a.firstChild);
-    const url=document.createElement('span');
-    url.style.cssText='font-size:12px;color:#7a8781;overflow-wrap:anywhere;';
-    url.textContent=href&&label!==href?'（'+href+'）':'';
-    a.replaceWith(wrap,url);
+    if(!href){ a.replaceWith(document.createTextNode(label)); return; }
+    a.setAttribute('href',href);
+    a.removeAttribute('target'); a.removeAttribute('rel');
+    a.style.cssText='color:'+(t&&t.primary?t.primary:'#2f6f9f')+';text-decoration:underline;text-decoration-thickness:1px;overflow-wrap:anywhere;word-break:break-word;';
+    const domain=safeLinkDomain(href);
+    if(domain){
+      const fallback=document.createElement('span');
+      fallback.style.cssText='font-size:12px;color:#7a8781;overflow-wrap:anywhere;word-break:break-word;';
+      fallback.textContent='（来源域名：'+domain+'）';
+      a.after(fallback);
+    }
   });
   return template.innerHTML;
 }
 function publishInlineField(content,key,fallback,t){ return publishInlineHtml(fieldValue(content,key,fallback),t); }
 function publishTextLines(value,t,g,prefix){
-  return (value||[]).map((item,index)=>`<p style="margin:0 0 ${7*g.space}px;font-size:${15*g.scale}px;line-height:1.75;color:${t.text};"><strong style="color:${t.accent};margin-right:7px;">${escapeHtml(typeof prefix==='function'?prefix(index):prefix||'•')}</strong><span>${escapeHtml(item)}</span></p>`).join('');
+  return (value||[]).map((item,index)=>`<p style="margin:0 0 ${7*g.space}px;font-size:${15*g.scale}px;line-height:1.75;color:${t.text};overflow-wrap:anywhere;word-break:break-word;"><strong style="color:${t.accent};margin-right:7px;">${escapeHtml(typeof prefix==='function'?prefix(index):prefix||'•')}</strong><span>${linkedListItemHtml(item,t,g)}</span></p>`).join('');
 }
 function buildWechatComponent(type,t,g,c,ctx,record){
   c=c||{}; ctx=ctx||{};
@@ -1121,7 +1233,7 @@ function buildWechatComponent(type,t,g,c,ctx,record){
       }
       return `<section data-type="table" style="${s}">${rows.map((row,ri)=>`<section style="display:block;background:${ri%2?t.card:'#fff'};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin:0 0 ${10*g.space}px;">${head.map((label,ci)=>`<p style="margin:${ci?6:0}px 0 0;font-size:${14*g.scale}px;line-height:1.7;color:${t.text};"><strong style="color:${txt};margin-right:8px;">${escapeHtml(label||('第'+(ci+1)+'列'))}</strong><span>${escapeHtml(row[ci]||'')}</span></p>`).join('')}</section>`).join('')}</section>`;
     }
-    case 'refs': return `<section data-type="refs" style="${s}"><p style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin:0 0 10px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','参考资料'))}</p>${listField(c,'items',[]).map((item,i)=>{const pair=splitPublishPair(item);return `<p style="font-size:${12*g.scale}px;color:#888;line-height:1.7;margin:5px 0;"><strong style="color:${txt};">[${String(i+1).padStart(2,'0')}]</strong> ${escapeHtml(pair.title)}${pair.description?' — '+escapeHtml(pair.description):''}</p>`;}).join('')}</section>`;
+    case 'refs': return `<section data-type="refs" style="${s}"><p style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin:0 0 10px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','参考资料'))}</p>${referenceRowsHtml(listField(c,'items',[]),t,g)}</section>`;
     case 'triple': {
       const acts=listField(c,'acts',[]),icons=listField(c,'icons',[]);
       return `<section data-type="triple" style="${s}"><p style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin:0 0 ${10*g.space}px;">${publishInlineField(c,'lead','',t)}</p><p style="margin:0;text-align:center;line-height:1.8;">${acts.map((action,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${t.accent};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};">${escapeHtml(icons[i]||'')} <strong>${escapeHtml(action)}</strong></span>`).join('')}</p><p style="margin:${12*g.space}px 0 0;font-size:10px;letter-spacing:3px;color:#999;">${escapeHtml(textField(c,'tail',''))}</p></section>`;
@@ -1577,14 +1689,14 @@ function stateWithinLimits(snapshot){
     for(const [key,,kind] of def.fields){
       const hasValue=!!(block.content&&Object.prototype.hasOwnProperty.call(block.content,key));
       const value=hasValue?block.content[key]:(DEFAULT_CONTENT[block.type]||{})[key];
-      if(kind==='list'||kind==='steplist'){
+      if(kind==='list'||kind==='steplist'||kind==='refs'){
         let items;
         if(Array.isArray(value)){
           if(value.some(item=>scalar(item)===null))return false;
           items=value.map(item=>sanitizePlainText(scalar(item)).trim()).filter(Boolean);
         }else{
           const raw=scalar(value); if(raw===null)return false;
-          items=splitLines(sanitizePlainText(raw));
+          items=kind==='refs'?normalizeReferenceItems(raw):splitLines(sanitizePlainText(raw));
         }
         if(items.length>MAX_LIST_ITEMS)return false;
         if(!addRenderUnits(items.length))return false;
@@ -1929,6 +2041,7 @@ function buildPanel(el){
     else if(kind==='grid-head'){ input=document.createElement('textarea'); input.rows=2; input.value=normalizeTableHead(c[key]).join('\t'); }
     else if(kind==='grid'){ input=document.createElement('textarea'); input.rows=7; input.value=normalizeTableRows(c[key]).map(row=>row.join('\t')).join('\n'); }
     else if(kind==='area'){ input=document.createElement('textarea'); input.rows=3; input.value=sanitizePlainText(c[key]||''); }
+    else if(kind==='refs'){ input=document.createElement('textarea'); input.rows=6; input.value=formatReferenceEditorItems(c[key]); }
     else if(kind==='list'||kind==='steplist'){ input=document.createElement('textarea'); input.rows=4; input.value=(c[key]||[]).join('\n'); }
     else { input=document.createElement('input'); input.value=sanitizePlainText(c[key]||''); }
     input.dataset.field=key;
@@ -1940,7 +2053,8 @@ function buildPanel(el){
       const selectionOffset=rich?captureSelectionOffset(input):null;
       const rawRich=rich?input.innerHTML:'';
       let val=rich?sanitizeInlineHtml(rawRich):input.value;
-      if(kind==='list') val=splitLines(val);
+      if(kind==='refs') val=parseReferenceEditorItems(val);
+      else if(kind==='list') val=splitLines(val);
       else if(kind==='steplist') val=splitLines(val);
       else if(kind==='grid-head') val=normalizeTableHead(val);
       else if(kind==='grid') val=normalizeTableRows(val);
@@ -1954,6 +2068,7 @@ function buildPanel(el){
       if(!stateWithinLimits(documentState)){
         current.content=previous;
         if(rich){ input.innerHTML=sanitizeInlineHtml(previous[key]||''); placeCaretAtEnd(input); }
+        else if(kind==='refs') input.value=formatReferenceEditorItems(previous[key]);
         else if(kind==='list'||kind==='steplist') input.value=(previous[key]||[]).join('\n');
         else if(kind==='grid-head') input.value=normalizeTableHead(previous[key]).join('\t');
         else if(kind==='grid') input.value=normalizeTableRows(previous[key]).map(row=>row.join('\t')).join('\n');
@@ -1967,7 +2082,7 @@ function buildPanel(el){
     });
   });
   const hint=document.createElement('div'); hint.className='prop-hint';
-  hint.textContent=type==='formula'?'公式会完整保留在项目中；公众号稳定发布前需按预检清单转成图片。':type==='code'?'代码只规范 Windows 换行，缩进、Tab、空行和符号会逐字符保留。':DIRECT_EDITABLE.has(type)?'编辑即时生效；此类简单文字也可直接在正文中修改。':'编辑即时生效；此类结构组件请通过本面板修改，避免破坏排版结构。';
+  hint.textContent=type==='refs'?'每行写成：[资料名称](https://网址)｜来源说明。复制时会保留安全链接，并显示短域名作为微信兜底。':type==='formula'?'公式会完整保留在项目中；公众号稳定发布前需按预检清单转成图片。':type==='code'?'代码只规范 Windows 换行，缩进、Tab、空行和符号会逐字符保留。':DIRECT_EDITABLE.has(type)?'编辑即时生效；此类简单文字也可直接在正文中修改。':'编辑即时生效；此类结构组件请通过本面板修改，避免破坏排版结构。';
   propFields.appendChild(hint);
   const tailButton=document.createElement('button');
   const isTailStart=documentState.fixedTailStartId===blockId;
@@ -2047,7 +2162,7 @@ authorInput.oninput=()=>{ const key='meta:author'; beginHistory(key); documentSt
 
 /* ============ 导入 / 清空 / 示例 ============ */
 /* ============ 一键排版文章核心 ============ */
-const SHIGUANG_LAYOUT_RECIPE_V1='2.0.0';
+const SHIGUANG_LAYOUT_RECIPE_V1='2.1.0';
 const ONE_CLICK_LAYOUT_DENSITIES=Object.freeze({
   clean:Object.freeze({id:'clean',label:'清爽',sectionCards:0,maxSectionCards:0,charsPerCard:Infinity}),
   balanced:Object.freeze({id:'balanced',label:'均衡',sectionCards:2,maxSectionCards:6,charsPerCard:900}),
@@ -2232,7 +2347,7 @@ function markdownInlineVisibleText(tokens,diagnostics){
       const href=normalizeHttpUrl(bare.href||'');
       if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(bare.href||token.href||'')); return label+'（已拦截不安全链接）'+bare.suffix; }
       diagnostics.links.push({text:label,url:href,title:sanitizePlainText(token.title||'')});
-      return label+(label!==href?'（'+href+'）':'')+bare.suffix;
+      return label+bare.suffix;
     }
     if(token.type==='image'){
       const image=markdownImageData(token);
@@ -2241,6 +2356,54 @@ function markdownInlineVisibleText(tokens,diagnostics){
     }
     return sanitizePlainText(token.text==null?(token.raw||''):token.text);
   }).join('');
+}
+function markdownInlineListText(tokens,diagnostics){
+  const list=Array.isArray(tokens)?tokens:[];
+  return list.map(token=>{
+    if(!token||typeof token!=='object') return '';
+    if(token.type==='checkbox') return token.checked?'☑ ':'☐ ';
+    if(token.type==='text'||token.type==='escape'||token.type==='strong'||token.type==='em'||token.type==='del') return token.tokens?markdownInlineListText(token.tokens,diagnostics):sanitizePlainText(token.text==null?(token.raw||''):token.text).replace(/(\*\*|__)([^\n]+?)\1/g,'$2');
+    if(token.type==='codespan'){ diagnostics.inlineCode++; return sanitizePlainText(token.text||''); }
+    if(token.type==='inlineFormula'){ diagnostics.inlineFormulas.push(sanitizePlainText(token.text||'')); return sanitizePlainText(token.text||''); }
+    if(token.type==='br') return '\n';
+    if(token.type==='link'){
+      const bare=markdownBareLinkParts(token);
+      const label=bare.suffix?bare.label:(markdownInlineVisibleText(token.tokens,{images:[],links:[],unsafeLinks:[],inlineFormulas:[],inlineCode:0})||sanitizePlainText(token.text||token.href||''));
+      const href=normalizeHttpUrl(bare.href||'');
+      if(!href){ diagnostics.unsafeLinks.push(sanitizePlainText(bare.href||token.href||'')); return label+'（已拦截不安全链接）'+bare.suffix; }
+      diagnostics.links.push({text:label,url:href,title:sanitizePlainText(token.title||'')});
+      return '['+label.replace(/[\[\]]/g,'')+']('+markdownSafeHrefLiteral(href)+')'+bare.suffix;
+    }
+    if(token.type==='image'){
+      const image=markdownImageData(token); diagnostics.images.push(image); return '';
+    }
+    if(token.tokens) return markdownInlineListText(token.tokens,diagnostics);
+    return sanitizePlainText(token.text==null?(token.raw||''):token.text);
+  }).join('');
+}
+function markdownReferenceListItems(token,diagnostics){
+  if(!token||!Array.isArray(token.items)||!token.items.length) return [];
+  const staged=[];
+  for(const item of token.items){
+    if(item.task||(item.tokens||[]).some(child=>child&&child.type==='list')) return [];
+    const links=[]; let residue='';
+    const visit=part=>{
+      if(!part||typeof part!=='object') return;
+      if(part.type==='link'){ links.push(part); return; }
+      if(part.type==='checkbox'||part.type==='space') return;
+      if(Array.isArray(part.tokens)){ part.tokens.forEach(visit); return; }
+      residue+=sanitizePlainText(part.text==null?(part.raw||''):part.text);
+    };
+    (item.tokens||[]).forEach(visit);
+    if(links.length!==1||residue.trim()) return [];
+    const link=links[0],bare=markdownBareLinkParts(link),href=normalizeHttpUrl(bare.href||'');
+    if(!href||bare.suffix) return [];
+    const scratch={images:[],links:[],unsafeLinks:[],inlineFormulas:[],inlineCode:0};
+    const label=(markdownInlineVisibleText(link.tokens,scratch)||sanitizePlainText(link.text||href)).trim()||href;
+    staged.push({label,source:sanitizePlainText(link.title||'').trim(),url:href});
+  }
+  staged.forEach(item=>diagnostics.links.push({text:item.label,url:item.url,title:item.source,source:'reference-list'}));
+  return staged.map(encodeReferenceItem);
 }
 function markdownBlockVisibleText(tokens,diagnostics){
   return (Array.isArray(tokens)?tokens:[]).map(token=>{
@@ -2260,7 +2423,7 @@ function markdownListItems(token,diagnostics){
       const own=[];
       (item.tokens||[]).forEach(child=>{
         if(child.type==='list') return;
-        if(child.tokens) own.push(markdownInlineVisibleText(child.tokens,diagnostics));
+        if(child.tokens) own.push(markdownInlineListText(child.tokens,diagnostics));
         else if(child.type!=='checkbox') own.push(sanitizePlainText(child.text==null?(child.raw||''):child.text));
       });
       let text=own.join(' ').replace(/\s+/g,' ').trim();
@@ -2287,7 +2450,7 @@ function oneClickStepItem(text){
 function parseOneClickArticle(raw){
   const clean=sanitizePlainText(raw).replace(/^\uFEFF/,'');
   if(clean.length>MAX_TOTAL_CHARS) throw new Error('导入文本超过 100 万字符上限');
-  if(!clean.trim()) return {text:'',title:'',blocks:[],detectedType:'general',counts:{blocks:0,h1:0,h2:0,h3:0,steps:0,lists:0,quotes:0,code:0,formulas:0,inlineCode:0,inlineFormulas:0,images:0,links:0,tables:0}};
+  if(!clean.trim()) return {text:'',title:'',blocks:[],detectedType:'general',counts:{blocks:0,h1:0,h2:0,h3:0,steps:0,lists:0,quotes:0,code:0,formulas:0,inlineCode:0,inlineFormulas:0,images:0,links:0,tables:0,refs:0}};
   const syntaxProblems=markdownSyntaxBlockers(clean);
   if(syntaxProblems.length) throw new Error(syntaxProblems[0]);
   const diagnostics={images:[],links:[],unsafeLinks:[],inlineFormulas:[],inlineCode:0,codeChecks:[],unmapped:[]};
@@ -2363,9 +2526,16 @@ function parseOneClickArticle(raw){
       const rows=(token.rows||[]).map(row=>row.map(cell=>markdownInlineVisibleText(cell.tokens||[],diagnostics).trim()));
       blocks.push({type:'table',c:{head,rows}});
     }else if(token.type==='list'){
-      const items=markdownListItems(token,diagnostics);
-      const steps=items.map(oneClickStepItem);
-      blocks.push({type:items.length&&steps.every(Boolean)?'step':'list',c:{items:items.length&&steps.every(Boolean)?steps:items}});
+      const referenceHeading=referenceHeadingFromBlock(blocks[blocks.length-1]);
+      const referenceItems=(referenceHeading||(token.items||[]).length>1)?markdownReferenceListItems(token,diagnostics):[];
+      if(referenceItems.length){
+        if(referenceHeading) blocks.pop();
+        blocks.push({type:'refs',c:{title:referenceHeading||'参考资料',items:referenceItems}});
+      }else{
+        const items=markdownListItems(token,diagnostics);
+        const steps=items.map(oneClickStepItem);
+        blocks.push({type:items.length&&steps.every(Boolean)?'step':'list',c:{items:items.length&&steps.every(Boolean)?steps:items}});
+      }
     }else if(token.type==='blockquote'){
       const body=markdownBlockVisibleText(token.tokens||[],diagnostics).trim();
       if(body) blocks.push({type:'quote',c:{text:textToInlineHtml(body)}});
@@ -2396,7 +2566,8 @@ function parseOneClickArticle(raw){
     inlineFormulas:diagnostics.inlineFormulas.length,
     images:blocks.filter(block=>block.type==='image').length,
     links:diagnostics.links.length,
-    tables:blocks.filter(block=>block.type==='table').length
+    tables:blocks.filter(block=>block.type==='table').length,
+    refs:blocks.filter(block=>block.type==='refs').length
   };
   const parsed={text:clean,title:sanitizePlainText(title).trim(),blocks,counts,diagnostics};
   parsed.rawIntegrity={ok:true,problems:[],atoms:blocks.length,codeExact:true,unsafeLinks:diagnostics.unsafeLinks.slice()};
@@ -2438,11 +2609,13 @@ function oneClickSemanticParts(block,skipGenerated){
     case 'formula': return scalar('latex').concat(scalar('alt'));
     case 'image': return scalar('text').concat(scalar('url'),scalar('title'));
     case 'table': return (Array.isArray(c.head)?c.head:normalizeTableHead(c.head)).concat((Array.isArray(c.rows)?c.rows:normalizeTableRows(c.rows)).flat());
-    case 'list':case 'clist':case 'step':case 'tags': return list('items');
+    case 'list': return list('items').map(listItemVisibleText);
+    case 'clist':case 'step':case 'tags': return list('items');
     case 'card': return scalar('title').concat(scalar('body'));
     case 'intro': return scalar('strong').concat(scalar('body'));
     case 'recap': return scalar('title').concat(list('items'));
-    case 'refs':case 'hist': return scalar('title').concat(list('items'));
+    case 'refs': return scalar('title').concat(list('items').flatMap(value=>{ const item=referenceItemData(value); return [item.label,item.source].filter(Boolean); }));
+    case 'hist': return scalar('title').concat(list('items'));
     case 'next': return scalar('title').concat(scalar('body'));
     case 'guide':case 'follow': return scalar('text');
     case 'triple': return scalar('lead').concat(list('acts'),list('icons'),scalar('tail'));
@@ -2611,7 +2784,7 @@ function planOneClickLayout(parsed,type,options){
     }
     if(block.type==='list'){
       const items=oneClickListItems(block);
-      if(items.length&&items.length<=recipe.listLimit&&!items.some(item=>String(item).includes('|'))&&!items.every(item=>/^\d+[.)、]\s+/.test(String(item)))){
+      if(items.length&&items.length<=recipe.listLimit&&!items.some(item=>String(item).includes('|')||listItemHasSafeLink(item))&&!items.every(item=>/^\d+[.)、]\s+/.test(String(item)))){
         result.push(oneClickPlanBlock(recipe.listType,{items},[index],[])); counts.lists+=1;
       }else pushOriginal(block,index);
       index+=1; continue;
@@ -2719,7 +2892,8 @@ function oneClickNormalizeSerializedAuditText(value){
   return oneClickNormalizeAuditText(value)
     .replace(/〔\s*/g,'')
     .replace(/\s*〕/g,'')
-    .replace(/（https?:\/\/[^）]+）/gi,'');
+    .replace(/（https?:\/\/[^）]+）/gi,'')
+    .replace(/（来源域名：[^）]+）/gi,'');
 }
 function oneClickPublishPairParts(value){
   const raw=String(value==null?'':value),index=raw.indexOf('|');
@@ -2763,7 +2937,11 @@ function oneClickSerializedOrderParts(block,skipGenerated,tableMode){
     const generated=new Set(skipGenerated&&block.audit&&Array.isArray(block.audit.generatedFields)?block.audit.generatedFields:[]);
     const output=[];
     if((block.type==='refs'||block.type==='hist')&&!generated.has('title')) output.push(String(c.title==null?'':c.title));
-    if(!generated.has('items')) (Array.isArray(c.items)?c.items:[]).forEach(item=>output.push(...oneClickPublishPairParts(item)));
+    if(!generated.has('items')) (Array.isArray(c.items)?c.items:[]).forEach(item=>{
+      if(block.type==='refs'){
+        const ref=referenceItemData(item); output.push(...[ref.label,ref.source].filter(Boolean));
+      }else output.push(...oneClickPublishPairParts(item));
+    });
     return output;
   }
   return oneClickSemanticParts(block,skipGenerated);
@@ -2972,7 +3150,7 @@ function syncCompareHeaders(){
 }
 
 /* ============ 复制 / 导出 ============ */
-const WECHAT_TAGS=new Set(['SECTION','P','DIV','SPAN','STRONG','B','EM','I','U','BR','HR','BLOCKQUOTE','UL','OL','LI','TABLE','TBODY','THEAD','TFOOT','TR','TH','TD']);
+const WECHAT_TAGS=new Set(['SECTION','P','DIV','SPAN','STRONG','B','EM','I','U','A','BR','HR','BLOCKQUOTE','UL','OL','LI','TABLE','TBODY','THEAD','TFOOT','TR','TH','TD']);
 const WECHAT_CSS=new Set([
   'color','background','background-color','font-family','font-size','font-weight','font-style','line-height','letter-spacing','text-align','text-decoration','text-decoration-line','text-decoration-style','text-decoration-color','text-decoration-thickness','text-transform',
   'margin','margin-top','margin-right','margin-bottom','margin-left','padding','padding-top','padding-right','padding-bottom','padding-left',
@@ -3007,9 +3185,18 @@ function cleanWechatTree(root, report){
       else el.replaceWith(...Array.from(el.childNodes));
       return;
     }
+    if(el.tagName==='A'){
+      const href=normalizeHttpUrl(el.getAttribute('href')||'');
+      if(!href){
+        report.removed.push('link:unsafe');
+        el.replaceWith(...Array.from(el.childNodes));
+        return;
+      }
+      el.setAttribute('href',href);
+    }
     Array.from(el.attributes).forEach(attr=>{
       const name=attr.name.toLowerCase();
-      if(name==='style' || name==='colspan' || name==='rowspan') return;
+      if(name==='style' || name==='colspan' || name==='rowspan' || (el.tagName==='A'&&name==='href')) return;
       if(name.startsWith('on') || name==='srcdoc') report.blockers.push('发现并移除了危险属性 '+name);
       if(name==='class'||name==='id'||name.startsWith('data-')||name==='draggable'||name==='contenteditable'||name==='spellcheck'||name==='tabindex'||name.startsWith('aria-')) report.stats.metadataRemoved++;
       else report.removed.push('attr:'+name);
@@ -3049,6 +3236,13 @@ function collectPublishAssets(records){
       // 三者都不能再静默混入「正文链接」清单，否则发布核对数量会虚高。
       if(kind==='code'||kind==='formula'||(record.type==='image'&&key==='url'))return;
       const value=record.content&&record.content[key];
+      if(record.type==='refs'&&key==='items'){
+        (Array.isArray(value)?value:[]).forEach((raw,itemIndex)=>{
+          const item=referenceItemData(raw); if(!item.url)return;
+          assets.links.push({index:assets.links.length+1,block:index+1,blockId:record.id,type:record.type,field:key,item:itemIndex+1,label:item.label||item.url,url:item.url,source:'reference'});
+        });
+        return;
+      }
       const flatten=input=>Array.isArray(input)?input.flatMap(flatten):[input];
       const values=flatten(value);
       values.forEach((raw,itemIndex)=>{
@@ -3099,8 +3293,9 @@ function validateModelForPublish(report,records){
       const technical=record.type==='code'||record.type==='formula'||record.type==='table';
       const normalized=value=>technical?sanitizePlainText(value==null?'':String(value)).trim():normalizePublishText(value);
       if(Array.isArray(value)){
-        const current=value.flat(Infinity).map(normalized);
-        const baseline=Array.isArray(defaults[key])?defaults[key].flat(Infinity).map(normalized):[];
+        const normalizeItem=record.type==='refs'&&key==='items'?item=>formatReferenceEditorItem(item):normalized;
+        const current=value.flat(Infinity).map(normalizeItem);
+        const baseline=Array.isArray(defaults[key])?defaults[key].flat(Infinity).map(normalizeItem):[];
         const baselineSet=new Set(baseline.filter(Boolean));
         return !current.length || current.some(item=>!item || baselineSet.has(item));
       }
@@ -3209,7 +3404,10 @@ function serializeWechatRecords(sourceRecords,options){
   validateModelForPublish(report,records);
   validateMobileCopyForPublish(report,records);
   policy.items.filter(item=>item.status==='degrade').forEach(item=>report.degradations.push('「'+item.name+'」采用微信安全结构：'+item.note));
-  if(assets.links.length) report.degradations.push('检测到 '+assets.links.length+' 处链接；已保留链接文字和 URL，请按链接清单在微信后台核对可点击状态');
+  if(assets.links.length){
+    report.degradations.push('检测到 '+assets.links.length+' 处链接；已尝试保留安全可点击结构，并显示短域名作为微信兜底');
+    report.manualChecks.highRisk.push({type:'link',count:assets.links.length,label:'超链接',note:'链接数量、顺序和短域名已核对；微信是否保留点击能力必须完成“粘贴 → 保存草稿 → 重新打开 → 手机预览”'});
+  }
   if(report.stats.inlineFormulas) report.degradations.push(report.stats.inlineFormulas+' 个行内公式已保留为可读 LaTeX；如需数学排版效果，请按公式清单替换为图片');
   const tableCount=records.filter(record=>record.type==='table').length;
   if(tableCount&&options.tableMode==='cards') report.degradations.push(tableCount+' 个数据表格已默认转为纵向卡片，避免微信重排和手机横向溢出');
@@ -3609,6 +3807,7 @@ document.getElementById('restoreNew').onclick=()=>{
   openOneClickLayout();
 };
 
+
 /* ============ 本机数据管理（只展示数量与体积，不读取正文做诊断）============ */
 const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse',UPDATE_LAST_CHECK_KEY,QUICK_START_KEY];
 function productStorageKeys(){
@@ -3722,7 +3921,7 @@ document.getElementById('helpBtn').onclick=()=>{
 /* ============ 关于弹窗 ============ */
 const PRODUCT_EDITION = {"id":"free","label":"免费版"};
 const aboutHTML = `<div style="font-size:13px;color:#5a5566;line-height:1.85;">
-  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.8 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 35 套主题。</p>
+  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.9 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 35 套主题。</p>
   <p style="margin:10px 0 2px;"><b>完整能力</b><br>一键排版文章、安全复制、发布预检、本地草稿、项目备份、35 套主题与 16 套文章结构均可直接使用；版本之间不通过阉割核心发布能力制造差异。</p>
   <p style="margin:10px 0 2px;"><b>开源版范围</b><br>安全复制、备份、Markdown 技术内容识别、35 套主题、16 套文章结构和 33 个区块均可完整使用，不需要注册或付费解锁。</p>
   <p style="margin:10px 0 2px;"><b>更新与服务边界</b><br>已交付版本可长期使用；拾光计划长期维护，V4.x 优先修复影响正常使用的可复现兼容问题。新功能、大版本、一对一指导与个性化服务另行说明。</p>
@@ -3760,23 +3959,93 @@ function readUpdateCheckMeta(storage){
 }
 function writeUpdateCheckMeta(storage,value){
   try{
-    if(storage&&storage.setItem) storage.setItem(UPDATE_LAST_CHECK_KEY,JSON.stringify({checkedAt:Number(value.checkedAt)||Date.now(),latestVersion:String(value.latestVersion||'').slice(0,24)}));
+    if(!storage||!storage.setItem) return;
+    const previous=readUpdateCheckMeta(storage);
+    const checkedAt=Number(value&&value.checkedAt!==undefined?value.checkedAt:previous.checkedAt)||0;
+    const latestVersion=cleanUpdateText(value&&value.latestVersion!==undefined?value.latestVersion:previous.latestVersion,24);
+    const latestContentPackVersion=cleanUpdateText(value&&value.latestContentPackVersion!==undefined?value.latestContentPackVersion:previous.latestContentPackVersion,24);
+    const notifiedSignature=cleanUpdateText(value&&value.notifiedSignature!==undefined?value.notifiedSignature:previous.notifiedSignature,80);
+    storage.setItem(UPDATE_LAST_CHECK_KEY,JSON.stringify({
+      checkedAt,
+      latestVersion,
+      latestContentPackVersion,
+      appUpdateAvailable:Boolean(value&&value.appUpdateAvailable!==undefined?value.appUpdateAvailable:previous.appUpdateAvailable),
+      contentUpdateAvailable:Boolean(value&&value.contentUpdateAvailable!==undefined?value.contentUpdateAvailable:previous.contentUpdateAvailable),
+      notifiedSignature,
+    }));
   }catch(_){ /* 本机存储被拒绝不影响排版 */ }
 }
 function cleanUpdateText(value,maxLength){
   return String(value==null?'':value).replace(/[<>\u0000-\u001f]/g,' ').replace(/\s+/g,' ').trim().slice(0,maxLength||180);
 }
+function normalizeContentPackEdition(value){
+  const edition=cleanUpdateText(value,32).toLowerCase();
+  if(edition==='supporter'||edition==='creatorworkbench') return 'creator-workbench';
+  return edition||'free';
+}
+function validContentPackVersion(value){
+  const version=cleanUpdateText(value,24);
+  return /^\d{4}\.\d{2}(?:\.\d+)?$/.test(version)?version:'';
+}
+function resolveManifestContentPack(manifest,edition){
+  const normalizedEdition=normalizeContentPackEdition(edition);
+  const packs=manifest&&manifest.contentPacks&&typeof manifest.contentPacks==='object'?manifest.contentPacks:null;
+  const record=packs&&(packs[normalizedEdition]||(normalizedEdition==='creator-workbench'?packs.supporter:null));
+  if(record&&typeof record==='object'){
+    const version=validContentPackVersion(record.currentVersion||record.version);
+    if(!version) return null;
+    return {
+      edition:normalizedEdition,
+      version,
+      label:cleanUpdateText(record.label,48)||`${normalizedEdition==='free'?'免费版':'创作者工作台'}内容包`,
+      notes:Array.isArray(record.notes)?record.notes.slice(0,5).map(item=>cleanUpdateText(item,180)).filter(Boolean):[],
+    };
+  }
+  const legacyVersion=validContentPackVersion(manifest&&manifest.contentPackVersion);
+  return legacyVersion?{edition:normalizedEdition,version:legacyVersion,label:'内容包',notes:[]}:null;
+}
+function updateAvailability(latestVersion,currentVersion,latestContentPackVersion,currentContentPackVersion){
+  const appUpdateAvailable=compareVersions(latestVersion,currentVersion)>0;
+  const contentUpdateAvailable=Boolean(latestContentPackVersion&&currentContentPackVersion&&compareVersions(latestContentPackVersion,currentContentPackVersion)>0);
+  return {
+    appUpdateAvailable,
+    contentUpdateAvailable,
+    status:appUpdateAvailable||contentUpdateAvailable?'update-available':'current',
+  };
+}
+function updateNoticeSignature(result){
+  if(!result||result.status!=='update-available') return '';
+  const parts=[];
+  if(result.appUpdateAvailable) parts.push(`app:${cleanUpdateText(result.latestVersion,24)}`);
+  if(result.contentUpdateAvailable) parts.push(`pack:${normalizeContentPackEdition(result.contentPackEdition)}:${cleanUpdateText(result.latestContentPackVersion,24)}`);
+  return parts.join('|');
+}
+function markUpdateNotice(result,storage){
+  const signature=updateNoticeSignature(result);
+  if(!signature) return false;
+  const saved=readUpdateCheckMeta(storage);
+  if(cleanUpdateText(saved.notifiedSignature,80)===signature) return false;
+  writeUpdateCheckMeta(storage,Object.assign({},saved,{notifiedSignature:signature}));
+  return true;
+}
 async function checkForUpdates(options){
   const opts=options&&typeof options==='object'?options:{};
   const currentVersion=cleanUpdateText(opts.currentVersion||APP_VERSION,24)||APP_VERSION;
+  const contentPackEdition=normalizeContentPackEdition(opts.contentPackEdition||CONTENT_PACK_EDITION);
+  const currentContentPackVersion=validContentPackVersion(opts.currentContentPackVersion||CONTENT_PACK_VERSION)||CONTENT_PACK_VERSION;
   const now=Number.isFinite(Number(opts.now))?Number(opts.now):Date.now();
   const storage=opts.storage===undefined?globalThis.localStorage:opts.storage;
   const downloadUrl=UPDATE_DOWNLOAD_URL;
-  const base={currentVersion,downloadUrl,freeZipUrl:UPDATE_FREE_ZIP_URL,onlineUrl:UPDATE_ONLINE_URL};
+  const base={currentVersion,contentPackEdition,currentContentPackVersion,downloadUrl,freeZipUrl:UPDATE_FREE_ZIP_URL,onlineUrl:UPDATE_ONLINE_URL,updatePageUrl:UPDATE_PAGE_URL};
   const saved=readUpdateCheckMeta(storage);
-  if(!opts.force&&!shouldCheckForUpdate(saved.checkedAt,now)) return Object.assign({status:'skipped',latestVersion:cleanUpdateText(saved.latestVersion,24)||currentVersion},base);
+  if(!opts.force&&!shouldCheckForUpdate(saved.checkedAt,now)){
+    const latestVersion=cleanUpdateText(saved.latestVersion,24)||currentVersion;
+    const latestContentPackVersion=validContentPackVersion(saved.latestContentPackVersion)||currentContentPackVersion;
+    const availability=updateAvailability(latestVersion,currentVersion,latestContentPackVersion,currentContentPackVersion);
+    return Object.assign({},availability,base,{status:availability.status==='update-available'?'update-available':'skipped',latestVersion,latestContentPackVersion,cached:true});
+  }
   const online=opts.online===undefined?!(globalThis.navigator&&globalThis.navigator.onLine===false):Boolean(opts.online);
-  if(!online) return Object.assign({status:'offline',latestVersion:cleanUpdateText(saved.latestVersion,24)||currentVersion},base);
+  if(!online) return Object.assign({status:'offline',latestVersion:cleanUpdateText(saved.latestVersion,24)||currentVersion,latestContentPackVersion:validContentPackVersion(saved.latestContentPackVersion)||currentContentPackVersion},base);
   const controller=typeof AbortController==='function'?new AbortController():null;
   const timer=controller?setTimeout(()=>controller.abort(),4500):null;
   const requestOptions={method:'GET',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',headers:{Accept:'application/json'}};
@@ -3787,14 +4056,17 @@ async function checkForUpdates(options){
       : await fetch(SHIGUANG_UPDATE_MANIFEST_URL,requestOptions);
     if(!response||response.ok===false||typeof response.json!=='function') throw new Error('update manifest unavailable');
     const manifest=await response.json();
-    const latestVersion=cleanUpdateText(manifest&&manifest.currentVersion,24);
+    const latestVersion=cleanUpdateText(manifest&&((manifest.app&&manifest.app.currentVersion)||manifest.appVersion||manifest.currentVersion),24);
     if(!/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(latestVersion)) throw new Error('invalid update manifest');
-    const notes=Array.isArray(manifest.notes)?manifest.notes.slice(0,5).map(item=>cleanUpdateText(item,180)).filter(Boolean):[];
-    writeUpdateCheckMeta(storage,{checkedAt:now,latestVersion});
-    return Object.assign({status:compareVersions(latestVersion,currentVersion)>0?'update-available':'current',latestVersion,notes},base);
+    const notesSource=manifest&&manifest.app&&Array.isArray(manifest.app.notes)?manifest.app.notes:manifest.notes;
+    const notes=Array.isArray(notesSource)?notesSource.slice(0,5).map(item=>cleanUpdateText(item,180)).filter(Boolean):[];
+    const contentPack=resolveManifestContentPack(manifest,contentPackEdition);
+    const latestContentPackVersion=contentPack?contentPack.version:currentContentPackVersion;
+    const availability=updateAvailability(latestVersion,currentVersion,latestContentPackVersion,currentContentPackVersion);
+    writeUpdateCheckMeta(storage,{checkedAt:now,latestVersion,latestContentPackVersion,appUpdateAvailable:availability.appUpdateAvailable,contentUpdateAvailable:availability.contentUpdateAvailable});
+    return Object.assign({latestVersion,latestContentPackVersion,contentPackLabel:contentPack&&contentPack.label||`${contentPackEdition==='free'?'免费版':'创作者工作台'}内容包`,notes,contentNotes:contentPack&&contentPack.notes||[]},availability,base);
   }catch(error){
-    writeUpdateCheckMeta(storage,{checkedAt:now,latestVersion:cleanUpdateText(saved.latestVersion,24)});
-    return Object.assign({status:'failed',latestVersion:cleanUpdateText(saved.latestVersion,24)||currentVersion,errorCode:error&&error.name==='AbortError'?'timeout':'unavailable'},base);
+    return Object.assign({status:'failed',latestVersion:cleanUpdateText(saved.latestVersion,24)||currentVersion,latestContentPackVersion:validContentPackVersion(saved.latestContentPackVersion)||currentContentPackVersion,errorCode:error&&error.name==='AbortError'?'timeout':'unavailable'},base);
   }finally{
     if(timer) clearTimeout(timer);
   }
@@ -3802,23 +4074,36 @@ async function checkForUpdates(options){
 const versionBadge=document.querySelector('.brand .ver');
 function setVersionBadgeState(result){
   if(!versionBadge) return;
-  const hasUpdate=Boolean(result&&result.status==='update-available');
+  const hasAppUpdate=Boolean(result&&result.appUpdateAvailable);
+  const hasContentUpdate=Boolean(result&&result.contentUpdateAvailable);
+  const hasUpdate=hasAppUpdate||hasContentUpdate;
   versionBadge.classList.toggle('has-update',hasUpdate);
-  versionBadge.title=hasUpdate?`发现 V${result.latestVersion}，点击查看`:`当前 V${APP_VERSION}·点击检查更新`;
+  versionBadge.classList.toggle('has-app-update',hasAppUpdate);
+  versionBadge.classList.toggle('has-content-update',hasContentUpdate);
+  versionBadge.title=hasAppUpdate&&hasContentUpdate?`发现应用 V${result.latestVersion} 和内容包 ${result.latestContentPackVersion}，点击查看`:hasAppUpdate?`发现应用 V${result.latestVersion}，点击查看`:hasContentUpdate?`发现内容包 ${result.latestContentPackVersion}，点击查看`:`当前 V${APP_VERSION} · 内容包 ${CONTENT_PACK_VERSION} · 点击检查更新`;
   versionBadge.setAttribute('aria-label',versionBadge.title);
 }
 function updateResultHtml(result){
   const safeLatest=escapeHtml(result&&result.latestVersion||APP_VERSION);
+  const safeLatestPack=escapeHtml(result&&result.latestContentPackVersion||CONTENT_PACK_VERSION);
+  const safePackLabel=escapeHtml(result&&result.contentPackLabel||`${CONTENT_PACK_EDITION==='free'?'免费版':'创作者工作台'}内容包`);
   if(result&&result.status==='update-available'){
-    const notes=result.notes&&result.notes.length?`<ul style="margin:8px 0 0;padding-left:18px;">${result.notes.map(note=>`<li>${escapeHtml(note)}</li>`).join('')}</ul>`:'<p style="margin:8px 0 0;">新版本已发布，可以继续使用现版，也可以现在更新。</p>';
-    return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;">发现新版本 V${safeLatest}</b><br>当前版本 V${escapeHtml(APP_VERSION)}。${notes}</p><p style="margin:10px 0 0;padding:9px 11px;border-radius:9px;background:#fff7e8;color:#765229;">更新不会自动覆盖当前文件。如果你有重要草稿，请先导出项目备份。</p><div data-update-actions style="display:grid;gap:8px;margin-top:12px;"><button id="updateBackupNow" type="button" style="margin:0;background:#f1ecf7;color:#6a4c93;">先导出项目备份</button><a href="${UPDATE_ONLINE_URL}?v=${encodeURIComponent(result.latestVersion)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:11px;border-radius:11px;background:#6a4c93;color:#fff;font-size:13px;font-weight:700;">打开最新在线版</a><a href="${UPDATE_DOWNLOAD_URL}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;border:1px solid #ded5ea;border-radius:11px;background:#fff;color:#6a4c93;font-size:13px;font-weight:700;">下载最新离线 HTML</a></div></div>`;
+    const appNotes=result.appUpdateAvailable&&(result.notes&&result.notes.length)?`<div style="margin-top:10px;"><b style="color:#51475e;">应用更新</b><ul style="margin:5px 0 0;padding-left:18px;">${result.notes.map(note=>`<li>${escapeHtml(note)}</li>`).join('')}</ul></div>`:'';
+    const contentNotes=result.contentUpdateAvailable&&(result.contentNotes&&result.contentNotes.length)?`<div style="margin-top:10px;"><b style="color:#765229;">内容包更新</b><ul style="margin:5px 0 0;padding-left:18px;">${result.contentNotes.map(note=>`<li>${escapeHtml(note)}</li>`).join('')}</ul></div>`:'';
+    const headline=result.appUpdateAvailable&&result.contentUpdateAvailable?'应用与内容包都有更新':result.appUpdateAvailable?'发现应用更新':'发现内容包更新';
+    const backupTip=result.appUpdateAvailable?'<p style="margin:10px 0 0;padding:9px 11px;border-radius:9px;background:#fff7e8;color:#765229;">更新不会自动覆盖当前文件。重要草稿请先导出文章备份，并保留旧版 HTML。</p>':'<p style="margin:10px 0 0;padding:9px 11px;border-radius:9px;background:#eef7f1;color:#2f6a49;">内容包更新不改写当前文章，也不会自动覆盖现有工具文件。</p>';
+    const backupButton=result.appUpdateAvailable?'<button id="updateBackupNow" type="button" style="margin:0;background:#f1ecf7;color:#6a4c93;">先导出文章备份</button>':'';
+    const appActions=result.appUpdateAvailable?`<a href="${UPDATE_ONLINE_URL}?v=${encodeURIComponent(result.latestVersion)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:11px;border-radius:11px;background:#6a4c93;color:#fff;font-size:13px;font-weight:700;">打开最新在线版</a><a href="${UPDATE_DOWNLOAD_URL}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;border:1px solid #ded5ea;border-radius:11px;background:#fff;color:#6a4c93;font-size:13px;font-weight:700;">下载最新离线 HTML</a>`:'';
+    const detailsLabel=result.contentUpdateAvailable?'查看内容包更新与领取方式':'查看完整更新说明';
+    const detailsAction=`<a href="${UPDATE_PAGE_URL}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none;padding:10px;border:1px solid #ead6b6;border-radius:11px;background:#fffaf0;color:#8a5b18;font-size:13px;font-weight:700;">${detailsLabel}</a>`;
+    return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;font-size:15px;">${headline}</b></p><div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;margin-top:10px;padding:10px 12px;border:1px solid #eee8f3;border-radius:10px;background:#fbf9fd;"><span>应用版本</span><b>V${escapeHtml(APP_VERSION)} → V${safeLatest}</b><span>${safePackLabel}</span><b>${escapeHtml(CONTENT_PACK_VERSION)} → ${safeLatestPack}</b></div>${appNotes}${contentNotes}${backupTip}<div data-update-actions style="display:grid;gap:8px;margin-top:12px;">${backupButton}${appActions}${detailsAction}</div><p style="margin:10px 0 0;color:#8b8794;font-size:12px;">你可以继续使用当前版本；拾光不会静默升级或上传文章。</p></div>`;
   }
-  if(result&&result.status==='current') return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;">已是最新版 V${safeLatest}</b><br>可以继续使用，不需要下载新文件。</p><p style="margin:10px 0 0;color:#8b8794;font-size:12px;">版本检查只读取公开版本号，不读取或上传你的文章。</p></div>`;
+  if(result&&(result.status==='current'||result.status==='skipped')) return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;font-size:15px;">当前没有需要安装的更新</b></p><div style="display:grid;grid-template-columns:1fr auto;gap:6px 14px;margin-top:10px;padding:10px 12px;border:1px solid #e6eee8;border-radius:10px;background:#f6fbf7;"><span>应用版本</span><b>V${escapeHtml(APP_VERSION)}</b><span>${safePackLabel}</span><b>${escapeHtml(CONTENT_PACK_VERSION)}</b></div><p style="margin:10px 0 0;color:#8b8794;font-size:12px;">更新中心只读取公开版本清单，不读取或上传你的文章。应用更新和内容包更新会分别提醒。</p></div>`;
   const reason=result&&result.status==='offline'?'当前电脑似乎未联网':'暂时无法读取版本信息';
-  return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;">${reason}</b><br>这不影响排版和复制功能，稍后再试即可。</p><a href="${UPDATE_ONLINE_URL}" target="_blank" rel="noopener" style="display:block;margin-top:12px;text-align:center;text-decoration:none;padding:10px;border:1px solid #ded5ea;border-radius:11px;background:#fff;color:#6a4c93;font-size:13px;font-weight:700;">打开拾光在线版</a></div>`;
+  return `<div style="font-size:13px;color:#5a5566;line-height:1.75;"><p style="margin:0;"><b style="color:#1f1b29;">${reason}</b><br>这不影响排版和复制功能；下次启动会重新尝试，不会因为这次失败沉默 24 小时。</p><a href="${UPDATE_PAGE_URL}" target="_blank" rel="noopener" style="display:block;margin-top:12px;text-align:center;text-decoration:none;padding:10px;border:1px solid #ded5ea;border-radius:11px;background:#fff;color:#6a4c93;font-size:13px;font-weight:700;">打开拾光更新页</a></div>`;
 }
 function showUpdateResult(result){
-  document.getElementById('modalTitle').textContent='检查更新 · 拾光排版器';
+  document.getElementById('modalTitle').textContent='更新中心 · 拾光排版器';
   document.getElementById('modalBody').innerHTML=updateResultHtml(result);
   modal.classList.add('show');
   const backup=document.getElementById('updateBackupNow');
@@ -3826,14 +4111,19 @@ function showUpdateResult(result){
 }
 async function runUpdateCheck(force,silent){
   if(force&&!silent){
-    document.getElementById('modalTitle').textContent='检查更新 · 拾光排版器';
-    document.getElementById('modalBody').innerHTML='<p>正在检查最新版本……</p>';
+    document.getElementById('modalTitle').textContent='更新中心 · 拾光排版器';
+    document.getElementById('modalBody').innerHTML='<p>正在检查应用版本与内容包……</p>';
     modal.classList.add('show');
   }
   const result=await checkForUpdates({force:Boolean(force)});
   setVersionBadgeState(result);
-  if(!silent) showUpdateResult(result);
-  else if(result.status==='update-available') flash(`拾光已发布 V${result.latestVersion}，点击左上角版本号查看`);
+  if(!silent){
+    showUpdateResult(result);
+    if(result.status==='update-available') markUpdateNotice(result,globalThis.localStorage);
+  }else if(result.status==='update-available'&&markUpdateNotice(result,globalThis.localStorage)){
+    const message=result.appUpdateAvailable&&result.contentUpdateAvailable?`拾光应用 V${result.latestVersion} 与内容包 ${result.latestContentPackVersion} 均有更新`:result.appUpdateAvailable?`拾光已发布应用 V${result.latestVersion}`:`拾光有新内容包 ${result.latestContentPackVersion}`;
+    flash(`${message}，点击左上角版本号查看`);
+  }
   return result;
 }
 function appendAboutUpdatePanel(){
@@ -3842,7 +4132,7 @@ function appendAboutUpdatePanel(){
   const panel=document.createElement('div');
   panel.dataset.aboutUpdate='true';
   panel.style.cssText='margin-top:12px;padding-top:12px;border-top:1px solid #eee;font-size:12px;color:#7a6f8c;line-height:1.7;';
-  panel.innerHTML=`<b style="color:#51475e;">当前版本 V${escapeHtml(APP_VERSION)}</b><br>点击检查时只会读取公开版本号，不会上传文章。<button id="aboutUpdateCheck" type="button" style="margin-top:8px;">检查是否有新版</button>`;
+  panel.innerHTML=`<b style="color:#51475e;">应用版本 V${escapeHtml(APP_VERSION)} · 内容包 ${escapeHtml(CONTENT_PACK_VERSION)}</b><br>更新中心只读取公开版本清单，不读取或上传文章。<button id="aboutUpdateCheck" type="button" style="margin-top:8px;">打开更新中心</button>`;
   body.appendChild(panel);
   document.getElementById('aboutUpdateCheck').onclick=()=>runUpdateCheck(true,false);
 }
