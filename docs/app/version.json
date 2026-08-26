@@ -1,34 +1,28 @@
 {
   "schemaVersion": 2,
-  "currentVersion": "4.1.9",
-  "appVersion": "4.1.9",
+  "currentVersion": "4.1.10",
+  "appVersion": "4.1.10",
   "releaseStatus": "released",
-  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.9",
+  "releaseUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.10",
   "onlineUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/",
   "updatePageUrl": "https://xiangxiuchen.github.io/shiguang-wechat-typesetter/updates/",
   "latestHtmlUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-latest.html",
   "freeZipUrl": "https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip",
-  "publishedAt": "2026-08-26T21:20:01+08:00",
+  "publishedAt": "2026-08-26T22:21:52+08:00",
   "candidateAt": null,
   "notes": [
-    "自动识别“官方核验入口 / 参考资料”等纯链接列表，生成独立参考资料组件，不再套入圈号卡片。",
-    "微信复制稿保留 http/https 安全链接，并显示短域名兜底；链接数量、名称和顺序可在发布预检核对。",
-    "普通列表中的 Markdown 链接保持列表语义，移动端增加自动换行，长网址不再挤坏卡片。",
-    "新增“应用版本 + 内容包版本”双更新中心，后续新增教程或实战包不必假装成应用升级。",
-    "免费版与创作者工作台分别比较自己的内容包版本，不向免费版提示无法获得的工作台内容。",
-    "修复 24 小时缓存后更新圆点消失的问题；检查失败后下次启动会重新尝试。",
-    "继续保留固定 version.json、无凭证 GET 和不上传文章的隐私边界。"
+    "发现正式新版时显示持续可见的更新横幅，不再只依赖 1.8 秒短提示和版本小圆点。",
+    "版本徽标直接显示“可更新 Vx”，横幅提供打开在线最新版、下载离线版和稍后提醒。",
+    "旧版在线链接会明确提示已经自动加载最新版，并引导使用不带版本号的固定地址。",
+    "候选版清单不会触发正式更新提醒；最新版、离线或检查失败时不打扰正常排版。"
   ],
   "app": {
-    "currentVersion": "4.1.9",
+    "currentVersion": "4.1.10",
     "notes": [
-      "自动识别“官方核验入口 / 参考资料”等纯链接列表，生成独立参考资料组件，不再套入圈号卡片。",
-      "微信复制稿保留 http/https 安全链接，并显示短域名兜底；链接数量、名称和顺序可在发布预检核对。",
-      "普通列表中的 Markdown 链接保持列表语义，移动端增加自动换行，长网址不再挤坏卡片。",
-      "新增“应用版本 + 内容包版本”双更新中心，后续新增教程或实战包不必假装成应用升级。",
-      "免费版与创作者工作台分别比较自己的内容包版本，不向免费版提示无法获得的工作台内容。",
-      "修复 24 小时缓存后更新圆点消失的问题；检查失败后下次启动会重新尝试。",
-      "继续保留固定 version.json、无凭证 GET 和不上传文章的隐私边界。"
+      "发现正式新版时显示持续可见的更新横幅，不再只依赖 1.8 秒短提示和版本小圆点。",
+      "版本徽标直接显示“可更新 Vx”，横幅提供打开在线最新版、下载离线版和稍后提醒。",
+      "旧版在线链接会明确提示已经自动加载最新版，并引导使用不带版本号的固定地址。",
+      "候选版清单不会触发正式更新提醒；最新版、离线或检查失败时不打扰正常排版。"
     ]
   },
   "contentPacks": {
