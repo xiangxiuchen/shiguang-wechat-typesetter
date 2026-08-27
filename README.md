@@ -7,7 +7,7 @@
 
 [在线使用（推荐）](https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/) · [下载离线备用 ZIP](https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/latest/download/shiguang-wechat-typesetter-free.zip) · [3 分钟上手](QUICKSTART.md) · [English](README_EN.md)
 
-35 套主题 · 16 套文章结构 · 33 个区块 · 单 HTML 双击即用
+39 套主题 · 16 套文章结构 · 33 个区块 · 单 HTML 双击即用
 
 </div>
 
@@ -91,8 +91,8 @@ Created and maintained by **Crush / [xiangxiuchen](https://github.com/xiangxiuch
 
 ## 项目状态
 
-- 当前公开版本：`V4.1.8`
-- 微信发布渲染器：`4.3.0-markdown-tech-1`
+- 当前公开版本：`V4.1.11`
+- 微信发布渲染器：`4.4.0-link-reference-1`
 - 维护状态：持续维护
 - 更新记录：[CHANGELOG.md](CHANGELOG.md)
 - 版本总账与验收状态：[VERSION_LEDGER.md](VERSION_LEDGER.md)

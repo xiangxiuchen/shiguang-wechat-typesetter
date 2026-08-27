@@ -6,13 +6,35 @@
 
 ## 当前基线
 
-- 当前正式版：`V4.1.10`
-- Git 标签：`v4.1.10`
-- Git 提交：由 `v4.1.10` 标签固定，以 Release 页面为准
+- 当前正式版：`V4.1.11`
+- Git 标签：`v4.1.11`
+- Git 提交：由 `v4.1.11` 标签固定，以 Release 页面为准
 - 在线版：https://xiangxiuchen.github.io/shiguang-wechat-typesetter/app/
-- Release：https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.10
-- 回退基线：`V4.1.9`；若新版出现阻断发布的回归，先保留用户文章备份，再使用上一正式版复核。
+- Release：https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.11
+- 回退基线：`V4.1.10`；若新版出现阻断发布的回归，先保留用户文章备份，再使用上一正式版复核。
 - 构建校验：以 `PUBLIC-MANIFEST.json` 和 Release 内 `SHA256SUMS.txt` 为准。
+
+## 当前正式发布：V4.1.11 — 2026-08-27
+
+- 版本状态：`正式发布`。
+- 当前正式版：`V4.1.11`。
+- 上一正式版基线：`V4.1.10`；回退版本：`V4.1.10`。
+- Git 标签：`v4.1.11`。
+- Release：https://github.com/xiangxiuchen/shiguang-wechat-typesetter/releases/tag/v4.1.11
+- 主要变化：新增简洁／专业工作区、受控 Markdown 源文候选区，以及项目 JSON、便携 Markdown、带样式 HTML、发布检查报告四类统一导出；新增丁香雾紫、月光银紫、薰衣草蓝、藤花粉紫 4 套低饱和主题；新增版本化问题、平台、微信与旧备份迁移证据。
+- 主题兼容：原有 35 套主题 ID 与 0–34 索引保持不变，新主题只追加到 35–38；旧项目的 `appearance.themeId` 和旧数字主题迁移必须继续恢复到原主题。
+- 与旧版的预期差异：V4.1.10 首屏直接展示完整工具；V4.1.11 对全新用户先展示核心流程，但既有用户仍默认完整工作区。工作区切换不得改变文章正文、区块、revision 或撤销历史。
+- Markdown 边界：项目 JSON 仍是唯一无损源码。含复杂组件或无法安全往返的正文只能查看、复制和下载 Markdown，不允许静默覆盖；固定品牌文末原样保留。
+- 发布报告边界：只声明 `staticPreflightPassed`；微信粘贴、保存草稿、重新打开、手机预览、Windows Chrome 和 Windows Edge 均保持 `pending`。
+- 自动回归：版本契约、8 组核心回归、工作区／导入导出专项、V4.1.8／V4.1.9／V4.1.10 备份迁移专项、39×33 共 1287 组合和 3120 个文字哨兵通过。
+- 旧版本差异检查：同一篇黄金稿人工对比尚未完成；自动合同已覆盖原文零删字、零重复、零乱序与历史故障回放。
+- Mac／Windows：macOS Chrome `151.0.7922.174` 候选 UI 冒烟通过；Mac 离线全流程与 Windows Chrome／Edge 真实设备待人工。
+- 微信桌面粘贴：待人工。
+- 微信保存草稿与重新打开：待人工。
+- 手机预览：待人工。
+- 发布例外：维护者已在知晓上述人工闸门仍待补测的情况下明确确认部署；该确认只授权发布，不把待验收项目改写为通过。
+- SHA-256：主源 `250bbfdd463aa32d99b4f08964390225b27c8ad862338ca2297226c54d1212c0`；公开 HTML `e285aeb514df4805b366e886c2c7158ddd549d2d47f8e086c504e36151878759`；公开 `version.json` `48176d09dd6bd01778baf605a554c7f3b256a54a15a84a0c746ae47551e20e9e`；公开清单 `caa95a1417b903178c3bb0065ceb8e0ca95b53158e27337b8a0a54f7c0510bfd`；免费 ZIP `7420c706be9259f8bf4e7cd7bb88e866278df65cbf66cb31f28bfcac4e2f9c19`；工作台 ZIP `14beb56f4eb03c141cdbb335274604fd70aa67d3ef2ad703f85fe4137826e56c`。完整记录见 `product-kit/release-evidence/V4.1.11-RELEASE-CHECKLIST.md`。
+- 验收记录：内部文件 `product-kit/release-evidence/V4.1.11-CANDIDATE-CHECKLIST.md`、`V4.1.11-RELEASE-CHECKLIST.md`、平台记录与微信 E2E 记录。
 
 ## 当前正式发布：V4.1.10 — 2026-08-26
 

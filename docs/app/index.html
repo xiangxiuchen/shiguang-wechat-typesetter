@@ -9,7 +9,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>拾光排版器 V4.1.10 · 开源免费版</title>
+<title>拾光排版器 V4.1.11 · 开源免费版</title>
 <style>
   :root{
     --accent:#6a4c93; --accent-2:#b39ddb; --accent-soft:#f1ecf7;
@@ -29,7 +29,7 @@
   .brand .ver.has-update::after{ content:""; position:absolute; width:8px; height:8px; right:-4px; top:-4px; border-radius:50%; background:#f28c45; border:2px solid #fff; }
   .brand .ver.has-app-update::after{ background:#d94d45; }
   .brand .ver.has-app-update.has-content-update::before{ content:""; position:absolute; width:7px; height:7px; right:6px; top:-4px; border-radius:50%; background:#f2a23a; border:2px solid #fff; }
-  .top-right{ display:flex; align-items:center; gap:9px; min-width:0; overflow-x:auto; }
+  .top-right{ display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:9px; min-width:0; overflow:visible; }
   .save-state{ font-size:12px; color:var(--muted); }
   .btn-toggle,.btn-check{ border:1px solid var(--border); background:var(--panel-2); color:#4a4458; border-radius:10px; padding:8px 14px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; transition:.15s; }
   .btn-toggle:hover,.btn-check:hover{ border-color:var(--accent-2); color:var(--accent); }
@@ -40,6 +40,24 @@
   .btn-oneclick{ border-color:var(--accent)!important; background:var(--accent)!important; color:#fff!important; box-shadow:0 4px 14px rgba(106,76,147,.18); white-space:nowrap; }
   .btn-oneclick:hover{ background:#5a3f82!important; }
   .btn-check{ background:transparent; }
+
+  .command-nav{ display:flex; align-items:center; gap:3px; }
+  .command-menu{ position:relative; }
+  .command-menu>summary{ list-style:none; border-radius:8px; padding:7px 9px; color:#4a4458; font-size:13px; font-weight:600; cursor:pointer; user-select:none; white-space:nowrap; }
+  .command-menu>summary::-webkit-details-marker{ display:none; }
+  .command-menu>summary:hover,.command-menu[open]>summary{ background:var(--accent-soft); color:var(--accent); }
+  .command-popover{ position:absolute; z-index:80; top:calc(100% + 7px); left:0; display:grid; gap:3px; width:204px; padding:7px; border:1px solid var(--border); border-radius:11px; background:#fff; box-shadow:0 14px 36px rgba(40,30,60,.16); }
+  .command-menu:last-child .command-popover{ left:auto; right:0; }
+  .command-popover button{ width:100%; border:0; border-radius:8px; background:transparent; color:#4a4458; padding:8px 10px; text-align:left; font:500 12px/1.35 inherit; cursor:pointer; }
+  .command-popover button:hover,.command-popover button:focus-visible{ outline:none; background:var(--accent-soft); color:var(--accent); }
+  .command-popover button:disabled{ color:#b7b2be; background:transparent; }
+  .workspace-switch{ display:inline-flex; align-items:center; padding:2px; border:1px solid var(--border); border-radius:10px; background:var(--panel-2); }
+  .workspace-switch button{ border:0; border-radius:7px; background:transparent; color:#777181; padding:6px 9px; font:600 11px inherit; cursor:pointer; white-space:nowrap; }
+  .workspace-switch button.active{ background:#fff; color:var(--accent); box-shadow:0 1px 5px rgba(40,30,60,.1); }
+  .workspace-risk{ border:1px solid #e3b6ae; border-radius:8px; background:#fff3f0; color:#a33b2e; padding:5px 8px; font-size:10px; font-weight:700; white-space:nowrap; }
+  body[data-workspace-view="guided"] .toolbar{ display:none; }
+  body[data-workspace-view="guided"] .workspace-advanced{ display:none!important; }
+  body[data-workspace-view="guided"] .sidebar{ width:252px; }
 
   .toolbar{ flex:none; background:var(--panel); border-bottom:1px solid var(--border); display:flex; align-items:center; gap:18px; padding:10px 18px; overflow-x:auto; }
   .tb-group{ display:inline-flex; align-items:center; gap:7px; flex:none; }
@@ -216,6 +234,18 @@
   .preflight-title{ font-size:13px; font-weight:700; margin:0 0 6px; color:#3f3948; }
   .asset-list{ margin:5px 0 0!important; padding-left:18px!important; max-height:150px; overflow:auto; }
   .asset-list code{ font-size:11px; overflow-wrap:anywhere; color:#596b63; }
+  .modal-box.wide-modal{ width:760px; }
+  .source-editor{ width:100%; min-height:360px; border:1px solid var(--border); border-radius:10px; background:#fbfafc; color:#28232e; padding:13px 14px; font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; resize:vertical; tab-size:2; }
+  .source-editor:focus{ outline:none; border-color:var(--accent-2); background:#fff; box-shadow:0 0 0 3px rgba(106,76,147,.09); }
+  .source-note{ margin:0 0 10px!important; padding:9px 11px; border:1px solid #ddd3ea; border-radius:9px; background:#fbf8ff; color:#5f5868!important; font-size:11px!important; }
+  .source-warning{ margin:10px 0 0!important; padding:9px 11px; border:1px solid #ead1ad; border-radius:9px; background:#fff8eb; color:#805719!important; font-size:11px!important; }
+  .source-actions,.export-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+  .source-actions button,.export-card{ margin:0!important; }
+  .source-actions .secondary{ border:1px solid var(--border)!important; background:var(--panel-2)!important; color:#5a5566!important; }
+  .export-card{ width:100%; border:1px solid var(--border)!important; border-radius:11px!important; background:#fff!important; color:#3f3948!important; padding:12px!important; text-align:left!important; }
+  .export-card:hover{ border-color:var(--accent-2)!important; background:var(--accent-soft)!important; color:var(--accent)!important; }
+  .export-card b{ display:block; font-size:13px; }
+  .export-card span{ display:block; margin-top:3px; color:var(--muted); font-size:10px; font-weight:400; line-height:1.5; }
   .screen-warning{ display:none; }
   @media (max-width:1180px){
     .sidebar{ width:238px; }
@@ -223,6 +253,8 @@
     .stage{ padding-left:14px; padding-right:14px; }
     .topbar{ padding-left:12px; padding-right:12px; }
     .top-right button{ padding-left:10px; padding-right:10px; }
+    .save-state{ display:none; }
+    .command-menu>summary{ padding-left:7px; padding-right:7px; }
   }
   @media (max-width:900px){
     body{ min-width:900px; overflow:auto; }
@@ -232,6 +264,7 @@
     .modal{ align-items:stretch; }
     .modal-box.oneclick-modal{ width:100%; max-width:none; max-height:none; border-radius:0; padding:18px; }
     .oneclick-grid,.oneclick-modes{ grid-template-columns:1fr; }
+    .source-actions,.export-grid{ grid-template-columns:1fr; }
     .oneclick-actions{ bottom:-18px; margin-right:-18px; margin-left:-18px; padding-right:18px; padding-left:18px; }
     .quick-start-banner{ margin:0 0 12px; align-items:flex-start; }
     .quick-start-actions{ flex-direction:column; align-items:stretch; }
@@ -240,29 +273,53 @@
   }
   
 </style>
-  <meta name="description" content="拾光排版器：无需注册、文章不上传的微信公众号排版工具，35 套主题，单 HTML 双击即用。">
+  <meta name="description" content="拾光排版器：无需注册、文章不上传的微信公众号排版工具，39 套主题，单 HTML 双击即用。">
   <meta name="author" content="Crush / xiangxiuchen">
   <meta name="license" content="MPL-2.0">
   <meta name="shiguang-edition" content="open-source-free">
-  <meta name="shiguang-build" content="2026-08-26T14:23:16.812Z">
+  <meta name="shiguang-build" content="2026-08-27T06:20:30.000Z">
 </head>
 <body>
   <div class="screen-warning">当前版本为电脑端编辑工具；建议使用宽度 1024px 以上的浏览器编辑，手机端只做发布后预览。</div>
   <div class="topbar">
-    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.10 · 开源免费版</span></div>
+    <div class="brand"><span class="logo"></span><b>拾光排版器</b><span class="ver">V4.1.11 · 开源免费版</span></div>
     <div class="top-right">
-      <button class="btn-check" id="undoBtn" disabled>撤销</button>
-      <button class="btn-check" id="redoBtn" disabled>重做</button>
-      <button class="btn-check" id="versionsBtn">文章历史</button>
-      <button class="btn-check" id="backupBtn">文章备份</button>
-      <button class="btn-check" id="dataBtn">本机数据</button>
+      <nav class="command-nav" aria-label="主菜单">
+        <details class="command-menu"><summary>文件</summary><div class="command-popover">
+          <button type="button" id="versionsBtn">文章历史</button>
+          <button type="button" id="backupBtn">导出项目备份 JSON</button>
+          <button type="button" id="menuImportBtn">恢复备份 / 导入旧稿</button>
+          <button type="button" id="menuExportBtn">打开导出中心</button>
+          <button type="button" id="dataBtn">本机数据</button>
+        </div></details>
+        <details class="command-menu"><summary>编辑</summary><div class="command-popover">
+          <button type="button" id="undoBtn" disabled>撤销</button>
+          <button type="button" id="redoBtn" disabled>重做</button>
+          <button type="button" id="sourceViewBtn">Markdown 源文</button>
+        </div></details>
+        <details class="command-menu"><summary>格式</summary><div class="command-popover">
+          <button type="button" id="checkBtn">详细发布检查</button>
+          <button type="button" id="compareBtn">对比主题</button>
+        </div></details>
+        <details class="command-menu"><summary>插入</summary><div class="command-popover">
+          <button type="button" id="insertWorkspaceBtn">打开 33 个排版组件</button>
+        </div></details>
+        <details class="command-menu"><summary>样式</summary><div class="command-popover">
+          <button type="button" id="styleWorkspaceBtn">查看主题与全局调节</button>
+        </div></details>
+        <details class="command-menu"><summary>帮助</summary><div class="command-popover">
+          <button type="button" id="helpBtn">使用教程</button>
+          <button type="button" id="aboutBtn">关于拾光</button>
+        </div></details>
+      </nav>
+      <div class="workspace-switch" role="group" aria-label="工作区模式">
+        <button type="button" id="viewModeSimple" aria-pressed="false">简洁</button>
+        <button type="button" id="viewModeFull" aria-pressed="false">专业</button>
+      </div>
+      <span class="workspace-risk" id="workspaceRiskBadge" hidden>真实表格高风险</span>
       
       <span class="save-state" id="saveState">尚未保存</span>
       <button class="btn-sample btn-oneclick" id="oneClickLayoutBtn">① 粘贴全文并排版</button>
-      <button class="btn-check" id="checkBtn">详细检查</button>
-      <button class="btn-toggle" id="compareBtn">对比主题</button>
-      <button class="btn-check" id="helpBtn">使用教程</button>
-      <button class="btn-check" id="aboutBtn">关于</button>
     </div>
   </div>
 
@@ -275,11 +332,11 @@
           <p class="group-title">排版样式（不改正文）</p>
           <div class="themes" id="themeList"></div>
         </div>
-        <div class="group">
+        <div class="group workspace-advanced">
           <p class="group-title tpl-head" data-tpl="v2"><span class="tpl-arrow">▾</span><span>新建文章骨架 · 场景 10 套（会替换正文）</span></p>
           <div id="tplListV2" class="tpl-body"></div>
         </div>
-        <div class="group">
+        <div class="group workspace-advanced">
           <p class="group-title tpl-head" data-tpl="v1"><span class="tpl-arrow">▾</span><span>新建文章骨架 · 常用 6 套（会替换正文）</span></p>
           <div id="tplList" class="tpl-body"></div>
         </div>
@@ -289,12 +346,12 @@
           <input type="range" id="fontScale" min="0.9" max="1.25" step="0.05" value="1">
           <label>行距 / 间距 <span id="spVal">1.0×</span></label>
           <input type="range" id="spaceScale" min="0.8" max="1.4" step="0.1" value="1">
-          <div class="color-row">
+          <div class="color-row workspace-advanced">
             <input type="color" id="primaryOverride" value="#6a4c93">
             <span>主色覆盖</span>
             <button class="link-btn" id="resetPrimary">恢复主题色</button>
           </div>
-          <div class="publish-setting">
+          <div class="publish-setting workspace-advanced">
             <label><input type="checkbox" id="keepWechatTable"><span>保留真实表格（高风险模式）</span></label>
             <small>默认会把三列表格转为纵向卡片。只有经过微信保存、重开和手机预览验收后，才建议保留真实表格。</small>
           </div>
@@ -304,7 +361,7 @@
           <input id="titleInput" maxlength="500" placeholder="文章标题（微信后台也要填一次）">
           <input id="authorInput" maxlength="500" placeholder="作者名">
         </div>
-        <div class="group">
+        <div class="group workspace-advanced">
           <p class="group-title">文章排版 / 备份</p>
           <textarea id="import" placeholder="也可以先把整篇文章粘贴到这里…" style="width:100%;height:70px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:13px;resize:vertical;font-family:inherit;background:var(--panel-2);color:var(--text);"></textarea>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;">
@@ -317,7 +374,7 @@
       </div>
       <div class="actions">
         <button class="btn-copy" id="copyBtn">③ 检查并复制</button>
-        <button class="btn-ghost" id="exportBtn">复制备用页</button>
+        <button class="btn-ghost" id="exportBtn">导出中心</button>
       </div>
     </aside>
 
@@ -465,6 +522,7 @@ const TIERS = [
   { id:'v2', name:'标题风格', badge:'10 套', free:true, desc:'条形、引用和胶囊标题' },
   { id:'v3', name:'杂志质感', badge:'10 套', free:true, desc:'杂志、东方、卡片和暖文艺' },
   { id:'v4', name:'标志风格', badge:'5 套', free:true, desc:'留白、金线、数据条和时间轴' },
+  { id:'v5', name:'编辑精选·淡紫', badge:'4 套 · NEW', free:true, desc:'丁香、月光、薰衣草与藤花' },
 ];
 const THEME_DEFS = {
   /* —— V1 基础版：现有 10 套，原样保留（顺序不变，保证旧数据兼容）—— */
@@ -522,6 +580,13 @@ const THEME_DEFS = {
     { id:'v4-wu',   name:'晨雾·卡', primary:'#5a6470', accent:'#9aa8b6', card:'#f6f8fa', text:'#3c4450', radius:12, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'PingFang SC','Microsoft YaHei',sans-serif", titleStyle:'bar', signature:'timeline' },
     /* 缃色·暖 —— 暖文艺高定：缃色+暖金，对比卡 */
     { id:'v4-xiang',name:'缃色·暖', primary:'#9a7b3f', accent:'#c9a96e', card:'#fbf7ef', text:'#4a3d28', radius:14, font:"'STKaiti','KaiTi','PingFang SC',serif", hFont:"'STKaiti','KaiTi',serif", titleStyle:'pill', signature:'compare' }
+  ],
+  /* —— V5 编辑精选（淡紫色系 ×4）：低饱和、浅实底、细边框；只追加，不改变旧主题索引 —— */
+  v5:[
+    { id:'v5-lilac-mist',    name:'丁香雾紫', primary:'#514866', accent:'#756a8a', card:'#f7f5fa', text:'#36343b', border:'#e4dfeb', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'editorial' },
+    { id:'v5-moon-silver',   name:'月光银紫', primary:'#504b5e', accent:'#6f687d', card:'#f6f5f8', text:'#37353b', border:'#e2dfe7', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'editorial' },
+    { id:'v5-lavender-blue', name:'薰衣草蓝', primary:'#484e6b', accent:'#697394', card:'#f5f6fb', text:'#343641', border:'#dee2ef', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'editorial' },
+    { id:'v5-wisteria-pink', name:'藤花粉紫', primary:'#5b405a', accent:'#7c6079', card:'#faf5f9', text:'#393338', border:'#eadde7', radius:10, font:"-apple-system,'PingFang SC','Microsoft YaHei',sans-serif", hFont:"'Songti SC','SimSun',serif", titleStyle:'editorial' }
   ]
 };
 /* 扁平化：保持 V1 顺序在前（旧数字索引兼容），每个主题附带 tier 与全局索引 gIdx */
@@ -529,6 +594,7 @@ const ALL_THEMES = [];
 TIERS.forEach(tier => (THEME_DEFS[tier.id]||[]).forEach(t => { t.tier = tier.id; t.gIdx = ALL_THEMES.length; ALL_THEMES.push(t); }));
 THEME_DEFS.v2.forEach(t => t.numStyle = '01'); // V2 统一用「01 |」现代编号，区别于 V1 的「一、」
 const THEMES = ALL_THEMES; // 别名，兼容旧引用 getTheme / renderThemes / compare
+const THEME_DISPLAY_ORDER = ['v5','v1','v2','v3','v4']; // 仅改变面板展示顺序，不改变 ALL_THEMES 的旧索引
 const DEFAULT_THEME = 6;
 
 /* ============ 组件分组 ============ */
@@ -608,7 +674,7 @@ const PUBLISH_POLICY=Object.freeze({
   hist:publishPolicy('stable','往期推荐文字清单')
 });
 const APP_SCHEMA = 2;
-const APP_VERSION = '4.1.10';
+const APP_VERSION = '4.1.11';
 const WECHAT_RENDERER_VERSION = '4.4.0-link-reference-1';
 const SHIGUANG_ONE_CLICK_LAYOUT_V1 = '1.2.0';
 const CONTENT_PACK_EDITION = "free";
@@ -866,8 +932,10 @@ function referenceHeadingFromBlock(block){
 }
 
 /* ============ 样式生成（全部内联）============ */
+function themeBorder(theme){ return (theme&&(theme.border||theme.accent))||'#d8dfdb'; }
 function blockStyle(type, t, g){
   const fs = 16 * g.scale, sp = 14 * g.space;
+  const border = themeBorder(t);
   const breath = t.tier === 'v1';
   const secTop = breath ? 30*g.space : 20*g.space;
   const secBot = breath ? 15*g.space : 10*g.space;
@@ -889,7 +957,7 @@ function blockStyle(type, t, g){
       if(t.titleStyle==='bar'){ head = `display:block;background:${t.primary};color:#fff;padding:${10*g.space}px ${16*g.space}px;border-left:5px solid ${t.accent};border-radius:${t.radius}px;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.5px;font-weight:700;`; }
       else if(t.titleStyle==='quote'){ head = `display:block;background:${t.card};color:${txt};padding:${10*g.space}px ${14*g.space}px ${10*g.space}px;border-left:5px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.3px;font-weight:700;`; }
       else if(t.titleStyle==='pill'){ head = `display:inline-block;background:${t.primary};color:#fff;padding:${6*g.space}px ${16*g.space}px;border-radius:${t.radius>=16?t.radius:18}px;margin:${18*g.space}px 0 ${10*g.space}px;letter-spacing:.5px;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.10);`; }
-      else if(t.titleStyle==='editorial'){ head = `display:block;background:#f5f5f5;padding:${8*g.space}px ${14*g.space}px;margin:${18*g.space}px 0 ${10*g.space}px;border-radius:4px;letter-spacing:.5px;font-weight:700;color:${t.text};border-left:4px solid ${t.accent};`; }
+      else if(t.titleStyle==='editorial'){ head = `display:block;background:${t.tier==='v5'?t.card:'#f5f5f5'};padding:${8*g.space}px ${14*g.space}px;margin:${18*g.space}px 0 ${10*g.space}px;border-radius:4px;letter-spacing:.5px;font-weight:700;color:${t.text};border-left:4px solid ${t.accent};`; }
       return base + `font-size:${20*g.scale}px;font-weight:700;color:${txt};margin:${secTop}px 0 ${secBot}px;` + hf + head;
     }
     case 'h3': {
@@ -901,32 +969,33 @@ function blockStyle(type, t, g){
       return base + `margin:0 0 ${blkGap}px;`;
     case 'strong': return base + `display:block;font-weight:700;color:${txt};background:${t.card};padding:${10*g.space}px ${14*g.space}px;border-radius:${t.radius}px;margin:${sp}px 0;`;
     case 'quote':  return base + `display:block;color:${t.text};background:${t.card};border-left:4px solid ${t.primary};padding:${13*g.space}px ${16*g.space}px;margin:${sp}px 0;border-radius:0 ${t.radius}px ${t.radius}px 0;`;
-    case 'code':   return `display:block;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-size:${13*g.scale}px;line-height:1.65;color:#23312b;background:#f6f7f8;border:1px solid ${t.accent};border-left:4px solid ${t.primary};border-radius:${Math.max(t.radius,6)}px;padding:${14*g.space}px ${16*g.space}px;margin:${sp}px 0;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;`;
-    case 'formula':return base + `display:block;background:#fbf8f1;border:1px solid ${t.accent};border-left:4px solid ${t.accent};border-radius:${Math.max(t.radius,6)}px;padding:${14*g.space}px ${16*g.space}px;margin:${sp}px 0;`;
+    case 'code':   return `display:block;font-family:Menlo,Consolas,"Liberation Mono",monospace;font-size:${13*g.scale}px;line-height:1.65;color:#23312b;background:#f6f7f8;border:1px solid ${border};border-left:4px solid ${t.primary};border-radius:${Math.max(t.radius,6)}px;padding:${14*g.space}px ${16*g.space}px;margin:${sp}px 0;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;`;
+    case 'formula':return base + `display:block;background:#fbf8f1;border:1px solid ${border};border-left:4px solid ${t.accent};border-radius:${Math.max(t.radius,6)}px;padding:${14*g.space}px ${16*g.space}px;margin:${sp}px 0;`;
     case 'card':
       if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`; }
       if(t.tier==='v4'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`; }
-      return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`;
+      if(t.tier==='v5'){ return base + `display:block;background:${t.card};border:1px solid ${border};border-left:4px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`; }
+      return base + `display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${sp}px 0;`;
     case 'tip':
       if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${12*g.space}px ${14*g.space}px;margin:${sp}px 0;`; }
       return base + `display:block;background:${t.card};border-left:4px solid ${t.accent};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${12*g.space}px ${14*g.space}px;margin:${sp}px 0;`;
     case 'image':  return base + `display:block;border:2px dashed ${t.accent};border-radius:${t.radius}px;padding:${30*g.space}px;text-align:center;color:#999;margin:${sp}px 0;font-size:${14*g.scale}px;`;
     case 'divider':return `border:none;border-top:2px dashed ${t.accent};margin:${20*g.space}px 0;`;
     case 'caption':
-      if(t.tier==='v3'){ return base + `font-size:${13*g.scale}px;color:#999;text-align:center;margin:${8*g.space}px 0 ${16*g.space}px;padding-top:${8*g.space}px;border-top:1px solid ${t.accent};`; }
+      if(t.tier==='v3'){ return base + `font-size:${13*g.scale}px;color:#999;text-align:center;margin:${8*g.space}px 0 ${16*g.space}px;padding-top:${8*g.space}px;border-top:1px solid ${border};`; }
       return base + `font-size:${13*g.scale}px;color:#999;text-align:center;margin:${8*g.space}px 0 ${16*g.space}px;`;
     case 'footer':
-      if(t.tier==='v4'){ return base + `display:block;text-align:center;color:${t.accent};font-size:${12*g.scale}px;margin:${28*g.space}px 0 ${24*g.space}px;padding-top:${14*g.space}px;border-top:1px solid ${t.accent};letter-spacing:1px;`; }
-      return base + `display:block;text-align:center;color:#999;font-size:${13*g.scale}px;margin:${24*g.space}px 0;padding-top:${12*g.space}px;border-top:1px solid ${t.accent};`;
-    case 'recap':  return base + `background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
-    case 'triple': return base + `display:block;border:1px solid ${t.accent};border-radius:${Math.max(t.radius,12)}px;padding:${16*g.space}px ${14*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+      if(t.tier==='v4'){ return base + `display:block;text-align:center;color:${t.accent};font-size:${12*g.scale}px;margin:${28*g.space}px 0 ${24*g.space}px;padding-top:${14*g.space}px;border-top:1px solid ${border};letter-spacing:1px;`; }
+      return base + `display:block;text-align:center;color:#999;font-size:${13*g.scale}px;margin:${24*g.space}px 0;padding-top:${12*g.space}px;border-top:1px solid ${border};`;
+    case 'recap':  return base + `background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'triple': return base + `display:block;border:1px solid ${border};border-radius:${Math.max(t.radius,12)}px;padding:${16*g.space}px ${14*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
     case 'next':   return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
-    case 'hist':   return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'hist':   return base + `display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
     case 'intro':
       if(t.tier==='v3'){ return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${14*g.space}px ${16*g.space}px;margin:0 0 ${18*g.space}px;font-size:${15*g.scale}px;`; }
       return base + `display:block;background:${t.card};border-left:4px solid ${t.primary};border-radius:0 ${t.radius}px ${t.radius}px 0;padding:${14*g.space}px ${16*g.space}px;margin:0 0 ${18*g.space}px;font-size:${15*g.scale}px;`;
     case 'stat':
-      if(t.tier==='v4'){ return base + `display:block;background:${t.card};color:${t.text};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${18*g.space}px 0;text-align:center;`; }
+      if(t.tier==='v4'||t.tier==='v5'){ return base + `display:block;background:${t.card};color:${t.text};border:1px solid ${border};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${18*g.space}px 0;text-align:center;`; }
       return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px;margin:${18*g.space}px 0;text-align:center;`;
     case 'quote2':
       if(t.tier==='v3'){ return base + `display:block;color:${txt};font-size:${19*g.scale}px;font-weight:700;line-height:1.7;text-align:center;margin:${20*g.space}px 0;padding:${12*g.space}px 8px;border-bottom:2px solid ${t.accent};`; }
@@ -934,13 +1003,13 @@ function blockStyle(type, t, g){
     case 'compare':return base + `margin:${18*g.space}px 0;`;
     case 'step':   return base + `margin:${18*g.space}px 0;`;
     case 'twocol': return base + `margin:${18*g.space}px 0;`;
-    case 'guide':  return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
+    case 'guide':  return base + `display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${16*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
     case 'follow': return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
     case 'cta':    return base + `display:block;background:${t.primary};color:#fff;border-radius:${t.radius}px;padding:${16*g.space}px ${18*g.space}px;margin:${20*g.space}px 0;text-align:center;`;
     case 'meta':  return base + `display:block;text-align:center;font-size:${12*g.scale}px;color:#999;letter-spacing:1px;margin:0 0 ${16*g.space}px;`;
     case 'clist': return base + `margin:${sp}px 0;`;
     case 'table': return base + `margin:${18*g.space}px 0;`;
-    case 'refs':  return base + `display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
+    case 'refs':  return base + `display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${14*g.space}px ${16*g.space}px;margin:${20*g.space}px 0;`;
     case 'tags':   return base + `margin:${16*g.space}px 0;`;
   }
   return base;
@@ -1031,6 +1100,7 @@ function splitLines(s){ return sanitizePlainText(s||'').split(/\n+/).map(x=>x.tr
 function buildSharedSectionSurface(type,theme,settings,content,target,context,record){
   const t=theme,g=settings,c=content||{};
   const s=blockStyle(type,t,g);
+  const border=themeBorder(t);
   const txt=t.tier==='v4'?t.text:t.primary;
   /* 这些非直接编辑组件在本地也显示微信安全的链接降级结果，避免预览与复制结构分叉。 */
   const safeInline=(key,fallback)=>publishInlineField(c,key,fallback,t);
@@ -1045,7 +1115,7 @@ function buildSharedSectionSurface(type,theme,settings,content,target,context,re
       const label=escapeHtml(textField(c,'strong','写在前面'));
       const labelStyle=t.tier==='v3'
         ? `display:inline-block;color:${t.accent};font-size:${11*g.scale}px;letter-spacing:2px;font-weight:700;text-transform:uppercase;margin-bottom:10px;font-family:-apple-system,'Helvetica Neue',sans-serif;`
-        : `display:inline-block;color:${txt};font-size:${13*g.scale}px;letter-spacing:1px;border:1px solid ${t.accent};border-radius:20px;padding:2px 12px;margin-bottom:8px;`;
+        : `display:inline-block;color:${txt};font-size:${13*g.scale}px;letter-spacing:1px;border:1px solid ${border};border-radius:20px;padding:2px 12px;margin-bottom:8px;`;
       return `<section data-type="intro" style="${s}"><strong style="${labelStyle}">${label}</strong><br><span style="font-size:${15*g.scale}px;line-height:${t.tier==='v3'?1.8:1.75};color:${t.text};">${safeInline('body','把这段换成你的开场白，用“我”的口吻，三两句话把读者拉进来。')}</span></section>`;
     }
     case 'step':
@@ -1058,6 +1128,7 @@ function buildSharedSectionSurface(type,theme,settings,content,target,context,re
 function buildEditorComponent(type, t, g, c){
   c = c || {};
   const s = blockStyle(type, t, g);
+  const border = themeBorder(t);
   const txt = (t.tier==='v4') ? t.text : t.primary;
   switch(type){
     case 'h1':     return `<section data-type="h1" style="${s}">${inlineField(c,'text','在此输入大标题')}</section>`;
@@ -1082,7 +1153,7 @@ function buildEditorComponent(type, t, g, c){
         }
       }
       if(t.titleStyle==='editorial'){
-        return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;font-family:-apple-system,'Helvetica Neue',sans-serif;">01</span><span style="display:inline-block;width:1px;height:14px;background:#ccc;margin-right:12px;vertical-align:-2px;"></span><span>${escapeHtml(textField(c,'text','小标题'))}</span></section>`;
+        return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;font-family:-apple-system,'Helvetica Neue',sans-serif;">01</span><span style="display:inline-block;width:1px;height:14px;background:${t.border||'#ccc'};margin-right:12px;vertical-align:-2px;"></span><span>${escapeHtml(textField(c,'text','小标题'))}</span></section>`;
       }
       return `<section data-type="h2" style="${s}">${escapeHtml(textField(c,'text','小标题'))}</section>`;
     case 'h3':     return `<section data-type="h3" style="${s};border-left:4px solid ${t.accent};padding-left:9px;"><span style="font-weight:700;color:${txt};">${escapeHtml(textField(c,'text','子节标题'))}</span></section>`;
@@ -1117,37 +1188,37 @@ function buildEditorComponent(type, t, g, c){
     }
     case 'table': {
       const model=normalizeTableModel(c),head=model.head,rows=model.rows;
-      const th=head.map(h=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${t.accent};">${escapeHtml(h)}</th>`).join('');
-      const trs=rows.map((r,ri)=>`<tr>${head.map((_,ci)=>`<td style="background:${ri%2?t.card:'#ffffff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${t.accent};">${escapeHtml(r[ci]||'')}</td>`).join('')}</tr>`).join('');
+      const th=head.map(h=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${border};">${escapeHtml(h)}</th>`).join('');
+      const trs=rows.map((r,ri)=>`<tr>${head.map((_,ci)=>`<td style="background:${ri%2?t.card:'#ffffff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${border};">${escapeHtml(r[ci]||'')}</td>`).join('')}</tr>`).join('');
       return `<section data-type="table" style="${s}"><table style="width:100%;border-collapse:collapse;"><tr>${th}</tr>${trs}</table></section>`;
     }
     case 'refs': {
       const items=listField(c,'items',['资料一|来源说明','资料二|来源说明']);
-      return `<section data-type="refs" style="${s}"><div style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin-bottom:10px;letter-spacing:1px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','REFERENCES · 参考资料'))}</div>${referenceRowsHtml(items,t,g)}</section>`;
+      return `<section data-type="refs" style="${s}"><div style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin-bottom:10px;letter-spacing:1px;border-bottom:1px solid ${border};padding-bottom:6px;">${escapeHtml(textField(c,'title','REFERENCES · 参考资料'))}</div>${referenceRowsHtml(items,t,g)}</section>`;
     }
     case 'triple': {
       const acts=listField(c,'acts',['点赞','在看','转发']);
       const icons=listField(c,'icons',['👍','👁','↗']);
       const lead=inlineField(c,'lead','既然看到这里了，随手点赞、在看、转发三连吧。');
-      const btns = acts.map((a,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${t.accent};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};"><span style="margin-right:5px;">${escapeHtml(icons[i]||'')}</span><strong>${escapeHtml(a)}</strong></span>`).join('');
+      const btns = acts.map((a,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${border};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};"><span style="margin-right:5px;">${escapeHtml(icons[i]||'')}</span><strong>${escapeHtml(a)}</strong></span>`).join('');
       return `<section data-type="triple" style="${s}"><div style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin-bottom:${10*g.space}px;">${lead}</div><p style="margin:0;text-align:center;line-height:1.8;">${btns}</p><div style="margin-top:${12*g.space}px;font-size:10px;letter-spacing:3px;color:#b0b0b0;">${escapeHtml(textField(c,'tail','THANKS FOR READING'))}</div></section>`;
     }
     case 'next':   return `<section data-type="next" style="${s}"><div style="font-size:10px;letter-spacing:2px;color:${txt};font-weight:700;margin-bottom:6px;">NEXT</div><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:6px;">${escapeHtml(textField(c,'title','下期预告'))}</div><div style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;">${inlineField(c,'body','下一篇文章，我想聊聊……（在这里写一句钩子，让人想追更）')}</div></section>`;
-    case 'hist':   return `<section data-type="hist" style="${s}"><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:8px;">${escapeHtml(textField(c,'title','往期推荐'))}</div>${listField(c,'items',['往期文章标题一|阅读数据请替换','往期文章标题二|阅读数据请替换']).map(line=>{ const raw=String(line),idx=raw.indexOf('|'),title=idx<0?raw:raw.slice(0,idx),desc=idx<0?'':raw.slice(idx+1); return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${t.accent};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(title)}</strong>${desc?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(desc)}</span>`:''}</p>`; }).join('')}</section>`;
+    case 'hist':   return `<section data-type="hist" style="${s}"><div style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin-bottom:8px;">${escapeHtml(textField(c,'title','往期推荐'))}</div>${listField(c,'items',['往期文章标题一|阅读数据请替换','往期文章标题二|阅读数据请替换']).map(line=>{ const raw=String(line),idx=raw.indexOf('|'),title=idx<0?raw:raw.slice(0,idx),desc=idx<0?'':raw.slice(idx+1); return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${border};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(title)}</strong>${desc?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(desc)}</span>`:''}</p>`; }).join('')}</section>`;
     case 'intro':  return buildSharedSectionSurface(type,t,g,c,'editor',{},null);
     case 'stat':   return `<section data-type="stat" style="${s}"><div style="font-size:${13*g.scale}px;opacity:.85;margin-bottom:8px;">${escapeHtml(textField(c,'label','数据卡标题'))}</div><div style="font-size:${18*g.scale}px;font-weight:700;line-height:1.6;">${inlineField(c,'value','关键数字一 · 关键数字二<br>关键数字三 · 关键数字四').replace(/\n/g,'<br>')}</div></section>`;
     case 'quote2': return `<section data-type="quote2" style="${s}">${inlineField(c,'text','「把最想让人记住的一句话，放在这里。」')}</section>`;
     case 'compare':return `<section data-type="compare" style="${s}">`
-                        + `<div style="background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;line-height:1.7;">${escapeHtml(textField(c,'aTitle','方案 A（推荐）'))}</p><ul style="list-style:disc;padding-left:20px;margin:0;color:${t.text};font-size:${15*g.scale}px;line-height:1.7;">${listItems(listField(c,'aItems',['优点一','优点二','优点三']))}</ul></div>`
+                        + `<div style="background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;line-height:1.7;">${escapeHtml(textField(c,'aTitle','方案 A（推荐）'))}</p><ul style="list-style:disc;padding-left:20px;margin:0;color:${t.text};font-size:${15*g.scale}px;line-height:1.7;">${listItems(listField(c,'aItems',['优点一','优点二','优点三']))}</ul></div>`
                         + `<div style="background:#f7f2ee;border:1px solid #e0c9b0;border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;"><p style="font-weight:700;color:#8a5a2b;font-size:${15*g.scale}px;margin:0 0 6px;line-height:1.7;">${escapeHtml(textField(c,'bTitle','方案 B（不推荐）'))}</p><ul style="list-style:disc;padding-left:20px;margin:0;color:${t.text};font-size:${15*g.scale}px;line-height:1.7;">${listItems(listField(c,'bItems',['缺点一','缺点二','缺点三']))}</ul></div></section>`;
     case 'step':   return buildSharedSectionSurface(type,t,g,c,'editor',{},null);
     case 'twocol': return `<section data-type="twocol" style="${s}">`
-                        + `<section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','左栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
-                        + `<section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','右栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
+                        + `<section style="display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','左栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
+                        + `<section style="display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','右栏内容').split('\n').map(x=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(x)}</p>`).join('')}</section>`
                         + `</section>`;
     case 'guide':  { const L=splitLines(inlineHtmlToText(inlineField(c,'text','如果觉得有用，点个「在看」支持一下\n你的每一次分享，都是我继续写下去的动力。'))); return `<section data-type="guide" style="${s}"><div style="font-size:${16*g.scale}px;font-weight:700;color:${txt};margin-bottom:8px;">${escapeHtml(L[0]||'')}</div><div style="font-size:${14*g.scale}px;color:${t.text};">${escapeHtml(L.slice(1).join(' '))}</div></section>`; }
     case 'follow': { const L=splitLines(inlineHtmlToText(inlineField(c,'text','关注我，不错过下一篇\n微信搜一搜，或点上方蓝字即可关注'))); return `<section data-type="follow" style="${s}"><div style="font-weight:700;font-size:${16*g.scale}px;margin-bottom:6px;">${escapeHtml(L[0]||'')}</div><div style="font-size:${13*g.scale}px;opacity:.9;">${escapeHtml(L.slice(1).join(' '))}</div></section>`; }
-    case 'tags':   return `<section data-type="tags" style="${s}">` + listField(c,'items',['效率工具','AI','时间管理']).map(x=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${t.accent};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(x)}</span>`).join('') + `</section>`;
+    case 'tags':   return `<section data-type="tags" style="${s}">` + listField(c,'items',['效率工具','AI','时间管理']).map(x=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${border};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(x)}</span>`).join('') + `</section>`;
     case 'cta':    return `<section data-type="cta" style="${s}">${inlineField(c,'text','你平时用它干过最爽的一件事是什么？<br><strong>评论区聊聊，我去抄作业</strong>')}</section>`;
   }
   return '';
@@ -1194,7 +1265,7 @@ function buildWechatComponent(type,t,g,c,ctx,record){
   const policy=PUBLISH_POLICY[type];
   if(!policy||!PUBLISH_STATUS[policy.status]) return '';
   if(policy.status==='local-only') return '';
-  const s=blockStyle(type,t,g),txt=t.tier==='v4'?t.text:t.primary;
+  const s=blockStyle(type,t,g),border=themeBorder(t),txt=t.tier==='v4'?t.text:t.primary;
   switch(type){
     case 'h1': return `<section data-type="h1" style="${s}">${publishInlineField(c,'text','在此输入大标题',t)}</section>`;
     case 'h2': {
@@ -1206,7 +1277,7 @@ function buildWechatComponent(type,t,g,c,ctx,record){
         if(t.signature==='timeline') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:4px solid ${t.accent};padding-left:12px;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
         if(t.signature==='compare') return `<section data-type="h2" style="${s};letter-spacing:.8px;border-left:24px solid ${t.accent};border-right:24px solid ${t.accent};padding:0 12px;text-align:center;"><span style="font-weight:700;color:${t.text};">${escapeHtml(raw)}</span></section>`;
       }
-      if(t.titleStyle==='editorial') return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;">01</span><span style="border-left:1px solid #ccc;padding-left:12px;">${escapeHtml(raw)}</span></section>`;
+      if(t.titleStyle==='editorial') return `<section data-type="h2" style="${s}"><span style="color:${t.accent};font-size:${16*g.scale}px;font-weight:700;margin-right:10px;letter-spacing:1px;">01</span><span style="border-left:1px solid ${t.border||'#ccc'};padding-left:12px;">${escapeHtml(raw)}</span></section>`;
       return `<section data-type="h2" style="${s}">${escapeHtml(raw)}</section>`;
     }
     case 'h3': return `<section data-type="h3" style="${s};border-left:4px solid ${t.accent};padding-left:9px;"><span style="font-weight:700;color:${txt};">${escapeHtml(textField(c,'text','子节标题'))}</span></section>`;
@@ -1236,31 +1307,31 @@ function buildWechatComponent(type,t,g,c,ctx,record){
     case 'table': {
       const model=normalizeTableModel(c),head=model.head,rows=model.rows;
       if(ctx.tableMode==='table'){
-        const th=head.map(value=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${t.accent};">${escapeHtml(value)}</th>`).join('');
-        const trs=rows.map((row,ri)=>`<tr>${head.map((_,ci)=>`<td style="background:${ri%2?t.card:'#fff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${t.accent};">${escapeHtml(row[ci]||'')}</td>`).join('')}</tr>`).join('');
+        const th=head.map(value=>`<th style="background:${t.primary};color:#fff;font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;text-align:left;border:1px solid ${border};">${escapeHtml(value)}</th>`).join('');
+        const trs=rows.map((row,ri)=>`<tr>${head.map((_,ci)=>`<td style="background:${ri%2?t.card:'#fff'};color:${t.text};font-size:${13*g.scale}px;padding:${8*g.space}px ${10*g.space}px;border:1px solid ${border};">${escapeHtml(row[ci]||'')}</td>`).join('')}</tr>`).join('');
         return `<section data-type="table" style="${s}"><table style="width:100%;border-collapse:collapse;"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></section>`;
       }
-      return `<section data-type="table" style="${s}">${rows.map((row,ri)=>`<section style="display:block;background:${ri%2?t.card:'#fff'};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin:0 0 ${10*g.space}px;">${head.map((label,ci)=>`<p style="margin:${ci?6:0}px 0 0;font-size:${14*g.scale}px;line-height:1.7;color:${t.text};"><strong style="color:${txt};margin-right:8px;">${escapeHtml(label||('第'+(ci+1)+'列'))}</strong><span>${escapeHtml(row[ci]||'')}</span></p>`).join('')}</section>`).join('')}</section>`;
+      return `<section data-type="table" style="${s}">${rows.map((row,ri)=>`<section style="display:block;background:${ri%2?t.card:'#fff'};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin:0 0 ${10*g.space}px;">${head.map((label,ci)=>`<p style="margin:${ci?6:0}px 0 0;font-size:${14*g.scale}px;line-height:1.7;color:${t.text};"><strong style="color:${txt};margin-right:8px;">${escapeHtml(label||('第'+(ci+1)+'列'))}</strong><span>${escapeHtml(row[ci]||'')}</span></p>`).join('')}</section>`).join('')}</section>`;
     }
-    case 'refs': return `<section data-type="refs" style="${s}"><p style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin:0 0 10px;border-bottom:1px solid ${t.accent};padding-bottom:6px;">${escapeHtml(textField(c,'title','参考资料'))}</p>${referenceRowsHtml(listField(c,'items',[]),t,g)}</section>`;
+    case 'refs': return `<section data-type="refs" style="${s}"><p style="font-weight:700;color:${txt};font-size:${13*g.scale}px;margin:0 0 10px;border-bottom:1px solid ${border};padding-bottom:6px;">${escapeHtml(textField(c,'title','参考资料'))}</p>${referenceRowsHtml(listField(c,'items',[]),t,g)}</section>`;
     case 'triple': {
       const acts=listField(c,'acts',[]),icons=listField(c,'icons',[]);
-      return `<section data-type="triple" style="${s}"><p style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin:0 0 ${10*g.space}px;">${publishInlineField(c,'lead','',t)}</p><p style="margin:0;text-align:center;line-height:1.8;">${acts.map((action,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${t.accent};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};">${escapeHtml(icons[i]||'')} <strong>${escapeHtml(action)}</strong></span>`).join('')}</p><p style="margin:${12*g.space}px 0 0;font-size:10px;letter-spacing:3px;color:#999;">${escapeHtml(textField(c,'tail',''))}</p></section>`;
+      return `<section data-type="triple" style="${s}"><p style="font-size:${14*g.scale}px;color:${t.text};line-height:1.7;margin:0 0 ${10*g.space}px;">${publishInlineField(c,'lead','',t)}</p><p style="margin:0;text-align:center;line-height:1.8;">${acts.map((action,i)=>`<span style="display:inline-block;margin:4px 8px;padding:7px 10px;background:${t.card};border:1px solid ${border};border-radius:${Math.max(t.radius,10)}px;font-size:${13*g.scale}px;color:${t.text};">${escapeHtml(icons[i]||'')} <strong>${escapeHtml(action)}</strong></span>`).join('')}</p><p style="margin:${12*g.space}px 0 0;font-size:10px;letter-spacing:3px;color:#999;">${escapeHtml(textField(c,'tail',''))}</p></section>`;
     }
     case 'next': return `<section data-type="next" style="${s}"><p style="font-size:10px;letter-spacing:2px;color:${txt};font-weight:700;margin:0 0 6px;">NEXT</p><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'title','下期预告'))}</p><p style="font-size:${15*g.scale}px;color:${t.text};line-height:1.7;margin:0;">${publishInlineField(c,'body','',t)}</p></section>`;
-    case 'hist': return `<section data-type="hist" style="${s}"><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 8px;">${escapeHtml(textField(c,'title','往期推荐'))}</p>${listField(c,'items',[]).map(item=>{const pair=splitPublishPair(item);return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${t.accent};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(pair.title)}</strong>${pair.description?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(pair.description)}</span>`:''}</p>`;}).join('')}</section>`;
+    case 'hist': return `<section data-type="hist" style="${s}"><p style="font-weight:700;color:${txt};font-size:${16*g.scale}px;margin:0 0 8px;">${escapeHtml(textField(c,'title','往期推荐'))}</p>${listField(c,'items',[]).map(item=>{const pair=splitPublishPair(item);return `<p style="margin:0;padding:8px 0;border-bottom:1px dashed ${border};font-size:${14*g.scale}px;line-height:1.7;"><strong style="display:block;color:${txt};">· ${escapeHtml(pair.title)}</strong>${pair.description?`<span style="display:block;color:#888;font-size:12px;margin-top:2px;">${escapeHtml(pair.description)}</span>`:''}</p>`;}).join('')}</section>`;
     case 'intro': return buildSharedSectionSurface(type,t,g,c,'wechat',ctx,record);
     case 'stat': return `<section data-type="stat" style="${s}"><p style="font-size:${13*g.scale}px;opacity:.85;margin:0 0 8px;">${escapeHtml(textField(c,'label','数据卡标题'))}</p><p style="font-size:${18*g.scale}px;font-weight:700;line-height:1.6;margin:0;">${publishInlineField(c,'value','',t)}</p></section>`;
     case 'quote2': return `<section data-type="quote2" style="${s}">${publishInlineField(c,'text','',t)}</section>`;
-    case 'compare': return `<section data-type="compare" style="${s}"><section style="background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'aTitle','方案 A'))}</p>${publishTextLines(listField(c,'aItems',[]),t,g,'•')}</section><section style="background:#f7f2ee;border:1px solid #e0c9b0;border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;"><p style="font-weight:700;color:#8a5a2b;font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'bTitle','方案 B'))}</p>${publishTextLines(listField(c,'bItems',[]),t,g,'•')}</section></section>`;
+    case 'compare': return `<section data-type="compare" style="${s}"><section style="background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;margin-bottom:${10*g.space}px;"><p style="font-weight:700;color:${txt};font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'aTitle','方案 A'))}</p>${publishTextLines(listField(c,'aItems',[]),t,g,'•')}</section><section style="background:#f7f2ee;border:1px solid #e0c9b0;border-radius:${t.radius}px;padding:${12*g.space}px ${14*g.space}px;"><p style="font-weight:700;color:#8a5a2b;font-size:${15*g.scale}px;margin:0 0 6px;">${escapeHtml(textField(c,'bTitle','方案 B'))}</p>${publishTextLines(listField(c,'bItems',[]),t,g,'•')}</section></section>`;
     case 'step': return buildSharedSectionSurface(type,t,g,c,'wechat',ctx,record);
-    case 'twocol': return `<section data-type="twocol" style="${s}"><section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section><section style="display:block;background:${t.card};border:1px solid ${t.accent};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section></section>`;
+    case 'twocol': return `<section data-type="twocol" style="${s}"><section style="display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px;margin:0 0 ${10*g.space}px;">${textField(c,'left','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section><section style="display:block;background:${t.card};border:1px solid ${border};border-radius:${t.radius}px;padding:${12*g.space}px;">${textField(c,'right','').split('\n').map(line=>`<p style="margin:4px 0;font-size:${15*g.scale}px;line-height:1.7;">${escapeHtml(line)}</p>`).join('')}</section></section>`;
     case 'guide':
     case 'follow': {
       const lines=splitLines(inlineHtmlToText(fieldValue(c,'text','')));
       return `<section data-type="${type}" style="${s}"><p style="font-weight:700;font-size:${16*g.scale}px;margin:0 0 6px;">${escapeHtml(lines[0]||'')}</p><p style="font-size:${13*g.scale}px;line-height:1.7;margin:0;">${escapeHtml(lines.slice(1).join(' '))}</p></section>`;
     }
-    case 'tags': return `<section data-type="tags" style="${s}">${listField(c,'items',[]).map(tag=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${t.accent};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(tag)}</span>`).join('')}</section>`;
+    case 'tags': return `<section data-type="tags" style="${s}">${listField(c,'items',[]).map(tag=>`<span style="display:inline-block;background:${t.card};color:${txt};border:1px solid ${border};border-radius:20px;padding:5px 14px;margin:4px 6px 4px 0;font-size:${13*g.scale}px;"># ${escapeHtml(tag)}</span>`).join('')}</section>`;
     case 'cta': return `<section data-type="cta" style="${s}">${publishInlineField(c,'text','',t)}</section>`;
   }
   return '';
@@ -1277,6 +1348,7 @@ function renderArticleRoot(records,options){
   const opts=options||{};
   const target=opts.target==='wechat'?'wechat':'editor';
   const t=opts.theme||{};
+  const border=themeBorder(t);
   const g=opts.settings||{scale:1,space:1};
   const context=opts.context||{};
   const outputMode=['wechat-stable','visual-enhanced','local-showcase'].includes(g.outputMode)?g.outputMode:'manual';
@@ -1296,7 +1368,7 @@ function renderArticleRoot(records,options){
       section.setAttribute('data-article-section',String(sectionIndex));
       const sectionBackground=localShowcase?'rgba(255,255,255,.92)':(enhanced?(t.card||'#ffffff'):'#ffffff');
       const localSectionDecoration=localShowcase?'box-shadow:0 8px 22px rgba(60,42,28,.09);':'';
-      section.setAttribute('style',`display:block;margin:${18*g.space}px 0;padding:${(enhanced||localShowcase?17:14)*g.space}px;background:${sectionBackground};border:1px solid ${t.accent||'#d8dfdb'};border-left:${enhanced||localShowcase?6:4}px solid ${t.primary||'#1f4d3a'};border-radius:${Math.max(Number(t.radius)||0,8)}px;color:${t.text||'#333'};line-height:1.75;${localSectionDecoration}`);
+      section.setAttribute('style',`display:block;margin:${18*g.space}px 0;padding:${(enhanced||localShowcase?17:14)*g.space}px;background:${sectionBackground};border:1px solid ${border};border-left:${enhanced||localShowcase?6:4}px solid ${t.primary||'#1f4d3a'};border-radius:${Math.max(Number(t.radius)||0,8)}px;color:${t.text||'#333'};line-height:1.75;${localSectionDecoration}`);
       root.appendChild(section);
       parent=section;
     }
@@ -1361,7 +1433,7 @@ const SAMPLE_ARTICLE = [
   { type:'image', c:{ text:'图片占位 — 建议此处放一张工具界面截图' } },
   { type:'caption', c:{ text:'图注：拾光排版器界面 · 左侧选主题，右侧实时预览' } },
   { type:'clist', c:{ items:[
-    '35 套视觉主题|覆盖杂志、东方、卡片和暖文艺',
+    '39 套视觉主题|新增 4 套低饱和淡紫编辑精选',
     '一键复制富文本|粘贴后保存草稿并手机预览',
     '静态发布预检|复制前检查占位与高风险结构',
     '示例文章教程|第一次使用也能跟着完成'
@@ -1376,7 +1448,7 @@ const SAMPLE_ARTICLE = [
   { type:'p', c:{ text:'这个号叫「Crush带你玩转海外市场营销」。以后，我会继续在这里分享海外营销的实战方法、内容生产的效率工具，以及一个人如何把自己的专业经验，逐步沉淀成可以持续积累的内容资产。' } },
   { type:'p', c:{ text:'我不想只告诉你"应该怎么做"。我更希望把自己正在使用的方法、工具，以及一路踩过的坑，慢慢整理出来交给你。' } },
   { type:'p', c:{ text:'对一个长期做内容的人来说，信任不是靠一次成交建立的，而是靠一次次真实、有用、可以验证的交付积累出来的。' } },
-  { type:'p', c:{ text:'免费版不是只开放几套模板：35 套视觉主题、16 套文章结构、33 个区块组件、本地备份、发布预检和微信清洁复制都可以使用。已领取的当前版本可以长期使用；我也计划持续维护影响正常使用的兼容问题。' } },
+  { type:'p', c:{ text:'免费版不是只开放几套模板：39 套视觉主题、16 套文章结构、33 个区块组件、本地备份、发布预检和微信清洁复制都可以使用。已领取的当前版本可以长期使用；我也计划持续维护影响正常使用的兼容问题。' } },
   { type:'h2', c:{ text:'三步开始，把时间还给内容' } },
   { type:'card', c:{ title:'🎁 示例领取说明（请替换）', body:'请在这里填写真实领取方式、价格、更新范围和服务边界；发布前删除所有示例占位信息。' } },
   { type:'step', c:{ items:[
@@ -1612,11 +1684,74 @@ const propFields = document.getElementById('propFields');
 const propType = document.getElementById('propType');
 const undoBtn=document.getElementById('undoBtn');
 const redoBtn=document.getElementById('redoBtn');
+const WORKSPACE_VIEW_KEY='wx-workspace-view-v1';
+let workspaceView='full';
 let historyStack=[];
 let historyIndex=-1;
 let historyTimer=null;
 let historyKey=null;
 let applyingHistory=false;
+
+function syncWorkspaceRiskBadge(){
+  const badge=document.getElementById('workspaceRiskBadge');
+  if(!badge) return;
+  const risks=[];
+  if(G.outputMode==='local-showcase') risks.push('本地展示版·禁止复制');
+  else if(G.outputMode==='visual-enhanced') risks.push('视觉增强版·需微信验收');
+  if(G.tableMode==='table') risks.push('真实表格·高风险');
+  badge.hidden=risks.length===0;
+  badge.textContent=risks.join(' · ');
+}
+function setWorkspaceView(view,options){
+  options=options||{};
+  const next=view==='guided'?'guided':'full';
+  workspaceView=next;
+  document.body.dataset.workspaceView=next;
+  const simple=document.getElementById('viewModeSimple');
+  const full=document.getElementById('viewModeFull');
+  simple.classList.toggle('active',next==='guided');
+  full.classList.toggle('active',next==='full');
+  simple.setAttribute('aria-pressed',String(next==='guided'));
+  full.setAttribute('aria-pressed',String(next==='full'));
+  if(next==='guided'&&compareMode) setCompareMode(false);
+  if(options.persist!==false){ try{ localStorage.setItem(WORKSPACE_VIEW_KEY,next); }catch(_){} }
+  renderThemes();
+  syncWorkspaceRiskBadge();
+  if(options.announce) flash(next==='guided'?'已切换到简洁模式；完整功能仍可从顶部菜单进入':'已切换到专业模式；33个组件和全部设置已展开');
+}
+function initWorkspaceView(){
+  let saved='';
+  let knownUser=false;
+  try{
+    saved=localStorage.getItem(WORKSPACE_VIEW_KEY)||'';
+    knownUser=!!localStorage.getItem(KEY)||!!localStorage.getItem(SNAPSHOT_KEY)||localStorage.getItem(QUICK_START_KEY)==='1';
+  }catch(_){}
+  setWorkspaceView(saved==='guided'||saved==='full'?saved:(knownUser?'full':'guided'),{persist:false});
+}
+document.getElementById('viewModeSimple').onclick=()=>setWorkspaceView('guided',{announce:true});
+document.getElementById('viewModeFull').onclick=()=>setWorkspaceView('full',{announce:true});
+document.querySelectorAll('.command-menu').forEach(menu=>{
+  menu.addEventListener('toggle',()=>{
+    if(menu.open) document.querySelectorAll('.command-menu').forEach(other=>{ if(other!==menu) other.removeAttribute('open'); });
+  });
+  menu.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>menu.removeAttribute('open')));
+});
+document.addEventListener('click',event=>{
+  if(event.target.closest&&event.target.closest('.command-menu')) return;
+  document.querySelectorAll('.command-menu[open]').forEach(menu=>menu.removeAttribute('open'));
+});
+document.getElementById('menuImportBtn').onclick=()=>document.getElementById('legacyFile').click();
+document.getElementById('menuExportBtn').onclick=()=>document.getElementById('exportBtn').click();
+document.getElementById('insertWorkspaceBtn').onclick=()=>{
+  setWorkspaceView('full',{announce:false});
+  document.getElementById('toolbar').scrollIntoView({block:'nearest'});
+  flash('已展开专业模式；从第二行选择要添加的组件');
+};
+document.getElementById('styleWorkspaceBtn').onclick=()=>{
+  setWorkspaceView('full',{announce:false});
+  document.getElementById('themeList').scrollIntoView({block:'nearest'});
+  flash('已展开主题与全局调节');
+};
 
 function stateComparable(state){
   const copy=cloneJson(state);
@@ -1664,6 +1799,7 @@ function syncAppearanceState(){
     themeId:(ALL_THEMES[themeIndex]&&ALL_THEMES[themeIndex].id)||null,
     scale:G.scale, space:G.space, primary:G.primaryOverride, tableMode:G.tableMode, outputMode:G.outputMode
   });
+  syncWorkspaceRiskBadge();
 }
 function runMutation(label, mutator, options){
   flushHistory();
@@ -1783,7 +1919,7 @@ function applyStateSnapshot(snapshot, shouldSave){
     document.getElementById('spVal').textContent=G.space.toFixed(1)+'×';
     document.getElementById('primaryOverride').value=G.primaryOverride||THEMES[themeIndex].primary;
     document.getElementById('keepWechatTable').checked=G.tableMode==='table';
-    renderThemes(); renderDocument(); if(selBlock) buildPanel(selBlock); syncCompareHeaders();
+    renderThemes(); renderDocument(); if(selBlock) buildPanel(selBlock); syncCompareHeaders(); syncWorkspaceRiskBadge();
     if(shouldSave) scheduleSave();
     return true;
   }finally{
@@ -1942,7 +2078,8 @@ loadTplCollapse(); applyTplCollapse();
 /* ============ 主题 ============ */
 const themeList = document.getElementById('themeList');
 const STORAGE_VER = '2'; // 存储结构版本；版本不符的旧数据自动失效，避免开发期脏数据残留
-const tierCollapsed = { v1:false, v2:false, v3:false, v4:false };
+const GUIDED_THEME_IDS=['minimal','green','blue','purple','v5-lilac-mist','v5-moon-silver','v5-lavender-blue','v5-wisteria-pink'];
+const tierCollapsed = { v1:false, v2:false, v3:false, v4:false, v5:false };
 function saveTierCollapse(){ try{ localStorage.setItem('wx-store-ver', STORAGE_VER); localStorage.setItem('wx-tier-collapse', JSON.stringify(tierCollapsed)); }catch(e){} }
 function loadTierCollapse(){
   try{
@@ -1957,10 +2094,24 @@ function initUnlock(){
 function renderThemes(){
   themeList.innerHTML='';
   const mode = document.createElement('div'); mode.className='theme-access';
-  mode.innerHTML = '<span>35 套主题全部可用 · 点击分组可收起</span>';
+  mode.innerHTML = workspaceView==='guided'?`<span>${GUIDED_THEME_IDS.length} 套精选主题 · 专业模式可查看全部 ${ALL_THEMES.length} 套</span>`:`<span>${ALL_THEMES.length} 套主题全部可用 · 点击分组可收起</span>`;
   themeList.appendChild(mode);
-  // 四组视觉主题：每组表头可点击，独立折叠 / 展开
-  TIERS.forEach(tier=>{
+  if(workspaceView==='guided'){
+    const ids=GUIDED_THEME_IDS.slice();
+    const active=ALL_THEMES[themeIndex];
+    if(active&&!ids.includes(active.id)) ids.unshift(active.id);
+    const wrap=document.createElement('div'); wrap.className='tier-themes';
+    ids.map(id=>ALL_THEMES.find(theme=>theme.id===id)).filter(Boolean).forEach(theme=>{
+      const item=document.createElement('div'); item.className='swatch'+(theme.gIdx===themeIndex?' active':'');
+      item.innerHTML=`<span class="dot" style="background:${theme.primary}"></span>${escapeHtml(theme.name)}`;
+      item.onclick=()=>setTheme(theme.gIdx);
+      wrap.appendChild(item);
+    });
+    themeList.appendChild(wrap);
+    return;
+  }
+  // 五组视觉主题：仅展示顺序把新品置顶，底层索引仍按 TIERS 追加顺序保持兼容
+  THEME_DISPLAY_ORDER.map(id=>TIERS.find(tier=>tier.id===id)).filter(Boolean).forEach(tier=>{
     const collapsed = !!tierCollapsed[tier.id];
     const head = document.createElement('div'); head.className='tier-head'+(collapsed?' collapsed':'');
     head.innerHTML = `<span class="tier-arrow">▾</span><span class="tier-name">${tier.name}</span><span class="tier-badge">${tier.badge}</span><span class="tier-desc">${tier.desc}</span>`;
@@ -1991,6 +2142,7 @@ document.getElementById('primaryOverride').oninput=e=>{ const key='appearance:pr
 document.getElementById('resetPrimary').onclick=()=>{ flushHistory(); G.primaryOverride=null; document.getElementById('primaryOverride').value=THEMES[themeIndex].primary; syncAppearanceState(); touchState(); applyTheme(); pushHistory(); scheduleSave(); };
 document.getElementById('keepWechatTable').onchange=e=>{
   runMutation('切换微信表格发布模式',()=>{ G.tableMode=e.target.checked?'table':'cards'; },{render:false});
+  syncWorkspaceRiskBadge();
   flash(G.tableMode==='table'?'已启用高风险真表格；发布后必须保存、重开并手机预览':'已恢复安全模式：真表格发布时转为纵向卡片');
 };
 
@@ -2219,6 +2371,16 @@ function markdownImageData(token){
 }
 function markdownTokensContainImage(tokens){
   return (Array.isArray(tokens)?tokens:[]).some(token=>token&&((token.type==='image')||markdownTokensContainImage(token.tokens)));
+}
+function markdownTokenTreeContainsImage(value,seen){
+  if(!value) return false;
+  if(Array.isArray(value)) return value.some(item=>markdownTokenTreeContainsImage(item,seen));
+  if(typeof value!=='object') return false;
+  if(value.type==='image') return true;
+  const visited=seen||new WeakSet();
+  if(visited.has(value)) return false;
+  visited.add(value);
+  return ['tokens','items','header','rows'].some(key=>markdownTokenTreeContainsImage(value[key],visited));
 }
 function shiguangMarkdownEngine(){
   if(SHIGUANG_MARKDOWN_ENGINE) return SHIGUANG_MARKDOWN_ENGINE;
@@ -2456,7 +2618,8 @@ function oneClickStepItem(text){
   if(!match) return null;
   return clean;
 }
-function parseOneClickArticle(raw){
+function parseOneClickArticle(raw,options){
+  options=options||{};
   const clean=sanitizePlainText(raw).replace(/^\uFEFF/,'');
   if(clean.length>MAX_TOTAL_CHARS) throw new Error('导入文本超过 100 万字符上限');
   if(!clean.trim()) return {text:'',title:'',blocks:[],detectedType:'general',counts:{blocks:0,h1:0,h2:0,h3:0,steps:0,lists:0,quotes:0,code:0,formulas:0,inlineCode:0,inlineFormulas:0,images:0,links:0,tables:0,refs:0}};
@@ -2469,7 +2632,7 @@ function parseOneClickArticle(raw){
   const sourceLines=clean.split('\n');
   const firstContentIndex=sourceLines.findIndex(line=>line.trim());
   const firstSourceText=firstContentIndex>=0?sourceLines[firstContentIndex].trim():'';
-  const firstLooksLikePlainTitle=firstContentIndex>=0&&firstSourceText.length<=36&&!/[。！？；：:]$/.test(firstSourceText)&&(sourceLines[firstContentIndex+1]||'').trim()==='';
+  const firstLooksLikePlainTitle=options.plainTitle!==false&&firstContentIndex>=0&&firstSourceText.length<=36&&!/[。！？；：:]$/.test(firstSourceText)&&(sourceLines[firstContentIndex+1]||'').trim()==='';
   const firstVisibleTokenIndex=(tokens||[]).findIndex(token=>token&&token.type!=='space'&&token.type!=='def');
   const addImages=start=>blocks.push(...markdownImageBlocks(diagnostics.images,start));
   (tokens||[]).forEach((token,tokenIndex)=>{
@@ -2479,7 +2642,7 @@ function parseOneClickArticle(raw){
     const directInlineImages=inlineTokens.filter(part=>part&&part.type==='image');
     const linkedInlineImage=inlineTokens.some(part=>part&&part.type==='link'&&markdownTokensContainImage(part.tokens));
     const nestedInlineImage=inlineTokens.some(part=>part&&part.type!=='image'&&markdownTokensContainImage(part.tokens));
-    if((directInlineImages.length||nestedInlineImage)&&token.type!=='paragraph'&&token.type!=='text') throw new Error('图片嵌在标题、列表或其他结构中，请把图片单独放在一行后重试');
+    if(markdownTokenTreeContainsImage(token)&&token.type!=='paragraph'&&token.type!=='text') throw new Error('图片嵌在标题、列表、引用或表格中，请把图片单独放在一行后重试');
     if(linkedInlineImage) throw new Error('链接包裹图片暂不支持，请把图片和链接拆成两行后重试');
     if(nestedInlineImage) throw new Error('嵌套图片暂不支持，请把图片单独放在一行后重试');
     if(token.type==='heading'){
@@ -2583,6 +2746,19 @@ function parseOneClickArticle(raw){
   parsed.classification=classifyOneClickArticle(clean,parsed);
   parsed.detectedType=parsed.classification.articleType;
   return parsed;
+}
+function markdownParsedAssetSignature(parsed){
+  const source=parsed&&typeof parsed==='object'?parsed:{};
+  const diagnostics=source.diagnostics&&typeof source.diagnostics==='object'?source.diagnostics:{};
+  const blocks=Array.isArray(source.blocks)?source.blocks:[];
+  const plain=value=>sanitizePlainText(value==null?'':String(value));
+  return JSON.stringify({
+    images:(diagnostics.images||[]).map(item=>[plain(item&&item.text),normalizeHttpUrl(item&&item.url||''),plain(item&&item.title)]),
+    links:(diagnostics.links||[]).map(item=>[plain(item&&item.text),normalizeHttpUrl(item&&item.url||''),plain(item&&item.title)]),
+    blockFormulas:blocks.filter(block=>block&&block.type==='formula').map(block=>[plain(block.c&&block.c.latex),plain(block.c&&block.c.alt)]),
+    inlineFormulas:(diagnostics.inlineFormulas||[]).map(plain),
+    inlineCode:Number(diagnostics.inlineCode)||0
+  });
 }
 function classifyOneClickArticle(input,parsedInput){
   const parsed=parsedInput&&typeof parsedInput==='object'?parsedInput:(typeof input==='object'?input:{});
@@ -3122,13 +3298,14 @@ function loadSampleArticle(){
 const compareBtn=document.getElementById('compareBtn');
 const phoneLabel=document.getElementById('phoneLabel');
 const emptyState=document.getElementById('emptyState');
-compareBtn.onclick=()=>{
-  compareMode=!compareMode;
+function setCompareMode(value){
+  compareMode=!!value;
   compareBtn.classList.toggle('on',compareMode);
   stage.classList.toggle('compare',compareMode);
   phoneLabel.textContent = compareMode ? '对比主题 · 同一内容不同配色（点配色名可切换）' : '手机预览 · 414px 宽度模拟';
   if(compareMode) buildCompare(); else document.querySelectorAll('.phone-wrap.cmp').forEach(e=>e.remove());
-};
+}
+compareBtn.onclick=()=>setCompareMode(!compareMode);
 function buildCompare(){
   document.querySelectorAll('.phone-wrap.cmp').forEach(e=>e.remove());
   const others=THEMES.map((t,i)=>i).filter(i=>i!==themeIndex).slice(0,2);
@@ -3591,6 +3768,309 @@ function downloadBlob(name,content,type){
   const a=document.createElement('a'); a.href=url; a.download=name; a.click();
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+const MARKDOWN_ROUNDTRIP_TYPES=new Set(['h2','h3','p','strong','list','code','formula','image','table','divider']);
+let sourceSession=null;
+function markdownEscapeText(value){
+  return sanitizePlainText(value==null?'':String(value))
+    .replace(/\\/g,'\\\\')
+    .replace(/([`*_[\]])/g,'\\$1')
+    .replace(/(^|\n)(#{1,6}|>|[-+])(?=\s)/g,'$1\\$2');
+}
+function markdownInlineCode(value){
+  const text=sanitizePlainText(value==null?'':String(value));
+  const longest=Math.max(0,...Array.from(text.matchAll(/`+/g),match=>match[0].length));
+  const fence='`'.repeat(Math.max(1,longest+1));
+  const pad=/^`|`$|^\s|\s$/.test(text)?' ':'';
+  return fence+pad+text+pad+fence;
+}
+function inlineHtmlToMarkdown(value){
+  const template=document.createElement('template');
+  template.innerHTML=sanitizeInlineHtml(value);
+  const walk=node=>{
+    if(node.nodeType===Node.TEXT_NODE) return markdownEscapeText(node.nodeValue||'').replace(/\n/g,'  \n');
+    if(node.nodeType!==Node.ELEMENT_NODE) return '';
+    if(node.tagName==='BR') return '  \n';
+    const inner=Array.from(node.childNodes).map(walk).join('');
+    if(node.tagName==='A'){
+      const href=normalizeHttpUrl(node.getAttribute('href')||'');
+      return href?'['+(inner||markdownEscapeText(href))+']('+href+')':inner;
+    }
+    if(node.tagName==='STRONG'||node.tagName==='B') return '**'+inner+'**';
+    if(node.tagName==='EM'||node.tagName==='I') return '*'+inner+'*';
+    if(node.tagName==='SPAN'){
+      const marker=node.getAttribute('data-sg-inline');
+      const plain=inlineHtmlToText(node.innerHTML||node.textContent||'');
+      if(marker==='code') return markdownInlineCode(plain);
+      if(marker==='formula') return '\\('+sanitizePlainText(plain)+'\\)';
+      if(marker==='del') return '~~'+inner+'~~';
+    }
+    return inner;
+  };
+  return Array.from(template.content.childNodes).map(walk).join('');
+}
+function markdownFence(language,value){
+  const text=sanitizePlainText(value==null?'':String(value));
+  const longest=Math.max(0,...Array.from(text.matchAll(/`{3,}/g),match=>match[0].length));
+  const fence='`'.repeat(Math.max(3,longest+1));
+  const lang=sanitizePlainText(language||'').trim().replace(/\s+/g,'-');
+  return fence+lang+'\n'+text+(text.endsWith('\n')?'':'\n')+fence;
+}
+function markdownTableCell(value){ return sanitizePlainText(value==null?'':String(value)).replace(/\\/g,'\\\\').replace(/\|/g,'\\|').replace(/\n/g,'<br>'); }
+function markdownLines(value,prefix){
+  const text=inlineHtmlToMarkdown(value);
+  return text.split('\n').map(line=>(prefix||'')+line).join('\n');
+}
+function markdownReferenceItem(value){
+  const item=referenceItemData(value);
+  const label=markdownEscapeText(item.label||item.url||'未命名资料');
+  if(!item.url) return '- '+label+(item.source?' — '+markdownEscapeText(item.source):'');
+  const title=item.source?' "'+sanitizePlainText(item.source).replace(/["\n]/g,' ')+'"':'';
+  return '- ['+label+']('+item.url+title+')';
+}
+function markdownRecord(record){
+  const type=record&&record.type;
+  const c=record&&record.content||{};
+  if(type==='h2'||type==='h3') return '#'.repeat(type==='h2'?2:3)+' '+markdownEscapeText(c.text||'');
+  if(type==='p') return inlineHtmlToMarkdown(c.text||'');
+  if(type==='strong') return '**'+inlineHtmlToMarkdown(c.text||'')+'**';
+  if(type==='list') return (c.items||[]).map(item=>'- '+sanitizePlainText(item)).join('\n');
+  if(type==='code') return markdownFence(c.language,c.text);
+  if(type==='formula') return '$$\n'+sanitizePlainText(c.latex||'')+'\n$$'+(c.alt?'\n\n'+markdownEscapeText(c.alt):'');
+  if(type==='image'&&normalizeHttpUrl(c.url||'')){
+    const alt=markdownEscapeText(inlineHtmlToText(c.text||'图片')).replace(/[\[\]]/g,'');
+    const title=sanitizePlainText(c.title||'').replace(/["\n]/g,' ');
+    return '!['+alt+']('+normalizeHttpUrl(c.url)+(title?' "'+title+'"':'')+')';
+  }
+  if(type==='table'){
+    const model=normalizeTableModel(c);
+    const line=row=>'| '+row.map(markdownTableCell).join(' | ')+' |';
+    return [line(model.head),line(model.head.map(()=> '---')),...model.rows.map(line)].join('\n');
+  }
+  if(type==='divider') return '---';
+  return '';
+}
+function portableMarkdownRecord(record){
+  const direct=markdownRecord(record);
+  if(direct) return direct;
+  const type=record&&record.type,c=record&&record.content||{};
+  const items=(key)=>(Array.isArray(c[key])?c[key]:[]).map(item=>'- '+sanitizePlainText(item)).join('\n');
+  const heading=(level,text)=>'#'.repeat(level)+' '+markdownEscapeText(text||'');
+  const blockquote=value=>markdownLines(value,'> ');
+  switch(type){
+    case 'h1': return heading(1,c.text);
+    case 'quote':case 'tip':case 'quote2':case 'cta':case 'guide':case 'follow': return blockquote(c.text||'');
+    case 'caption': return '*'+inlineHtmlToMarkdown(c.text||'')+'*';
+    case 'footer': return inlineHtmlToMarkdown(c.text||'');
+    case 'card': return [heading(3,c.title),inlineHtmlToMarkdown(c.body||'')].filter(Boolean).join('\n\n');
+    case 'intro': return ['**'+markdownEscapeText(c.strong||'')+'**',inlineHtmlToMarkdown(c.body||'')].filter(Boolean).join('\n\n');
+    case 'stat': return [heading(3,c.label),inlineHtmlToMarkdown(c.value||'')].filter(Boolean).join('\n\n');
+    case 'meta': return [c.words,c.minutes,c.fit].map(markdownEscapeText).filter(Boolean).join(' · ');
+    case 'clist':case 'step':case 'tags': return items('items');
+    case 'recap': return [heading(2,c.title),items('items')].filter(Boolean).join('\n\n');
+    case 'refs': return [heading(2,c.title),(c.items||[]).map(markdownReferenceItem).join('\n')].filter(Boolean).join('\n\n');
+    case 'next': return [heading(2,c.title),inlineHtmlToMarkdown(c.body||'')].filter(Boolean).join('\n\n');
+    case 'hist': return [heading(2,c.title),items('items')].filter(Boolean).join('\n\n');
+    case 'twocol': return [inlineHtmlToMarkdown(c.left||''),inlineHtmlToMarkdown(c.right||'')].filter(Boolean).join('\n\n');
+    case 'compare': return [heading(3,c.aTitle),items('aItems'),heading(3,c.bTitle),items('bItems')].filter(Boolean).join('\n\n');
+    case 'triple':{
+      const acts=Array.isArray(c.acts)?c.acts:[],icons=Array.isArray(c.icons)?c.icons:[];
+      const rows=acts.map((act,index)=>'- '+[icons[index],act].filter(Boolean).map(markdownEscapeText).join(' '));
+      icons.slice(acts.length).forEach(icon=>rows.push('- '+markdownEscapeText(icon)));
+      return [inlineHtmlToMarkdown(c.lead||''),rows.join('\n'),markdownEscapeText(c.tail||'')].filter(Boolean).join('\n\n');
+    }
+    case 'image': return blockquote([c.text,c.title,c.url].map(value=>sanitizePlainText(value||'')).filter(Boolean).join(' · '));
+    default: return oneClickSemanticParts(record,false).map(value=>markdownEscapeText(oneClickPlain(value))).filter(Boolean).join('\n\n');
+  }
+}
+function markdownRecordRoundTripEligible(record){
+  if(!record||!MARKDOWN_ROUNDTRIP_TYPES.has(record.type)) return false;
+  if(record.type==='image'&&!normalizeHttpUrl(record.content&&record.content.url||'')) return false;
+  if(record.type==='strong'&&/<\/?(?:strong|b)>/i.test(record.content&&record.content.text||'')) return false;
+  return true;
+}
+function serializePortableMarkdown(records,meta,options){
+  options=Object.assign({mode:'portable',includeTitle:true},options||{});
+  const rows=[],lossyBlocks=[];
+  const title=sanitizePlainText(meta&&meta.title||'').trim();
+  if(options.includeTitle&&title) rows.push('# '+markdownEscapeText(title));
+  (records||[]).forEach((record,index)=>{
+    const eligible=markdownRecordRoundTripEligible(record);
+    if(!eligible) lossyBlocks.push({index:index+1,id:record.id,type:record.type,name:componentName(record.type),reason:'标准 Markdown 无法无损保留该组件结构'});
+    const markdown=eligible?markdownRecord(record):portableMarkdownRecord(record);
+    if(markdown.trim()) rows.push(markdown.trimEnd());
+  });
+  return {
+    ok:options.mode!=='strict'||lossyBlocks.length===0,
+    markdown:rows.join('\n\n').trim()+(rows.length?'\n':''),
+    warnings:lossyBlocks.length?['有 '+lossyBlocks.length+' 个拾光结构组件会在便携 Markdown 中展开为普通标题、段落或列表；项目 JSON 才是无损备份。']:[],
+    lossyBlocks,
+    stats:{blocks:(records||[]).length,lossyBlocks:lossyBlocks.length,title:!!title}
+  };
+}
+function sourceEditablePartition(){
+  const rows=documentState.blocks.slice();
+  const fixedId=documentState.fixedTailStartId;
+  const fixedIndex=fixedId?rows.findIndex(block=>block.id===fixedId):-1;
+  if(fixedIndex>=0) return {body:rows.slice(0,fixedIndex),tail:rows.slice(fixedIndex),fixedTailStartId:fixedId};
+  let start=rows.length;
+  while(start>0&&ONE_CLICK_AUTO_PRESERVE_TAIL_TYPES.has(rows[start-1]&&rows[start-1].type)) start--;
+  return {body:rows.slice(0,start),tail:rows.slice(start),fixedTailStartId:null};
+}
+function sourceComparableRecords(records){
+  return JSON.stringify((records||[]).map(record=>({type:record.type,content:normalizeContent(record.type,record.content||record.c||{})})));
+}
+function verifyGeneratedMarkdownRoundTrip(markdown,records,title){
+  try{
+    const parsed=parseOneClickArticle(markdown,{plainTitle:false,strictAssets:true});
+    const actual=parsed.blocks.map(block=>createBlockRecord(block.type,block.c));
+    return {ok:parsed.title===sanitizePlainText(title||'').trim()&&sourceComparableRecords(actual)===sourceComparableRecords(records),parsed};
+  }catch(error){ return {ok:false,error:error&&error.message?error.message:String(error)}; }
+}
+async function copyPlainText(value,textarea){
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    try{ await navigator.clipboard.writeText(value); return true; }catch(_){}
+  }
+  if(textarea){ textarea.focus(); textarea.select(); return document.execCommand('copy'); }
+  return false;
+}
+function openMarkdownSourceView(){
+  flushHistory(); syncAppearanceState();
+  const partition=sourceEditablePartition();
+  const generated=serializePortableMarkdown(partition.body,documentState.meta,{mode:'strict'});
+  const roundTrip=generated.ok?verifyGeneratedMarkdownRoundTrip(generated.markdown,partition.body,documentState.meta&&documentState.meta.title):{ok:false};
+  const emptyStarter=partition.body.length===1&&partition.body[0]&&partition.body[0].type==='p'&&!inlineHtmlToText(partition.body[0].content&&partition.body[0].content.text||'').trim();
+  const sourceApplicable=generated.ok&&(roundTrip.ok||emptyStarter);
+  sourceSession={active:true,dirty:false,baseRevision:documentState.revision,partition,generated,roundTrip,emptyStarter,sourceApplicable};
+  document.getElementById('modalTitle').textContent='Markdown 源文（候选修改）';
+  const body=document.getElementById('modalBody'); body.replaceChildren();
+  const note=document.createElement('p'); note.className='source-note'; note.textContent='这里编辑的是可移植 Markdown 候选稿，不会实时覆盖画布。项目 JSON 仍是唯一无损备份；作者、主题和发布设置保持不变。'; body.appendChild(note);
+  const textarea=document.createElement('textarea'); textarea.id='sourceMarkdownInput'; textarea.className='source-editor'; textarea.spellcheck=false; textarea.value=generated.markdown; body.appendChild(textarea);
+  const status=document.createElement('p'); status.id='sourceMarkdownStatus'; status.className=sourceApplicable?'source-note':'source-warning';
+  if(sourceApplicable) status.textContent=(emptyStarter?'当前是空白起始段，可以直接在此编写 Markdown 候选稿。':'可安全候选应用：当前正文只含 Markdown 可逆组件；'+partition.tail.length+' 个品牌文末区块将保留原样。');
+  else if(generated.lossyBlocks.length) status.textContent='当前正文含 '+generated.lossyBlocks.length+' 个复杂组件（'+Array.from(new Set(generated.lossyBlocks.map(item=>item.name))).join('、')+'）。可以查看、复制或下载，但为防止结构静默丢失，本轮禁止直接覆盖画布。';
+  else status.textContent='生成稿未通过无修改往返校验，已阻止直接应用。'+(roundTrip.error?' '+roundTrip.error:'');
+  body.appendChild(status);
+  const actions=document.createElement('div'); actions.className='source-actions';
+  const copy=document.createElement('button'); copy.type='button'; copy.className='secondary'; copy.id='sourceCopyBtn'; copy.textContent='复制 Markdown';
+  const download=document.createElement('button'); download.type='button'; download.className='secondary'; download.id='sourceDownloadBtn'; download.textContent='下载 .md';
+  const apply=document.createElement('button'); apply.type='button'; apply.id='sourceApplyBtn'; apply.textContent='检查并应用候选修改'; apply.disabled=!sourceApplicable;
+  actions.append(copy,download,apply); body.appendChild(actions);
+  textarea.addEventListener('input',()=>{
+    if(!sourceSession) return;
+    sourceSession.dirty=textarea.value!==generated.markdown;
+    if(sourceSession.dirty){ status.className='source-warning'; status.textContent='源文已修改；点击“检查并应用候选修改”后，会重新执行结构、资产、容量和品牌文末安全检查。'; }
+    else{
+      status.className=sourceApplicable?'source-note':'source-warning';
+      status.textContent=sourceApplicable?(emptyStarter?'当前是空白起始段，可以直接在此编写 Markdown 候选稿。':'可安全候选应用：当前正文只含 Markdown 可逆组件；'+partition.tail.length+' 个品牌文末区块将保留原样。'):'当前源文仅可查看，不能覆盖画布。';
+    }
+  });
+  copy.onclick=async()=>{ const ok=await copyPlainText(textarea.value,textarea); flash(ok?'Markdown 已复制':'复制失败，请在源文框按 ⌘/Ctrl+A 后手动复制'); };
+  download.onclick=()=>{ downloadBlob(safeExportBaseName()+'_便携Markdown.md',textarea.value,'text/markdown;charset=utf-8'); flash('已下载便携 Markdown；无损恢复请同时保留项目 JSON'); };
+  apply.onclick=()=>applyMarkdownSourceCandidate(textarea.value);
+  modalBox.classList.add('wide-modal'); modalClose.hidden=false; modal.classList.add('show'); modalBox.scrollTop=0; textarea.focus();
+}
+function applyMarkdownSourceCandidate(markdown){
+  if(!sourceSession||!sourceSession.active) return;
+  if(documentState.revision!==sourceSession.baseRevision){ flash('画布在源文打开后已经变化；请关闭并重新生成源文，当前文章未覆盖'); return; }
+  let parsed;
+  try{ parsed=parseOneClickArticle(markdown,{plainTitle:false,strictAssets:true}); }
+  catch(error){ flash('Markdown 不能应用：'+(error&&error.message?error.message:'格式无法识别')); return; }
+  if(parsed.diagnostics&&parsed.diagnostics.unsafeLinks&&parsed.diagnostics.unsafeLinks.length){ flash('Markdown 含不安全链接，当前文章未覆盖'); return; }
+  const records=parsed.blocks.map(block=>createBlockRecord(block.type,block.c));
+  const candidateExport=serializePortableMarkdown(records,{title:parsed.title},{mode:'strict'});
+  const candidateRoundTrip=candidateExport.ok?verifyGeneratedMarkdownRoundTrip(candidateExport.markdown,records,parsed.title):{ok:false};
+  if(!candidateExport.ok||!candidateRoundTrip.ok){
+    const names=Array.from(new Set(candidateExport.lossyBlocks.map(item=>item.name))).filter(Boolean);
+    flash(names.length?'候选稿包含暂不能安全往返的组件：'+names.join('、')+'；当前文章未覆盖':'候选稿未通过结构往返校验；当前文章未覆盖');
+    return;
+  }
+  if(markdownParsedAssetSignature(parsed)!==markdownParsedAssetSignature(candidateRoundTrip.parsed)){
+    flash('候选稿中的图片、链接、公式或行内代码无法在当前组件结构中完整保留；当前文章未覆盖');
+    return;
+  }
+  const protectedTail=sourceSession.partition.tail.slice();
+  const finalAssembly=verifyOneClickFinalAssembly(records,protectedTail);
+  if(!finalAssembly.ok){ flash('候选稿与保留文末存在重复或空内容；请先调整源文，当前文章未覆盖'); return; }
+  const nextBlocks=records.concat(protectedTail);
+  const nextMeta=Object.assign({},documentState.meta,{title:sanitizePlainText(parsed.title||'').trim()});
+  if(!stateWithinLimits(Object.assign({},documentState,{meta:nextMeta,blocks:nextBlocks}))){ flash('Markdown 候选超过安全容量或结构上限，当前文章未覆盖'); return; }
+  const counts=parsed.counts||{};
+  const currentTitle=sanitizePlainText(documentState.meta&&documentState.meta.title||'').trim();
+  const nextTitle=sanitizePlainText(parsed.title||'').trim();
+  const titleLabel=value=>value?'「'+value.slice(0,32)+(value.length>32?'…':'')+'」':'空标题';
+  const titleChange=currentTitle===nextTitle?'文章标题保持 '+titleLabel(nextTitle):'文章标题将从 '+titleLabel(currentTitle)+' 改为 '+titleLabel(nextTitle);
+  if(!confirm('将用 '+records.length+' 个 Markdown 区块替换当前正文，并原样保留 '+protectedTail.length+' 个品牌文末区块；'+titleChange+'。图片 '+(counts.images||0)+'、链接 '+(counts.links||0)+'、公式 '+((counts.formulas||0)+(counts.inlineFormulas||0))+'、表格 '+(counts.tables||0)+'。确定应用吗？')) return;
+  const fixedTailId=sourceSession.partition.fixedTailStartId;
+  sourceSession.active=false;
+  runMutation('应用 Markdown 候选修改',()=>{
+    documentState.blocks=nextBlocks;
+    documentState.meta=nextMeta;
+    delete documentState.migration;
+    if(fixedTailId&&protectedTail.length) documentState.fixedTailStartId=fixedTailId;
+    else delete documentState.fixedTailStartId;
+  });
+  titleInput.value=nextMeta.title; phTitle.textContent=nextMeta.title||'在此预览标题';
+  closeModal(true); flash('Markdown 候选已作为一次可撤销修改应用；品牌文末保持原样');
+}
+function safeExportBaseName(){
+  return (sanitizePlainText(documentState.meta&&documentState.meta.title||'').trim()||'拾光文章').replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').slice(0,60);
+}
+function buildPublishReportPayload(result,stateOverride,strictResultOverride){
+  const safe=result&&typeof result==='object'?result:{};
+  const strict=strictResultOverride&&typeof strictResultOverride==='object'?strictResultOverride:safe;
+  const state=stateOverride&&typeof stateOverride==='object'?stateOverride:documentState;
+  const meta=state.meta&&typeof state.meta==='object'?state.meta:{};
+  return {
+    schema:'shiguang-publish-report/v1',
+    generatedAt:new Date().toISOString(),
+    appVersion:APP_VERSION,
+    rendererVersion:WECHAT_RENDERER_VERSION,
+    documentRevision:Number(state.revision)||0,
+    article:{title:sanitizePlainText(meta.title||''),author:sanitizePlainText(meta.author||''),blocks:Array.isArray(state.blocks)?state.blocks.length:0},
+    staticPreflightPassed:!!strict.ok,
+    preflight:{
+      strictOriginal:{passed:!!strict.ok,blockers:cloneJson(strict.blockers||[]),warnings:cloneJson(strict.warnings||[])},
+      placeholderStrippedExport:{passed:!!safe.ok,blockers:cloneJson(safe.blockers||[]),warnings:cloneJson(safe.warnings||[])}
+    },
+    humanAcceptanceStatus:'pending',
+    blockers:cloneJson(strict.blockers||[]),
+    warnings:cloneJson(strict.warnings||[]),
+    normalizations:cloneJson(safe.normalizations||[]),
+    degradations:cloneJson(safe.degradations||[]),
+    componentPolicies:cloneJson(safe.componentPolicies||[]),
+    stats:cloneJson(safe.stats||{}),
+    manualChecks:cloneJson(safe.manualChecks||{}),
+    acceptance:{wechatPaste:'pending',draftSaved:'pending',draftReopened:'pending',mobilePreview:'pending',windowsChrome:'pending',windowsEdge:'pending'},
+    requiredWorkflow:['复制到微信公众号后台','保存为草稿','重新打开草稿','手机预览并核对文字、图片、链接、公式、表格和固定落尾'],
+    note:'staticPreflightPassed 以严格原稿为准；移除图片或公式占位后的导出预检单独记录，不代表已可发布。静态预检和自动回归不等于微信公众号验收通过。报告不包含正文 HTML 或正文纯文本。'
+  };
+}
+function exportPublishReport(){
+  const strictResult=serializeForWechat({dropPlaceholders:false,tableMode:G.tableMode});
+  const exportResult=serializeForWechat({dropPlaceholders:true,tableMode:G.tableMode});
+  const payload=buildPublishReportPayload(exportResult,documentState,strictResult);
+  downloadBlob(safeExportBaseName()+'_发布检查报告.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8');
+  flash(payload.staticPreflightPassed?'已导出静态发布检查报告；微信人工验收仍为 pending':'已导出检查报告；请先处理阻断项');
+}
+function exportPortableMarkdown(){
+  const exported=serializePortableMarkdown(documentState.blocks,documentState.meta,{mode:'portable'});
+  downloadBlob(safeExportBaseName()+'_便携Markdown.md',exported.markdown,'text/markdown;charset=utf-8');
+  flash(exported.lossyBlocks.length?'已导出便携 Markdown；'+exported.lossyBlocks.length+' 个复杂组件已明确扁平化，JSON 才可无损恢复':'已导出便携 Markdown');
+}
+function openExportCenter(){
+  document.getElementById('modalTitle').textContent='导出中心';
+  const body=document.getElementById('modalBody'); body.replaceChildren();
+  const note=document.createElement('p'); note.className='source-note'; note.textContent='项目 JSON 用于无损恢复；便携 Markdown 用于跨编辑器传递；带样式 HTML 和发布报告都复用同一微信安全内核。'; body.appendChild(note);
+  const grid=document.createElement('div'); grid.className='export-grid';
+  const add=(id,title,desc,handler)=>{ const button=document.createElement('button'); button.type='button'; button.id=id; button.className='export-card'; button.innerHTML='<b>'+escapeHtml(title)+'</b><span>'+escapeHtml(desc)+'</span>'; button.onclick=handler; grid.appendChild(button); };
+  add('exportProjectJson','项目备份 JSON','唯一无损格式；保留33组件、主题、区块顺序和固定文末',()=>{ closeModal(true); document.getElementById('backupBtn').click(); });
+  add('exportPortableMarkdown','便携 Markdown','适合跨工具编辑；复杂拾光组件会明确扁平化',()=>exportPortableMarkdown());
+  add('exportStyledHtml','带样式 HTML','微信安全复制页；图片和公式进入独立资产清单',()=>{ closeModal(true); exportWechatPage({dropPlaceholders:true,tableMode:G.tableMode}); });
+  add('exportPublishReport','发布检查报告 JSON','记录阻断项、降级、资产清单与待人工验收状态',()=>exportPublishReport());
+  body.appendChild(grid);
+  modalBox.classList.add('wide-modal'); modal.classList.add('show'); modalBox.scrollTop=0;
+}
+document.getElementById('sourceViewBtn').onclick=openMarkdownSourceView;
 function standaloneScriptJson(value){
   return JSON.stringify(value).replace(/</g,'\\u003c').replace(/>/g,'\\u003e').replace(/&/g,'\\u0026').replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
 }
@@ -3611,24 +4091,28 @@ function exportWechatPage(options){
   downloadBlob('wechat-article-copy.html',buildStandaloneCopyPage(result),'text/html');
   flash('已导出微信复制页；正文来自同一发布渲染器');
 }
-document.getElementById('exportBtn').onclick=()=>exportWechatPage();
+document.getElementById('exportBtn').onclick=openExportCenter;
 
 /* ============ 微信发布静态预检 ============ */
 function wechatCheck(){ return serializeForWechat(); }
 const modal=document.getElementById('modal');
 const modalBox=modal.querySelector('.modal-box');
 const modalClose=document.getElementById('modalClose');
-function closeModal(){
+function closeModal(force){
+  if(!force&&sourceSession&&sourceSession.active&&sourceSession.dirty&&!confirm('Markdown 源文还有未应用的修改。确定关闭并放弃这些候选修改吗？')) return false;
+  sourceSession=null;
   modal.classList.remove('show');
   modalBox.classList.remove('oneclick-modal');
+  modalBox.classList.remove('wide-modal');
   modalBox.scrollTop=0;
   modalClose.hidden=false;
   modalClose.textContent='知道了';
+  return true;
 }
 document.getElementById('checkBtn').onclick=()=>{
   showPreflight(wechatCheck());
 };
-modalClose.onclick=closeModal;
+modalClose.onclick=()=>closeModal();
 modal.addEventListener('click',e=>{ if(e.target===modal) closeModal(); });
 
 async function readOneClickClipboard(target,status){
@@ -3818,7 +4302,7 @@ document.getElementById('restoreNew').onclick=()=>{
 
 
 /* ============ 本机数据管理（只展示数量与体积，不读取正文做诊断）============ */
-const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse',UPDATE_LAST_CHECK_KEY,QUICK_START_KEY];
+const PRODUCT_SETTING_KEYS=['wx-store-ver','wx-tier-collapse','wx-tpl-collapse',WORKSPACE_VIEW_KEY,UPDATE_LAST_CHECK_KEY,QUICK_START_KEY];
 function productStorageKeys(){
   const keys=new Set([KEY,LEGACY_KEY,LEGACY_BACKUP_KEY,SNAPSHOT_KEY,...PRODUCT_SETTING_KEYS]);
   try{
@@ -3930,9 +4414,9 @@ document.getElementById('helpBtn').onclick=()=>{
 /* ============ 关于弹窗 ============ */
 const PRODUCT_EDITION = {"id":"free","label":"免费版"};
 const aboutHTML = `<div style="font-size:13px;color:#5a5566;line-height:1.85;">
-  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.10 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 35 套主题。</p>
-  <p style="margin:10px 0 2px;"><b>完整能力</b><br>一键排版文章、安全复制、发布预检、本地草稿、项目备份、35 套主题与 16 套文章结构均可直接使用；版本之间不通过阉割核心发布能力制造差异。</p>
-  <p style="margin:10px 0 2px;"><b>开源版范围</b><br>安全复制、备份、Markdown 技术内容识别、35 套主题、16 套文章结构和 33 个区块均可完整使用，不需要注册或付费解锁。</p>
+  <p style="margin:0 0 8px;"><b style="color:#1f1b29;font-size:15px;">拾光排版器 V4.1.11 · 开源免费版</b><br>支持整篇文字一键排版，并保留完整安全复制内核与 39 套主题。</p>
+  <p style="margin:10px 0 2px;"><b>完整能力</b><br>一键排版文章、安全复制、发布预检、本地草稿、项目备份、39 套主题与 16 套文章结构均可直接使用；版本之间不通过阉割核心发布能力制造差异。</p>
+  <p style="margin:10px 0 2px;"><b>开源版范围</b><br>安全复制、备份、Markdown 技术内容识别、39 套主题、16 套文章结构和 33 个区块均可完整使用，不需要注册或付费解锁。</p>
   <p style="margin:10px 0 2px;"><b>更新与服务边界</b><br>已交付版本可长期使用；拾光计划长期维护，V4.x 优先修复影响正常使用的可复现兼容问题。新功能、大版本、一对一指导与个性化服务另行说明。</p>
   <p style="margin:10px 0 2px;"><b>功能边界（重要）</b><br>本工具只做「排版美化 + 复制」，不提供自动发布、内容采集或批量搬运。复制后请在微信<b>官方后台手动粘贴、检查、发布</b>。</p>
   <p style="margin:10px 0 0;color:#8b8794;font-size:12px;">发布预检是本地静态检查，不等于微信兼容认证；最终必须以微信保存草稿、重新打开和手机预览为准。</p>
@@ -4479,12 +4963,17 @@ function recordsFromLegacyHtml(html){
   for(let i=0;i<imageGaps;i++) records.push(createBlockRecord('image',{text:'旧稿图片位置待核对 — 请在公众号后台重新上传'}));
   return {records,imageGaps};
 }
+function legacyThemeIndex(old){
+  const byId=old&&typeof old.themeId==='string'?ALL_THEMES.findIndex(theme=>theme.id===old.themeId):-1;
+  if(byId>=0) return byId;
+  const byNumber=old&&Number.isInteger(old.theme)?old.theme:-1;
+  return byNumber>=0&&byNumber<ALL_THEMES.length?byNumber:DEFAULT_THEME;
+}
 function migrateLegacyDraft(raw){
   let old; try{ old=JSON.parse(raw); }catch(_){ return null; }
   const legacy=recordsFromLegacyHtml(old&&old.html);
   const records=legacy.records;
-  const idx=old&&old.themeId?ALL_THEMES.findIndex(t=>t.id===old.themeId):(typeof old.theme==='number'?old.theme:DEFAULT_THEME);
-  const theme=ALL_THEMES[idx>=0?idx:DEFAULT_THEME]||ALL_THEMES[DEFAULT_THEME];
+  const theme=ALL_THEMES[legacyThemeIndex(old)]||ALL_THEMES[DEFAULT_THEME];
   return {
     schemaVersion:APP_SCHEMA,revision:1,updatedAt:Date.now(),
     meta:{title:sanitizePlainText(old.title||''),author:sanitizePlainText(old.author||''),summary:''},
@@ -4603,6 +5092,7 @@ function flash(msg){
 }
 /* ============ 启动 ============ */
 initUnlock();
+initWorkspaceView();
 renderThemes();
 load();
 scheduleAutomaticUpdateCheck();

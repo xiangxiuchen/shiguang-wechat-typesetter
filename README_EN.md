@@ -6,7 +6,7 @@ Shiguang is a local-first, single-HTML typesetting editor for WeChat Official Ac
 - Article content is not uploaded by Shiguang
 - One-click article layout with local structure detection and a generic closing section when no custom brand ending exists
 - Local Markdown file import with fenced code, formulas, links, images, task lists, and variable-column tables
-- 35 visual themes, 16 article structures, and 33 content blocks
+- 39 visual themes, 16 article structures, and 33 content blocks
 - Sanitized rich-text copy and static preflight checks for WeChat
 - Local drafts, snapshots, and JSON project backups
 
